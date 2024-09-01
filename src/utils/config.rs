@@ -14,20 +14,16 @@ impl Default for Config {
     fn default() -> Self {
         #[cfg(target_os = "windows")]
         let dir = format!(
-            "{:?}{:?}\\Pictures\\Capter",
-            var_os("HOMEDRIVE").unwrap(),
-            var_os("HOMEPATH").unwrap()
-        )
-        .replace("\"", "")
-        .replace("\\\\", "\\");
+            "{}{}\\Pictures\\Capter",
+            var_os("HOMEDRIVE").unwrap().to_string_lossy(),
+            var_os("HOMEPATH").unwrap().to_string_lossy()
+        );
 
         #[cfg(not(target_os = "windows"))]
-        let dir = format!("{:?}/Pictures/Capter", var_os("HOMEPATH").unwrap())
-            .replace("\"", "")
-            .replace("\\\\", "\\");
+        let dir = format!("{}/Pictures/Capter", var_os("HOME").unwrap().to_string_lossy());
 
         Self {
-            theme: Theme::Light,
+            theme: Theme::default(),
             dir: dir.clone(),
             shortened_path: Self::shorten_path(&dir),
         }
@@ -56,15 +52,13 @@ impl Config {
     pub fn get_config_file() -> Result<File, std::io::Error> {
         #[cfg(target_os = "windows")]
         let path = format!(
-            "{:?}{:?}\\.config\\capter.toml",
-            var_os("HOMEDRIVE").unwrap(),
-            var_os("HOMEPATH").unwrap()
-        )
-        .replace("\"", "")
-        .replace("\\\\", "\\");
+                "{}{}\\.config\\capter.toml",
+                var_os("HOMEDRIVE").unwrap().to_string_lossy(),
+                var_os("HOMEPATH").unwrap().to_string_lossy()
+            );
 
         #[cfg(not(target_os = "windows"))]
-        let path = format!("{:?}/.config/capter.toml", var_os("HOMEPATH").unwrap());
+        let path = format!("{:?}/.config/capter.toml", var_os("HOME").unwrap().to_string_lossy());
 
         if !Path::new(&path).exists() {
             DirBuilder::new()
@@ -120,21 +114,16 @@ impl Config {
     }
 
     fn shorten_path(path: &str) -> String {
+
         #[cfg(target_os = "windows")]
-        let home_path = {
-            let homedrive = var_os("HOMEDRIVE").unwrap();
-            let homepath = var_os("HOMEPATH").unwrap();
-            format!(
+        let home_path = format!(
                 "{}{}",
-                homedrive.to_string_lossy(),
-                homepath.to_string_lossy()
-            )
-        };
+                var_os("HOMEDRIVE").unwrap().to_string_lossy(),
+                var_os("HOMEPATH").unwrap().to_string_lossy()
+            );
+
         #[cfg(not(target_os = "windows"))]
-        let home_path = var_os("HOME")
-            .unwrap()
-            .to_string_lossy()
-            .to_string();
+        let home_path = format!("{}", var_os("HOME").unwrap().to_string_lossy());
 
         // Replace the full home path with ~
         let replaced_path = path.replace(&home_path, "~");
