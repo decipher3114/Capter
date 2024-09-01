@@ -1,10 +1,10 @@
-pub const FONT_MEDIUM: &[u8; 86616] = include_bytes!("../assets/SpaceGrotesk-Medium.ttf");
+pub const FONT_MEDIUM: &[u8; 86616] = include_bytes!("../assets/fonts/SpaceGrotesk-Medium.ttf");
 
-pub const FONT_BOLD: &[u8; 86520] = include_bytes!("../assets/SpaceGrotesk-Bold.ttf");
+pub const FONT_BOLD: &[u8; 86520] = include_bytes!("../assets/fonts/SpaceGrotesk-Bold.ttf");
 
-pub const ICON: &[u8; 8647] = include_bytes!("../assets/icon.png");
+pub const ICON: &[u8; 8647] = include_bytes!("../assets/icons/icon.png");
 
-pub const SVG_FOLDER_OPEN: &[u8; 653] = include_bytes!("../assets/folder-open.svg");
+pub const SVG_FOLDER_OPEN: &[u8; 653] = include_bytes!("../assets/icons/folder-open.svg");
 
 use iced::Font;
 
