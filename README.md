@@ -6,17 +6,18 @@
     </picture>
 </p>
 
-A simple cross-platform screenshot tool made in rust
-
-> Well, this app is not made to replace the native screenshot tools. They are too good.
-> The app is only made for learning and experience purposes
-> However it is more intuitive than the native ones.
+A simple cross-platform screenshot tool made in Rust
 
 ## ✨ Features
 - Captures FreeForm, FullScreen and Window
 - Keybindings support
-- Better usablity (Fullscreen and Window (focused) screenshots are immediate)
+- Better usablity
+    > FullScreen and Window Screenshots are immediate.
 - Beautiful minimalistic UI
+
+> Shortcomings
+> - No Multi-monitor Support
+> - No Screen Recording support
 
 ## 📥 Installation
 - ### Cargo
