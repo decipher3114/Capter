@@ -3,6 +3,7 @@ use iced::Point;
 pub mod capture;
 pub mod config;
 pub mod key_listener;
+pub mod tray_icon;
 
 pub fn evaluate_points(point_a: Point, point_b: Point) -> (Point, Point) {
     let (mut start, mut end) = (point_a, point_b);

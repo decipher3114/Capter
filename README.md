@@ -16,11 +16,7 @@ A simple cross-platform screenshot tool made in rust
 - Captures FreeForm, FullScreen and Window
 - Keybindings support
 - Better usablity (Fullscreen and Window (focused) screenshots are immediate)
-- Decent looking UI
-
-> **Shortcomings:**
-> - No taskbar support (iced doesn't support taskbar yet)
-> - UI is not native
+- Beautiful minimalistic UI
 
 ## 📥 Installation
 - ### Cargo

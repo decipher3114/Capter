@@ -1,3 +1,5 @@
+pub const APPNAME: &str = "Capter";
+
 pub const FONT_MEDIUM: &[u8; 86616] = include_bytes!("../assets/fonts/SpaceGrotesk-Medium.ttf");
 
 pub const FONT_BOLD: &[u8; 86520] = include_bytes!("../assets/fonts/SpaceGrotesk-Bold.ttf");

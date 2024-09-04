@@ -31,7 +31,7 @@ use iced::{
 use style::Element;
 use utils::{
     capture::{fullscreen::capture_fullscreen, window::capture_window},
-    key_listener::global_key_listener,
+    key_listener::global_key_listener, tray_icon::{tray_icon, tray_icon_listener, tray_menu_listener},
 };
 
 pub fn main() -> Result<(), iced::Error> {
@@ -48,8 +48,10 @@ pub fn main() -> Result<(), iced::Error> {
 impl App {
     pub fn new() -> (App, Task<AppEvent>) {
         let (config, is_initial) = Config::new();
+        let _tray_icon = tray_icon();
         (
             App {
+                _tray_icon,
                 config,
                 windows: BTreeMap::new(),
             },
@@ -96,7 +98,6 @@ impl App {
                 }
                 Task::none()
             }
-
             AppEvent::InitiateFreeForm => {
                 if self.windows.len() <= 1 {
                     let (id, open_task) = window::open(window::Settings {
@@ -190,6 +191,10 @@ impl App {
         });
         let global_key_listener = Subscription::run(global_key_listener);
 
-        Subscription::batch([window_events, app_key_listener, global_key_listener])
+        let tray_icon_listener = Subscription::run(tray_icon_listener);
+
+        let tray_menu_listener = Subscription::run(tray_menu_listener);
+
+        Subscription::batch([window_events, app_key_listener, global_key_listener, tray_icon_listener, tray_menu_listener])
     }
 }

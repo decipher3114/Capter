@@ -16,4 +16,5 @@ rfd = { version = "0.14", features = ["gtk3", "tokio"], default-features = false
 serde = { version = "1.0", features = ["derive"] }
 tokio = { version = "1.39.2", features = ["full", "rt"] }
 toml = "0.8.19"
+tray-icon = "0.17.0"
 xcap = "0.0.13"

@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 
 use iced::window::Id;
+use tray_icon::TrayIcon;
 
 use crate::entities::{
     config::{Config, ConfigEvent},
@@ -8,8 +9,8 @@ use crate::entities::{
     window::WindowType,
 };
 
-#[derive(Default)]
 pub struct App {
+    pub _tray_icon: TrayIcon,
     pub config: Config,
     pub windows: BTreeMap<Id, WindowType>,
 }
