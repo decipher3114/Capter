@@ -72,14 +72,8 @@ impl App {
             AppEvent::OpenConfigureWindow => {
                 if self.windows.is_empty() {
                     let (id, open_task) = window::open(window::Settings {
-                        min_size: Some(Size {
-                            width: 650.0,
-                            height: 450.0,
-                        }),
-                        max_size: Some(Size {
-                            width: 750.0,
-                            height: 500.0,
-                        }),
+                        size: Size { width: 700.0, height: 430.0 },
+                        resizable: false,
                         icon: Some(icon::from_file_data(ICON, Some(ImageFormat::Png)).unwrap()),
                         ..Default::default()
                     });
