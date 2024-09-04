@@ -1,11 +1,11 @@
-use iced::futures::{SinkExt, Stream};
+use iced::{futures::{SinkExt, Stream}, stream};
 use rdev::{listen, EventType, Key};
 use tokio::sync::mpsc::channel;
 
 use crate::entities::app::AppEvent;
 
 pub fn global_key_listener() -> impl Stream<Item = AppEvent> {
-    iced::stream::channel(10, |mut output| async move {
+    stream::channel(10, |mut output| async move {
         let (sender, mut receiver) = channel(10);
 
         std::thread::spawn(move || {
@@ -32,9 +32,6 @@ pub fn global_key_listener() -> impl Stream<Item = AppEvent> {
                     }
                     Key::KeyW if alt_pressed && shift_pressed => {
                         output.send(AppEvent::CaptureWindow).await.unwrap();
-                    }
-                    Key::KeyO if alt_pressed && shift_pressed => {
-                        output.send(AppEvent::OpenConfigureWindow).await.unwrap();
                     }
                     _ => (),
                 },

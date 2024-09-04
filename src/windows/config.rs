@@ -120,7 +120,6 @@ impl Config {
                 footer_row("Alt+Shift+S", "Captures FreeForm Screenshot"),
                 footer_row("Alt+Shift+F", "Captures Full Screenshot"),
                 footer_row("Alt+Shift+W", "Captures Focused Window"),
-                footer_row("Alt+Shift+O", "Opens App Settings"),
             ]
             .width(Fill)
             .padding(10),
