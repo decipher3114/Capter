@@ -134,14 +134,14 @@ impl App {
                 self.config.write_config(false);
                 iced::exit()
             }
-            AppEvent::ConfigAppEvent(id, message) => {
+            AppEvent::Config(id, message) => {
                 if let Some(WindowType::ConfigureWindow(config)) = self.windows.get_mut(&id) {
                     config.update(message)
                 } else {
                     Task::none()
                 }
             }
-            AppEvent::FreeFormAppEvent(id, message) => {
+            AppEvent::FreeForm(id, message) => {
                 if let Some(WindowType::FreeFormWindow(freeform)) = self.windows.get_mut(&id) {
                     freeform.update(message)
                 } else {
@@ -155,10 +155,10 @@ impl App {
         let content = match &self.windows.get(&id) {
             Some(WindowType::ConfigureWindow(config)) => config
                 .view()
-                .map(move |message| AppEvent::ConfigAppEvent(id, message)),
+                .map(move |message| AppEvent::Config(id, message)),
             Some(WindowType::FreeFormWindow(freeform)) => freeform
                 .view()
-                .map(move |message| AppEvent::FreeFormAppEvent(id, message)),
+                .map(move |message| AppEvent::FreeForm(id, message)),
             None => horizontal_space().into(),
         };
 

@@ -25,6 +25,6 @@ pub enum AppEvent {
     CloseWindow,
     WindowClosed(Id),
     ExitApp,
-    ConfigAppEvent(Id, ConfigEvent),
-    FreeFormAppEvent(Id, FreeFormEvent),
+    Config(Id, ConfigEvent),
+    FreeForm(Id, FreeFormEvent),
 }
