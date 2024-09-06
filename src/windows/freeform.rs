@@ -53,9 +53,10 @@ impl FreeFormWindow {
         .height(Fill)
         .width(Fill);
 
-        let text_hint = match self.selection_area.final_pos {
-            Some(_) => "Enter to Capture | Esc to Cancel",
-            None => "Esc to Cancel"
+        let text_hint = if let (Some(_), Some(_)) = (self.selection_area.initial_pos, self.selection_area.final_pos) {
+            "Enter to Capture | Double Click to Reset"
+        } else {
+            "Esc to Cancel"
         };
         stack![
             background,
