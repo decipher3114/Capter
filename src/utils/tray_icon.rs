@@ -2,7 +2,7 @@ use std::{thread::{sleep, spawn}, time::Duration};
 
 use iced::{advanced::graphics::image::image_rs::load_from_memory, futures::{SinkExt, Stream}, stream};
 use tokio::sync::mpsc;
-use tray_icon::{menu::{Menu, MenuEvent, MenuId, MenuItem}, Icon, MouseButton::Left, TrayIcon, TrayIconAttributes, TrayIconEvent};
+use tray_icon::{menu::{Menu, MenuEvent, MenuId, MenuItem, PredefinedMenuItem}, Icon, MouseButton::Left, TrayIcon, TrayIconAttributes, TrayIconEvent};
 
 use crate::{assets::{APPNAME, ICON}, entities::app::AppEvent};
 
@@ -16,10 +16,12 @@ pub fn tray_icon() -> TrayIcon {
     let menu = Menu::new();
         menu.append_items(
             &[
-                &MenuItem::with_id("open", "Open Capter", true, None),
+                &MenuItem::with_id("open", "Open", true, None),
+                &PredefinedMenuItem::separator(),
                 &MenuItem::with_id("freeform", "Capture FreeForm", true, None),
                 &MenuItem::with_id("fullscreen", "Capture FullScreen", true, None),
-                &MenuItem::with_id("exit", "Exit", true, None)
+                &PredefinedMenuItem::separator(),
+                &MenuItem::with_id("exit", "Exit", true, None),
             ]
         ).unwrap();
 
