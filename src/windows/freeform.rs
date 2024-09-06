@@ -49,7 +49,6 @@ impl FreeFormWindow {
                 self.image.height(),
                 self.image.clone().into_raw(),
             )
-            // Handle::from_bytes(self.image.clone().into_raw())
         )
         .height(Fill)
         .width(Fill);

@@ -8,7 +8,6 @@ use crate::{assets::{APPNAME, ICON}, entities::app::AppEvent};
 
 pub fn tray_icon() -> TrayIcon {
 
-    // let icon =  load_from_memory(buffer)
     let icon_image= load_from_memory(ICON).unwrap();
     let (width, height) = (icon_image.width(), icon_image.height());
 
