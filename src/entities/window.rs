@@ -1,7 +1,7 @@
-use crate::entities::{config::Config, freeform::FreeForm};
+use crate::entities::{config::ConfigureWindow, freeform::FreeFormWindow};
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum WindowType {
-    ConfigureWindow(Config),
-    FreeFormWindow(FreeForm),
+    ConfigureWindow(ConfigureWindow),
+    FreeFormWindow(FreeFormWindow),
 }

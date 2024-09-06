@@ -1,3 +1,5 @@
+use std::env::var_os;
+
 use iced::Point;
 
 pub mod capture;
@@ -15,4 +17,27 @@ pub fn evaluate_points(point_a: Point, point_b: Point) -> (Point, Point) {
     };
 
     (start, end)
+}
+
+pub fn shorten_path(path: String) -> String {
+
+    #[cfg(target_os = "windows")]
+    let home_path = format!(
+            "{}{}",
+            var_os("HOMEDRIVE").unwrap().to_string_lossy(),
+            var_os("HOMEPATH").unwrap().to_string_lossy()
+        );
+
+    #[cfg(not(target_os = "windows"))]
+    let home_path = format!("{}", var_os("HOME").unwrap().to_string_lossy());
+
+    // Replace the full home path with ~
+    let replaced_path = path.replace(&home_path, "~");
+
+    // Shorten the path if it's longer than 20 characters
+    if replaced_path.len() > 20 {
+        format!("...{}", &replaced_path[replaced_path.len() - 17..])
+    } else {
+        replaced_path
+    }
 }

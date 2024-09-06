@@ -1,39 +1,33 @@
 use iced::{
-    alignment::Horizontal::Left,
-    widget::{
+    alignment::Horizontal::Left, widget::{
         button, column, container, horizontal_space, row, svg, svg::Handle, text, vertical_space,
-    },
-    Alignment::{self, Center},
-    ContentFit,
-    Length::Fill,
-    Task,
+    }, window::Id, Alignment::{self, Center}, ContentFit, Length::Fill, Task
 };
 
 use crate::{
-    assets::BOLD,
-    assets::SVG_FOLDER_OPEN,
+    assets::{BOLD, SVG_FOLDER_OPEN},
     entities::{
-        config::{Config, ConfigEvent},
+        config::{ConfigEvent, ConfigureWindow},
         style::ButtonClass,
     },
     style::Element,
     AppEvent,
 };
 
-impl Config {
-    pub fn update(&mut self, message: ConfigEvent) -> Task<AppEvent> {
+impl ConfigureWindow {
+    pub fn update(&mut self, id: Id, message: ConfigEvent) -> Task<AppEvent> {
         match message {
             ConfigEvent::UpdateFolderPath => {
-                self.update_dir();
-                Task::done(AppEvent::UpdateConfig)
+                self.update_directory();
+                Task::done(AppEvent::UpdateConfig(id))
             }
             ConfigEvent::OpenFolder => {
-                self.open_dir();
-                ().into()
+                self.open_directory();
+                Task::none()
             },
             ConfigEvent::ToggleTheme => {
                 self.toggle_theme();
-                Task::done(AppEvent::UpdateConfig)
+                Task::done(AppEvent::UpdateConfig(id))
             }
             ConfigEvent::RequestExit => Task::done(AppEvent::ExitApp),
         }
@@ -68,7 +62,7 @@ impl Config {
                     .width(40)
                     .on_press(ConfigEvent::OpenFolder),
                     horizontal_space().width(10),
-                    button(text(&self.shortened_path).size(20).center())
+                    button(text(&self.path).size(20).center())
                         .height(40)
                         .width(250)
                         .on_press(ConfigEvent::UpdateFolderPath)
@@ -83,7 +77,7 @@ impl Config {
                 row![
                     text("App Theme").align_x(Left).size(22).font(BOLD),
                     horizontal_space().width(Fill),
-                    button(text(self.theme.to_string()).size(20).center())
+                    button(text(self.config.theme.to_string()).size(20).center())
                         .height(40)
                         .width(160)
                         .on_press(ConfigEvent::ToggleTheme)

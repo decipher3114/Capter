@@ -11,8 +11,8 @@ use std::collections::BTreeMap;
 use assets::{FONT_BOLD, FONT_MEDIUM, ICON, MEDIUM};
 use entities::{
     app::{App, AppEvent},
-    config::Config,
-    freeform::FreeForm,
+    config::{Config, ConfigureWindow},
+    freeform::FreeFormWindow,
     theme::Theme,
     window::WindowType,
 };
@@ -78,17 +78,19 @@ impl App {
                         ..Default::default()
                     });
                     self.windows
-                        .insert(id, WindowType::ConfigureWindow(self.config.clone()));
+                        .insert(
+                            id, WindowType::ConfigureWindow(
+                                ConfigureWindow::new(&self.config)
+                            )
+                        );
                     open_task.discard()
                 } else {
                     Task::none()
                 }
             }
-            AppEvent::UpdateConfig => {
-                if let Some((_, WindowType::ConfigureWindow(config))) =
-                    self.windows.first_key_value()
-                {
-                    self.config = config.clone();
+            AppEvent::UpdateConfig(id) => {
+                if let Some(WindowType::ConfigureWindow(config_window)) = self.windows.get(&id) {
+                    self.config = config_window.config.clone();
                 }
                 Task::none()
             }
@@ -99,7 +101,7 @@ impl App {
                         decorations: false,
                         ..Default::default()
                     });
-                    let freeform = FreeForm::new();
+                    let freeform = FreeFormWindow::new();
                     self.windows
                         .insert(id, WindowType::FreeFormWindow(freeform));
                     open_task
@@ -112,30 +114,32 @@ impl App {
             }
             AppEvent::CaptureFullscreen => {
                 capture_fullscreen(&self.config);
-                ().into()
+                Task::none()
             },
             AppEvent::CaptureWindow => {
                 capture_window(&self.config);
-                ().into()
+                Task::none()
             },
             AppEvent::CloseWindow => window::get_latest().and_then::<Id>(close).discard(),
             AppEvent::WindowClosed(id) => {
                 match self.windows.remove(&id) {
                     Some(WindowType::FreeFormWindow(freeform)) => {
-                        freeform.capture_freeform(&self.config)
+                        freeform.capture_freeform(&self.config);
                     }
-                    Some(WindowType::ConfigureWindow(config)) => config.write_config(false),
+                    Some(WindowType::ConfigureWindow(_)) => {
+                        self.config.update_config()
+                    },
                     None => (),
                 }
                 Task::none()
             }
             AppEvent::ExitApp => {
-                self.config.write_config(false);
+                self.config.update_config();
                 iced::exit()
             }
             AppEvent::Config(id, message) => {
                 if let Some(WindowType::ConfigureWindow(config)) = self.windows.get_mut(&id) {
-                    config.update(message)
+                    config.update(id, message)
                 } else {
                     Task::none()
                 }

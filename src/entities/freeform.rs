@@ -1,8 +1,8 @@
 use iced::Point;
 use xcap::image::RgbaImage;
 
-#[derive(Debug, Clone)]
-pub struct FreeForm {
+#[derive(Debug)]
+pub struct FreeFormWindow {
     pub cursor_position: Point,
     pub image: RgbaImage,
     pub selection_area: SelectionArea,

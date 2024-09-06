@@ -12,7 +12,7 @@ use iced::{
 
 use crate::{
     entities::{
-        freeform::{FreeForm, FreeFormEvent},
+        freeform::{FreeFormWindow, FreeFormEvent},
         theme::Theme,
     },
     style::Element,
@@ -20,17 +20,15 @@ use crate::{
     AppEvent,
 };
 
-impl FreeForm {
+impl FreeFormWindow {
     pub fn update(&mut self, message: FreeFormEvent) -> Task<AppEvent> {
         match message {
             FreeFormEvent::SetInitialPoint => {
                 self.selection_area.final_pos = None;
                 self.selection_area.initial_pos = Some(self.cursor_position);
-                Task::none()
             }
             FreeFormEvent::UpdateCurrentPosition(point) => {
                 self.cursor_position = point;
-                Task::none()
             }
             FreeFormEvent::SetFinalPoint => {
                 if Some(self.cursor_position) != self.selection_area.initial_pos {
@@ -38,9 +36,9 @@ impl FreeForm {
                 } else {
                     self.selection_area.initial_pos = None;
                 }
-                Task::none()
             }
         }
+        Task::none()
     }
 
     pub fn view(&self) -> Element<FreeFormEvent> {
@@ -84,7 +82,7 @@ impl FreeForm {
     }
 }
 
-impl Program<FreeFormEvent, Theme> for FreeForm {
+impl Program<FreeFormEvent, Theme> for FreeFormWindow {
     type State = ();
 
     fn draw(

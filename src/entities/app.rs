@@ -18,7 +18,7 @@ pub struct App {
 #[derive(Debug, Clone)]
 pub enum AppEvent {
     OpenConfigureWindow,
-    UpdateConfig,
+    UpdateConfig(Id),
     InitiateFreeForm,
     CaptureFullscreen,
     CaptureWindow,

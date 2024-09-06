@@ -10,7 +10,7 @@ pub mod window;
 fn save_image(config: &Config, image: RgbaImage) {
     let date = chrono::Local::now().format("%Y-%m-%d-%H-%M-%S");
 
-    let image_path = format!("{}\\Capture_{}.png", config.dir, date);
+    let image_path = format!("{}\\Capture_{}.png", config.directory, date);
 
     Clipboard::new()
         .unwrap()

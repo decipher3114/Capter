@@ -5,17 +5,17 @@ use xcap::image::DynamicImage;
 use crate::{
     entities::{
         config::Config,
-        freeform::{FreeForm, SelectionArea},
+        freeform::{FreeFormWindow, SelectionArea},
     },
     utils::evaluate_points,
 };
 
 use crate::utils::capture::{fullscreen, save_image};
 
-impl FreeForm {
+impl FreeFormWindow {
     pub fn new() -> Self {
         let image = fullscreen::get_fullscreen().unwrap();
-        FreeForm {
+        FreeFormWindow {
             cursor_position: Point::ORIGIN,
             image,
             selection_area: SelectionArea {
