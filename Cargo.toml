@@ -1,6 +1,6 @@
 [package]
 name = "Capter"
-version = "1.0.0"
+version = "1.0.1"
 description = "A simple cross-platform screenshot tool"
 edition = "2021"
 authors = ["decipher3114 <decipher3114@gmail.com>"]
