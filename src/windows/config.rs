@@ -15,7 +15,6 @@ use crate::{
     entities::{
         config::{Config, ConfigEvent},
         style::ButtonClass,
-        theme::Theme,
     },
     style::Element,
     AppEvent,
@@ -126,9 +125,5 @@ impl Config {
         );
 
         column![header, body, footer].spacing(10).padding(15).into()
-    }
-
-    pub fn theme(&self) -> Theme {
-        self.theme.clone()
     }
 }

@@ -164,11 +164,8 @@ impl App {
         content
     }
 
-    pub fn theme(&self, id: Id) -> Theme {
-        match &self.windows.get(&id) {
-            Some(WindowType::ConfigureWindow(config)) => config.theme(),
-            _ => Theme::default(),
-        }
+    pub fn theme(&self, _id: Id) -> Theme {
+        self.config.theme.clone()
     }
 
     pub fn style(&self, theme: &Theme) -> Appearance {
