@@ -120,14 +120,13 @@ impl App {
             },
             AppEvent::CloseWindow => window::get_latest().and_then::<Id>(close).discard(),
             AppEvent::WindowClosed(id) => {
-                match self.windows.get(&id) {
+                match self.windows.remove(&id) {
                     Some(WindowType::FreeFormWindow(freeform)) => {
                         freeform.capture_freeform(&self.config)
                     }
                     Some(WindowType::ConfigureWindow(config)) => config.write_config(false),
                     None => (),
                 }
-                self.windows.remove(&id);
                 Task::none()
             }
             AppEvent::ExitApp => {

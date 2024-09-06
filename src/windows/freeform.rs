@@ -44,14 +44,14 @@ impl FreeForm {
     }
 
     pub fn view(&self) -> Element<FreeFormEvent> {
-        let image = &self.image;
 
         let background: Image<Handle> = Image::new(
             Handle::from_rgba(
-                image.width(),
-                image.height(),
-                image.clone().into_bytes(),
+                self.image.width(),
+                self.image.height(),
+                self.image.clone().into_raw(),
             )
+            // Handle::from_bytes(self.image.clone().into_raw())
         )
         .height(Fill)
         .width(Fill);

@@ -1,10 +1,10 @@
 use iced::Point;
-use xcap::image::DynamicImage;
+use xcap::image::RgbaImage;
 
 #[derive(Debug, Clone)]
 pub struct FreeForm {
     pub cursor_position: Point,
-    pub image: DynamicImage,
+    pub image: RgbaImage,
     pub selection_area: SelectionArea,
 }
 

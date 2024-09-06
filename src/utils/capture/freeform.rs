@@ -1,5 +1,6 @@
 use display_info::DisplayInfo;
 use iced::Point;
+use xcap::image::DynamicImage;
 
 use crate::{
     entities::{
@@ -24,8 +25,7 @@ impl FreeForm {
         }
     }
 
-    pub fn capture_freeform(&self, config: &Config) {
-        let image = &self.image;
+    pub fn capture_freeform(self, config: &Config) {
 
         if let (Some(initial_pos), Some(final_pos)) = (
             self.selection_area.initial_pos,
@@ -41,14 +41,14 @@ impl FreeForm {
 
             let (initial_pos, final_pos) = evaluate_points(initial_pos, final_pos);
 
-            let cropped_image = image.crop_imm(
+            let cropped_image = DynamicImage::from(self.image).crop(
                 (initial_pos.x * scale_factor) as u32,
                 (initial_pos.y * scale_factor) as u32,
                 ((final_pos.x - initial_pos.x) * scale_factor) as u32,
                 ((final_pos.y - initial_pos.y) * scale_factor) as u32,
             );
 
-            save_image(config, cropped_image);
+            save_image(config, cropped_image.into_rgba8());
         }
     }
 }

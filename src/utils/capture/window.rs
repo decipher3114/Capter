@@ -1,4 +1,4 @@
-use xcap::{image::DynamicImage, Window};
+use xcap::Window;
 
 use crate::{entities::config::Config, utils::capture::save_image};
 
@@ -9,9 +9,7 @@ pub fn capture_window(config: &Config) {
 
     for window in windows {
         if window.title() == active_window.title {
-            let capture = window.capture_image().unwrap();
-
-            let image = DynamicImage::from(capture);
+            let image = window.capture_image().unwrap();
 
             save_image(config, image);
         }

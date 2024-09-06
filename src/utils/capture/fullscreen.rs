@@ -1,15 +1,16 @@
-use xcap::{image::DynamicImage, Monitor};
+use xcap::image::RgbaImage;
+use xcap::Monitor;
 
 use crate::entities::config::Config;
 
 use crate::utils::capture::save_image;
 
-pub fn get_fullscreen() -> Option<DynamicImage> {
+pub fn get_fullscreen() -> Option<RgbaImage> {
     let monitors = Monitor::all().unwrap();
     let mut image = None;
     for monitor in monitors {
         if monitor.is_primary() {
-            image = Some(DynamicImage::from(monitor.capture_image().unwrap()));
+            image = Some(monitor.capture_image().unwrap());
         }
     }
     image
