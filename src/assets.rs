@@ -4,7 +4,7 @@ pub const FONT_MEDIUM: &[u8; 86616] = include_bytes!("../assets/fonts/SpaceGrote
 
 pub const FONT_BOLD: &[u8; 86520] = include_bytes!("../assets/fonts/SpaceGrotesk-Bold.ttf");
 
-pub const ICON: &[u8; 629] = include_bytes!("../assets/icons/icon.png");
+pub const ICON: &[u8; 1358] = include_bytes!("../assets/icons/icon.png");
 
 pub const SVG_FOLDER_OPEN: &[u8; 653] = include_bytes!("../assets/icons/folder-open.svg");
 

@@ -2,74 +2,118 @@ name: Release
 
 permissions:
   contents: write
-  pull-requests: write
 
 on:
   push:
     tags:
       - v[0-9]+.*
 
-
 jobs:
-  create-release:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        
-      - name: Update CHANGELOG
-        id: changelog
-        uses: requarks/changelog-action@v1
-        with:
-          token: ${{ github.token }}
-          tag: ${{ github.ref_name }}
-
-      - name: Create Release
-        uses: actions/create-release@latest
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
-          body: |
-            ${{ steps.changelog.outputs.changes }}
-          draft: false
-          prerelease: false
-
-  upload-assets:
-    needs: create-release
+  build-assets:
     strategy:
       matrix:
         include:
           - target: x86_64-unknown-linux-gnu
             os: ubuntu-latest
+            format: "deb,pacman"
           - target: x86_64-apple-darwin
             os: macos-latest
+            format: "app,dmg"
           - target: x86_64-pc-windows-msvc
             os: windows-latest
+            format: "wix,nsis"
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: apt Cache
+      - name: Setup Linux
         if: matrix.os == 'ubuntu-latest'
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
           packages: libgtk-3-dev libxdo-dev libappindicator3-dev
           version: 1.0
 
-      - name: Setup toolchain
-        run: rustup toolchain install stable --profile minimal
+      - name: Setup Windows
+        if: matrix.os == 'windows-latest'
+        run: |
+          dotnet tool install --global wix
+          $base64Cert = '${{ secrets.WINDOWS_CERT }}'
+          [System.IO.File]::WriteAllBytes("certificate.pfx", [System.Convert]::FromBase64String($base64Cert))
+          $password = ConvertTo-SecureString -String '${{ secrets.WINDOWS_CERT_PASSWORD }}' -Force -AsPlainText
+          Import-PfxCertificate -FilePath 'certificate.pfx' -CertStoreLocation 'Cert:\\CurrentUser\\My' -Password $password
 
-      - name: Rust Cache
-        uses: Swatinem/rust-cache@v2
-
-      - name: Build ${{ matrix.target }}
-        uses: taiki-e/upload-rust-binary-action@v1
+      - name: Setup Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          bin: Capter
+          toolchain: stable
           target: ${{ matrix.target }}
-          tar: unix
-          zip: windows
+
+      - name: Build binary
+        run: |
+          cargo build --release
+
+      - name: Install cargo-packager
+        run: |
+          cargo install cargo-packager --locked
+      
+      - name: Package binary
+        run: |
+          cargo packager --release --formats ${{ matrix.format }} -v
+
+      - name: Upload windows artifacts
+        uses: actions/upload-artifact@v4
+        if: matrix.os == 'windows-latest'
+        with:
+          name: windows_packages
+          path: |
+            target/packages/*.msi
+            target/packages/*.exe
+
+      - name: Upload linux artifacts
+        uses: actions/upload-artifact@v4
+        if: matrix.os == 'ubuntu-latest'
+        with:
+          name: linux_packages
+          path: |
+            target/packages/*.deb
+            target/packages/*.tar.gz
+
+      - name: Upload macos artifacts
+        uses: actions/upload-artifact@v4
+        if: matrix.os == 'macos-latest'
+        with:
+          name: macos_packages
+          path: |
+            target/packages/*.dmg
+            target/packages/*.app
+
+  upload-assets:
+    needs: build-assets
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Update CHANGELOG
+        id: changelog
+        uses: requarks/changelog-action@v1
+        with:
           token: ${{ github.token }}
+          tag: ${{ github.ref_name }}
+      
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          body: |
+            ${{ steps.changelog.outputs.changes }}
+          files: |
+            windows_packages/*
+            linux_packages/*
+            macos_packages/*
+          draft: false
+          prerelease: false
