@@ -51,7 +51,7 @@ impl Config {
             );
 
         #[cfg(not(target_os = "windows"))]
-        let path = format!("{:?}/.config/capter.toml", var_os("HOME").unwrap().to_string_lossy());
+        let path = format!("{}/.config/capter.toml", var_os("HOME").unwrap().to_string_lossy());
 
         if !Path::new(&path).exists() {
             DirBuilder::new()
