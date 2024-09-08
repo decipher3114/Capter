@@ -23,8 +23,7 @@ use iced::{
     keyboard::{key, on_key_press},
     widget::horizontal_space,
     window::{
-        self, change_mode, close, close_events, gain_focus, icon, Id,
-        Mode,
+        self, change_mode, close, close_events, gain_focus, icon, settings::PlatformSpecific, Id, Mode
     },
     Size, Subscription, Task,
 };
@@ -75,6 +74,16 @@ impl App {
                         size: Size { width: 700.0, height: 430.0 },
                         resizable: false,
                         icon: Some(icon::from_file_data(ICON, Some(ImageFormat::Png)).unwrap()),
+                        #[cfg(target_os = "macos")]
+                        platform_specific: PlatformSpecific {
+                            title_hidden: true,
+                            titlebar_transparent: true,
+                            fullsize_content_view: true
+                        },
+                        #[cfg(target_os = "linux")]
+                        platform_specific: PlatformSpecific {
+                            application_id: String::from("Capter")
+                        },
                         ..Default::default()
                     });
                     self.windows
@@ -99,6 +108,12 @@ impl App {
                     let (id, open_task) = window::open(window::Settings {
                         transparent: true,
                         decorations: false,
+                        #[cfg(target_os = "windows")]
+                        platform_specific: PlatformSpecific {
+                            drag_and_drop: false,
+                            skip_taskbar: true,
+                            undecorated_shadow: false,
+                        },
                         ..Default::default()
                     });
                     let freeform = FreeFormWindow::new();
