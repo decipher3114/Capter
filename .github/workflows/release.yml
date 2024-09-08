@@ -18,7 +18,7 @@ jobs:
             format: "deb,pacman"
           - target: x86_64-apple-darwin
             os: macos-latest
-            format: "app,dmg"
+            format: "dmg"
           - target: x86_64-pc-windows-msvc
             os: windows-latest
             format: "wix,nsis"
@@ -86,7 +86,6 @@ jobs:
           name: macos_packages
           path: |
             target/packages/*.dmg
-            target/packages/*.app
 
   upload-assets:
     needs: build-assets
