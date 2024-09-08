@@ -1,8 +1,8 @@
 <p align="center">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/decipher3114/Capter/master/assets/banner/dark.png">
-      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/decipher3114/Capter/master/assets/banner/light.png">
-      <img src="https://raw.githubusercontent.com/decipher3114/Capter/master/assets/banner/dark.png">
+      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/decipher3114/Capter/master/assets/images/banner_dark.png">
+      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/decipher3114/Capter/master/assets/images/banner_light.png">
+      <img src="https://raw.githubusercontent.com/decipher3114/Capter/master/assets/images/banner_dark.png">
     </picture>
 </p>
 
@@ -44,7 +44,7 @@ A simple cross-platform screenshot tool made in Rust
 
 ## 🖥️ Images
 
-![Dark](assets/ui/dark.png) | ![Light](assets/ui/light.png) |
+![Dark](assets/images/app_dark.png) | ![Light](assets/images/app_light.png) |
 --- | --- |
 Dark Mode | Light Mode |
 

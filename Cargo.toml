@@ -39,8 +39,8 @@ icons = ["assets/icons/windows/icon.ico", "assets/icons/macos/icon.icns", "asset
 out-dir = "target/packages"
 
 [package.metadata.packager.wix]
-banner-path = "assets/banner/wix_banner.png"
-dialog-image-path = "assets/banner/wix_dialog_image.png"
+banner-path = "assets/images/wix_banner.png"
+dialog-image-path = "assets/images/wix_dialog_image.png"
 
 [package.metadata.packager.nsis]
 installer-icon = "assets/icons/windows/icon.ico"
