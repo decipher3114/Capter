@@ -49,6 +49,9 @@ certificate-thumbprint = "07a9c417660868a4420fe9e2f8b6ac2e1a33228a"
 tsp = true
 timestamp-url = "http://timestamp.digicert.com"
 
+[package.metadata.packager.macos]
+minimum-system-version = "10.13"
+
 [package.metadata.packager.deb]
 depends = ["libgtk-3-dev", "libxdo-dev", "libayatana-appindicator3-dev", "libxcb1", "libxrandr2", "libdbus-1-3"]
 
