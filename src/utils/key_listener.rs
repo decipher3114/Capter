@@ -25,7 +25,7 @@ pub fn global_key_listener() -> impl Stream<Item = AppEvent> {
                     Key::Alt => alt_pressed = true,
                     Key::ShiftLeft | Key::ShiftRight => shift_pressed = true,
                     Key::KeyS if alt_pressed && shift_pressed => {
-                        output.send(AppEvent::InitiateFreeForm).await.unwrap();
+                        output.send(AppEvent::OpenCropWindow).await.unwrap();
                     }
                     Key::KeyF if alt_pressed && shift_pressed => {
                         output.send(AppEvent::CaptureFullscreen).await.unwrap();

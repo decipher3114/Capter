@@ -3,7 +3,7 @@ use xcap::image::{ImageFormat, RgbaImage};
 
 use crate::entities::config::Config;
 
-pub mod freeform;
+pub mod crop;
 pub mod fullscreen;
 pub mod window;
 

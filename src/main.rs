@@ -12,7 +12,7 @@ use assets::{FONT_BOLD, FONT_MEDIUM, ICON, MEDIUM};
 use entities::{
     app::{App, AppEvent},
     config::{Config, ConfigureWindow},
-    freeform::FreeFormWindow,
+    crop::CropWindow,
     theme::Theme,
     window::WindowType,
 };
@@ -103,7 +103,7 @@ impl App {
                 }
                 Task::none()
             }
-            AppEvent::InitiateFreeForm => {
+            AppEvent::OpenCropWindow => {
                 if self.windows.len() <= 1 {
                     let (id, open_task) = window::open(window::Settings {
                         transparent: true,
@@ -116,9 +116,9 @@ impl App {
                         },
                         ..Default::default()
                     });
-                    let freeform = FreeFormWindow::new();
+                    let crop_window = CropWindow::new();
                     self.windows
-                        .insert(id, WindowType::FreeFormWindow(freeform));
+                        .insert(id, WindowType::CropWindow(crop_window));
                     open_task
                         .discard()
                         .chain(gain_focus(id))
@@ -138,8 +138,8 @@ impl App {
             AppEvent::CloseWindow => window::get_latest().and_then::<Id>(close).discard(),
             AppEvent::WindowClosed(id) => {
                 match self.windows.remove(&id) {
-                    Some(WindowType::FreeFormWindow(freeform)) => {
-                        freeform.capture_freeform(&self.config);
+                    Some(WindowType::CropWindow(crop_window)) => {
+                        crop_window.crop_screenshot(&self.config);
                     }
                     Some(WindowType::ConfigureWindow(_)) => {
                         self.config.update_config()
@@ -153,15 +153,15 @@ impl App {
                 iced::exit()
             }
             AppEvent::Config(id, message) => {
-                if let Some(WindowType::ConfigureWindow(config)) = self.windows.get_mut(&id) {
-                    config.update(id, message)
+                if let Some(WindowType::ConfigureWindow(config_window)) = self.windows.get_mut(&id) {
+                    config_window.update(id, message)
                 } else {
                     Task::none()
                 }
             }
-            AppEvent::FreeForm(id, message) => {
-                if let Some(WindowType::FreeFormWindow(freeform)) = self.windows.get_mut(&id) {
-                    freeform.update(message)
+            AppEvent::Crop(id, message) => {
+                if let Some(WindowType::CropWindow(crop_window)) = self.windows.get_mut(&id) {
+                    crop_window.update(message)
                 } else {
                     Task::none()
                 }
@@ -171,12 +171,12 @@ impl App {
 
     pub fn view(&self, id: Id) -> Element<AppEvent> {
         let content = match &self.windows.get(&id) {
-            Some(WindowType::ConfigureWindow(config)) => config
+            Some(WindowType::ConfigureWindow(config_window)) => config_window
                 .view()
                 .map(move |message| AppEvent::Config(id, message)),
-            Some(WindowType::FreeFormWindow(freeform)) => freeform
+            Some(WindowType::CropWindow(crop_window)) => crop_window
                 .view()
-                .map(move |message| AppEvent::FreeForm(id, message)),
+                .map(move |message| AppEvent::Crop(id, message)),
             None => horizontal_space().into(),
         };
 

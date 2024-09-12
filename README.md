@@ -9,7 +9,7 @@
 A simple cross-platform screenshot tool made in Rust
 
 ## ✨ Features
-- Captures FreeForm, FullScreen and Window
+- Captures Cropped, FullScreen and Window
 - Keybindings support
 - Better usablity
     > FullScreen and Window Screenshots are immediate.

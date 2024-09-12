@@ -5,7 +5,7 @@ use tray_icon::TrayIcon;
 
 use crate::entities::{
     config::{Config, ConfigEvent},
-    freeform::FreeFormEvent,
+    crop::CropEvent,
     window::WindowType,
 };
 
@@ -19,12 +19,12 @@ pub struct App {
 pub enum AppEvent {
     OpenConfigureWindow,
     UpdateConfig(Id),
-    InitiateFreeForm,
+    OpenCropWindow,
     CaptureFullscreen,
     CaptureWindow,
     CloseWindow,
     WindowClosed(Id),
     ExitApp,
     Config(Id, ConfigEvent),
-    FreeForm(Id, FreeFormEvent),
+    Crop(Id, CropEvent),
 }

@@ -12,7 +12,7 @@ use iced::{
 
 use crate::{
     entities::{
-        freeform::{FreeFormWindow, FreeFormEvent},
+        crop::{CropWindow, CropEvent},
         theme::Theme,
     },
     style::Element,
@@ -20,17 +20,17 @@ use crate::{
     AppEvent,
 };
 
-impl FreeFormWindow {
-    pub fn update(&mut self, message: FreeFormEvent) -> Task<AppEvent> {
+impl CropWindow {
+    pub fn update(&mut self, message: CropEvent) -> Task<AppEvent> {
         match message {
-            FreeFormEvent::SetInitialPoint => {
+            CropEvent::SetInitialPoint => {
                 self.selection_area.final_pos = None;
                 self.selection_area.initial_pos = Some(self.cursor_position);
             }
-            FreeFormEvent::UpdateCurrentPosition(point) => {
+            CropEvent::UpdateCurrentPosition(point) => {
                 self.cursor_position = point;
             }
-            FreeFormEvent::SetFinalPoint => {
+            CropEvent::SetFinalPoint => {
                 if Some(self.cursor_position) != self.selection_area.initial_pos {
                     self.selection_area.final_pos = Some(self.cursor_position);
                 } else {
@@ -41,7 +41,7 @@ impl FreeFormWindow {
         Task::none()
     }
 
-    pub fn view(&self) -> Element<FreeFormEvent> {
+    pub fn view(&self) -> Element<CropEvent> {
 
         let background: Image<Handle> = Image::new(
             Handle::from_rgba(
@@ -72,9 +72,9 @@ impl FreeFormWindow {
                 ]
             ],
             mouse_area(Canvas::new(self).height(Fill).width(Fill))
-            .on_move(FreeFormEvent::UpdateCurrentPosition)
-            .on_press(FreeFormEvent::SetInitialPoint)
-            .on_release(FreeFormEvent::SetFinalPoint)
+            .on_move(CropEvent::UpdateCurrentPosition)
+            .on_press(CropEvent::SetInitialPoint)
+            .on_release(CropEvent::SetFinalPoint)
         ]
         .height(Fill)
         .width(Fill)
@@ -82,7 +82,7 @@ impl FreeFormWindow {
     }
 }
 
-impl Program<FreeFormEvent, Theme> for FreeFormWindow {
+impl Program<CropEvent, Theme> for CropWindow {
     type State = ();
 
     fn draw(

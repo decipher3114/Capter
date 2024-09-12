@@ -1,7 +1,7 @@
-use crate::entities::{config::ConfigureWindow, freeform::FreeFormWindow};
+use crate::entities::{config::ConfigureWindow, crop::CropWindow};
 
 #[derive(Debug)]
 pub enum WindowType {
     ConfigureWindow(ConfigureWindow),
-    FreeFormWindow(FreeFormWindow),
+    CropWindow(CropWindow),
 }
