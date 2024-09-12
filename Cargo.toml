@@ -1,6 +1,6 @@
 [package]
 name = "capter"
-version = "1.1.0"
+version = "1.1.1"
 description = "A simple cross-platform screenshot tool"
 edition = "2021"
 authors = ["decipher3114 <decipher3114@gmail.com>"]
@@ -29,7 +29,6 @@ FileDescription = "Capter"
 
 [package.metadata.packager]
 product-name = "Capter"
-version = "1.0.1"
 identifier = "app.decipher.capter"
 authors = ["decipher3114 <decipher3114@gmail.com>"]
 publisher = "decipher3114"
