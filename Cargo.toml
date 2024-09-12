@@ -43,10 +43,6 @@ out-dir = "target/packages"
 banner-path = "assets/images/wix_banner.png"
 dialog-image-path = "assets/images/dialog_image.png"
 
-[package.metadata.packager.nsis]
-installer-icon = "assets/icons/windows/icon.ico"
-installer-mode = "perMachine"
-
 [package.metadata.packager.windows]
 digest-algorithim = "SHA256"
 certificate-thumbprint = "07a9c417660868a4420fe9e2f8b6ac2e1a33228a"
