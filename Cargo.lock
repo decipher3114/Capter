@@ -3,25 +3,6 @@
 version = 3
 
 [[package]]
-name = "Capter"
-version = "1.1.0"
-dependencies = [
- "active-win-pos-rs",
- "arboard",
- "chrono",
- "display-info",
- "iced",
- "rdev",
- "rfd",
- "serde",
- "tokio",
- "toml 0.8.19",
- "tray-icon",
- "winresource",
- "xcap",
-]
-
-[[package]]
 name = "ab_glyph"
 version = "0.2.28"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -720,6 +701,25 @@ dependencies = [
  "rustix",
  "wayland-backend",
  "wayland-client",
+]
+
+[[package]]
+name = "capter"
+version = "1.1.0"
+dependencies = [
+ "active-win-pos-rs",
+ "arboard",
+ "chrono",
+ "display-info",
+ "iced",
+ "rdev",
+ "rfd",
+ "serde",
+ "tokio",
+ "toml 0.8.19",
+ "tray-icon",
+ "winresource",
+ "xcap",
 ]
 
 [[package]]

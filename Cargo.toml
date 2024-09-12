@@ -1,5 +1,5 @@
 [package]
-name = "Capter"
+name = "capter"
 version = "1.1.0"
 description = "A simple cross-platform screenshot tool"
 edition = "2021"
@@ -25,6 +25,7 @@ winresource = "0.1"
 
 [package.metadata.winresource]
 ProductName = "Capter"
+FileDescription = "Capter"
 
 [package.metadata.packager]
 product-name = "Capter"
