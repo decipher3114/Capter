@@ -4,6 +4,7 @@ use iced::Point;
 
 pub mod capture;
 pub mod config;
+pub mod ipc;
 pub mod key_listener;
 pub mod tray_icon;
 

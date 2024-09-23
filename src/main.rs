@@ -8,7 +8,7 @@ mod windows;
 
 use std::collections::BTreeMap;
 
-use assets::{FONT_BOLD, FONT_MEDIUM, ICON, MEDIUM};
+use assets::{APPNAME, FONT_BOLD, FONT_MEDIUM, ICON, MEDIUM};
 use entities::{
     app::{App, AppEvent},
     config::{Config, ConfigureWindow},
@@ -27,13 +27,19 @@ use iced::{
     },
     Size, Subscription, Task,
 };
+use interprocess::local_socket::{traits::Stream, GenericNamespaced, ToNsName};
 use style::Element;
 use utils::{
-    capture::{fullscreen::capture_fullscreen, window::capture_window},
-    key_listener::global_key_listener, tray_icon::{tray_icon, tray_icon_listener, tray_menu_listener},
+    capture::{fullscreen::capture_fullscreen, window::capture_window}, ipc::ipc, key_listener::global_key_listener, tray_icon::{tray_icon, tray_icon_listener, tray_menu_listener}
 };
 
 pub fn main() -> Result<(), iced::Error> {
+
+    let name = APPNAME.to_ns_name::<GenericNamespaced>().unwrap();
+
+    if let Ok(_) = interprocess::local_socket::Stream::connect(name) {
+        return Ok(())
+    };
     daemon(App::title, App::update, App::view)
         .font(FONT_MEDIUM)
         .font(FONT_BOLD)
@@ -92,7 +98,7 @@ impl App {
                                 ConfigureWindow::new(&self.config)
                             )
                         );
-                    open_task.discard()
+                    open_task.discard().chain(gain_focus(id))
                 } else {
                     Task::none()
                 }
@@ -204,6 +210,8 @@ impl App {
 
         let tray_menu_listener = Subscription::run(tray_menu_listener);
 
-        Subscription::batch([window_events, app_key_listener, global_key_listener, tray_icon_listener, tray_menu_listener])
+        let ipc = Subscription::run(ipc);
+
+        Subscription::batch([window_events, app_key_listener, global_key_listener, tray_icon_listener, tray_menu_listener, ipc])
     }
 }
