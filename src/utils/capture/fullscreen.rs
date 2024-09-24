@@ -7,13 +7,14 @@ use crate::utils::capture::save_image;
 
 pub fn get_fullscreen() -> Option<RgbaImage> {
     let monitors = Monitor::all().unwrap();
-    let mut image = None;
-    for monitor in monitors {
-        if monitor.is_primary() {
-            image = Some(monitor.capture_image().unwrap());
-        }
-    }
-    image
+    let image = monitors
+        .into_iter()
+        .find(|m| m.is_primary())
+        .unwrap()
+        .capture_image()
+        .unwrap();
+
+    Some(image)
 }
 
 pub fn capture_fullscreen(config: &Config) {

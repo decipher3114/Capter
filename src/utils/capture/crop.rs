@@ -31,13 +31,12 @@ impl CropWindow {
             self.selection_area.initial_pos,
             self.selection_area.final_pos,
         ) {
-            let mut scale_factor = 1.0;
-            let displays = DisplayInfo::all().unwrap();
-            for display in displays {
-                if display.is_primary {
-                    scale_factor = display.scale_factor;
-                }
-            }
+            let scale_factor = DisplayInfo::all()
+                .unwrap()
+                .into_iter()
+                .find(|d| d.is_primary)
+                .unwrap()
+                .scale_factor;
 
             let (initial_pos, final_pos) = evaluate_points(initial_pos, final_pos);
 
