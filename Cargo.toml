@@ -21,6 +21,9 @@ toml = "0.8"
 tray-icon = "0.17"
 xcap = "0.0"
 
+[target.'cfg( target_os = "linux" )'.dependencies]
+gtk = "0.18"
+
 [target.'cfg( target_os = "windows" )'.build-dependencies]
 winresource = "0.1"
 

@@ -88,7 +88,8 @@ impl App {
                         },
                         #[cfg(target_os = "linux")]
                         platform_specific: PlatformSpecific {
-                            application_id: String::from("Capter")
+                            application_id: String::from("Capter"),
+                            override_redirect: true
                         },
                         ..Default::default()
                     });

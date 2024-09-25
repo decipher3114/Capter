@@ -684,6 +684,7 @@ dependencies = [
  "arboard",
  "chrono",
  "display-info",
+ "gtk",
  "iced",
  "interprocess",
  "rdev",

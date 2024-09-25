@@ -13,6 +13,9 @@ pub fn tray_icon() -> TrayIcon {
 
     let icon = Icon::from_rgba(icon_image.into_bytes(), width, height).unwrap();
 
+    #[cfg(target_os = "linux")]
+    gtk::init().unwrap();
+    
     let menu = Menu::new();
         menu.append_items(
             &[
