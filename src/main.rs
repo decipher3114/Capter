@@ -20,7 +20,7 @@ use iced::{
     advanced::graphics::image::image_rs::ImageFormat,
     application::DefaultStyle,
     daemon::{daemon, Appearance},
-    keyboard::{key, on_key_press},
+    keyboard::{key, on_key_press, Modifiers},
     widget::horizontal_space,
     window::{
         self, change_mode, close, close_events, gain_focus, icon, settings::PlatformSpecific, Id, Mode
@@ -201,10 +201,21 @@ impl App {
     pub fn subscription(&self) -> Subscription<AppEvent> {
         let window_events = close_events().map(AppEvent::WindowClosed);
 
-        let app_key_listener = on_key_press(|key, _| match key {
-            key::Key::Named(key::Named::Escape | key::Named::Enter) => Some(AppEvent::CloseWindow),
-            _ => None,
-        });
+        let app_key_listener = on_key_press(
+            |key, modifiers|
+                match (key, modifiers) {
+                    (key::Key::Named(key::Named::Escape | key::Named::Enter), _) => Some(AppEvent::CloseWindow),
+                    (key::Key::Character(char), m) if m.contains(Modifiers::SHIFT) && m.contains(Modifiers::ALT) => {
+                        match char.as_str() {
+                            "s" => Some(AppEvent::OpenCropWindow),
+                            "f" => Some(AppEvent::CaptureFullscreen),
+                            _ => None
+                        }
+                    },
+                    _ => None,
+            }
+        );
+        
         let global_key_listener = Subscription::run(global_key_listener);
 
         let tray_icon_listener = Subscription::run(tray_icon_listener);
