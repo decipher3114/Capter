@@ -14,53 +14,23 @@ impl Catalog for Theme {
     }
 
     fn style(&self, class: &Self::Class<'_>, status: Status) -> Style {
+        let palette = self.palette();
         Style {
             background: {
                 match status {
-                    Status::Active => match self {
-                        Self::Light => match class {
-                            ButtonClass::Default => {
-                                Some(Background::Color(Color::from_rgb8(190, 190, 190)))
-                            }
-                            ButtonClass::Danger => {
-                                Some(Background::Color(Color::from_rgb8(255, 100, 100)))
-                            }
-                        },
-                        Self::Dark => match class {
-                            ButtonClass::Default => {
-                                Some(Background::Color(Color::from_rgb8(70, 70, 70)))
-                            }
-                            ButtonClass::Danger => {
-                                Some(Background::Color(Color::from_rgb8(228, 67, 67)))
-                            }
-                        },
+                    Status::Active => match class {
+                        ButtonClass::Default => Some(Background::Color(palette.primary)),
+                        ButtonClass::Danger => Some(Background::Color(palette.danger_primary)),
                     },
-                    Status::Hovered | Status::Pressed => match self {
-                        Self::Light => match class {
-                            ButtonClass::Default => {
-                                Some(Background::Color(Color::from_rgb8(180, 180, 180)))
-                            }
-                            ButtonClass::Danger => {
-                                Some(Background::Color(Color::from_rgb8(245, 90, 90)))
-                            }
-                        },
-                        Self::Dark => match class {
-                            ButtonClass::Default => {
-                                Some(Background::Color(Color::from_rgb8(80, 80, 80)))
-                            }
-                            ButtonClass::Danger => {
-                                Some(Background::Color(Color::from_rgb8(238, 77, 77)))
-                            }
-                        },
+                    Status::Hovered | Status::Pressed => match class {
+                        ButtonClass::Default => Some(Background::Color(palette.secondary)),
+                        ButtonClass::Danger => Some(Background::Color(palette.danger_secondary)),
                     },
                     _ => Some(Background::Color(Color::default())),
                 }
             },
             border: Border {
-                color: match self {
-                    Theme::Light => Color::from_rgb8(180, 180, 180),
-                    Theme::Dark => Color::from_rgb8(80, 80, 80),
-                },
+                color: palette.secondary,
                 width: 0.5,
                 radius: Radius::new(8),
             },

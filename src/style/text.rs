@@ -1,7 +1,4 @@
-use iced::{
-    widget::text::{Catalog, Style},
-    Color,
-};
+use iced::widget::text::{Catalog, Style};
 
 use crate::entities::{style::TextClass, theme::Theme};
 
@@ -14,10 +11,7 @@ impl Catalog for Theme {
 
     fn style(&self, _item: &Self::Class<'_>) -> Style {
         Style {
-            color: Some(match self {
-                Theme::Light => Color::from_rgb8(50, 50, 50),
-                Theme::Dark => Color::from_rgb8(210, 210, 210),
-            }),
+            color: Some(self.palette().text),
         }
     }
 }
