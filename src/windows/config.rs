@@ -9,7 +9,6 @@ use iced::{
     Length::Fill,
     Task,
 };
-use iced_anim::SpringEvent;
 
 use crate::{
     assets::{BOLD, SVG_FOLDER_OPEN},
@@ -33,13 +32,8 @@ impl ConfigureWindow {
                 Task::none()
             }
             ConfigEvent::UpdateTheme(event) => {
-                if let SpringEvent::Target(_) = event {
-                    self.config.theme.update(event);
-                    Task::done(AppEvent::UpdateConfig(id))
-                } else {
-                    self.config.theme.update(event);
-                    Task::none()
-                }
+                self.config.theme.update(event);
+                Task::done(AppEvent::UpdateConfig(id))
             }
             ConfigEvent::RequestExit => Task::done(AppEvent::ExitApp),
         }
