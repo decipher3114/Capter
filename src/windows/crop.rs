@@ -2,7 +2,10 @@ use iced::{
     advanced::graphics::geometry,
     mouse::{Cursor, Interaction},
     widget::{
-        canvas::{Frame, Geometry, LineCap, LineDash, LineJoin, Path, Program, Stroke, Style}, column, container, horizontal_space, image::Handle, mouse_area, row, stack, text, vertical_space, Canvas, Image
+        canvas::{Frame, Geometry, LineCap, LineDash, LineJoin, Path, Program, Stroke, Style},
+        column, container, horizontal_space,
+        image::Handle,
+        mouse_area, row, stack, text, vertical_space, Canvas, Image,
     },
     Alignment::Center,
     Color,
@@ -12,7 +15,7 @@ use iced::{
 
 use crate::{
     entities::{
-        crop::{CropWindow, CropEvent},
+        crop::{CropEvent, CropWindow},
         theme::Theme,
     },
     style::Element,
@@ -42,18 +45,18 @@ impl CropWindow {
     }
 
     pub fn view(&self) -> Element<CropEvent> {
-
-        let background: Image<Handle> = Image::new(
-            Handle::from_rgba(
-                self.image.width(),
-                self.image.height(),
-                self.image.clone().into_raw(),
-            )
-        )
+        let background: Image<Handle> = Image::new(Handle::from_rgba(
+            self.image.width(),
+            self.image.height(),
+            self.image.clone().into_raw(),
+        ))
         .height(Fill)
         .width(Fill);
 
-        let text_hint = if let (Some(_), Some(_)) = (self.selection_area.initial_pos, self.selection_area.final_pos) {
+        let text_hint = if let (Some(_), Some(_)) = (
+            self.selection_area.initial_pos,
+            self.selection_area.final_pos,
+        ) {
             "Enter to Capture | Double Click to Reset"
         } else {
             "Esc to Cancel"
@@ -72,9 +75,9 @@ impl CropWindow {
                 ]
             ],
             mouse_area(Canvas::new(self).height(Fill).width(Fill))
-            .on_move(CropEvent::UpdateCurrentPosition)
-            .on_press(CropEvent::SetInitialPoint)
-            .on_release(CropEvent::SetFinalPoint)
+                .on_move(CropEvent::UpdateCurrentPosition)
+                .on_press(CropEvent::SetInitialPoint)
+                .on_release(CropEvent::SetFinalPoint)
         ]
         .height(Fill)
         .width(Fill)

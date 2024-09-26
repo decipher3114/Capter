@@ -21,13 +21,12 @@ pub fn evaluate_points(point_a: Point, point_b: Point) -> (Point, Point) {
 }
 
 pub fn shorten_path(path: String) -> String {
-
     #[cfg(target_os = "windows")]
     let home_path = format!(
-            "{}{}",
-            var_os("HOMEDRIVE").unwrap().to_string_lossy(),
-            var_os("HOMEPATH").unwrap().to_string_lossy()
-        );
+        "{}{}",
+        var_os("HOMEDRIVE").unwrap().to_string_lossy(),
+        var_os("HOMEPATH").unwrap().to_string_lossy()
+    );
 
     #[cfg(not(target_os = "windows"))]
     let home_path = format!("{}", var_os("HOME").unwrap().to_string_lossy());

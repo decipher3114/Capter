@@ -26,7 +26,6 @@ impl CropWindow {
     }
 
     pub fn crop_screenshot(self, config: &Config) {
-
         if let (Some(initial_pos), Some(final_pos)) = (
             self.selection_area.initial_pos,
             self.selection_area.final_pos,

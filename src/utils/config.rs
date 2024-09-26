@@ -8,7 +8,10 @@ use std::{
 
 use rfd::FileDialog;
 
-use crate::entities::{config::{Config, ConfigureWindow}, theme::Theme};
+use crate::entities::{
+    config::{Config, ConfigureWindow},
+    theme::Theme,
+};
 
 use super::shorten_path;
 
@@ -45,13 +48,16 @@ impl Config {
     pub fn get_config_file() -> Result<File, std::io::Error> {
         #[cfg(target_os = "windows")]
         let path = format!(
-                "{}{}\\.config\\capter.toml",
-                var_os("HOMEDRIVE").unwrap().to_string_lossy(),
-                var_os("HOMEPATH").unwrap().to_string_lossy()
-            );
+            "{}{}\\.config\\capter.toml",
+            var_os("HOMEDRIVE").unwrap().to_string_lossy(),
+            var_os("HOMEPATH").unwrap().to_string_lossy()
+        );
 
         #[cfg(not(target_os = "windows"))]
-        let path = format!("{}/.config/capter.toml", var_os("HOME").unwrap().to_string_lossy());
+        let path = format!(
+            "{}/.config/capter.toml",
+            var_os("HOME").unwrap().to_string_lossy()
+        );
 
         if !Path::new(&path).exists() {
             DirBuilder::new()
@@ -77,7 +83,6 @@ impl Config {
         }
     }
 
-
     pub fn default_path() -> String {
         #[cfg(target_os = "windows")]
         let path = format!(
@@ -87,7 +92,10 @@ impl Config {
         );
 
         #[cfg(not(target_os = "windows"))]
-        let path = format!("{}/Pictures/Capter", var_os("HOME").unwrap().to_string_lossy());
+        let path = format!(
+            "{}/Pictures/Capter",
+            var_os("HOME").unwrap().to_string_lossy()
+        );
 
         let _ = DirBuilder::new()
             .recursive(true)
@@ -102,7 +110,7 @@ impl ConfigureWindow {
     pub fn new(config: &Config) -> Self {
         Self {
             config: config.clone(),
-            path: shorten_path(config.directory.clone())
+            path: shorten_path(config.directory.clone()),
         }
     }
     pub fn toggle_theme(&mut self) {
@@ -129,7 +137,9 @@ impl ConfigureWindow {
         let cmd = "xdg-open";
         #[cfg(target_os = "macos")]
         let cmd = "open";
-        Command::new(cmd).arg(&self.config.directory).spawn().unwrap();
+        Command::new(cmd)
+            .arg(&self.config.directory)
+            .spawn()
+            .unwrap();
     }
-
 }

@@ -1,4 +1,7 @@
-use iced::{futures::{SinkExt, Stream}, stream};
+use iced::{
+    futures::{SinkExt, Stream},
+    stream,
+};
 use rdev::{listen, EventType, Key};
 use tokio::sync::mpsc::channel;
 

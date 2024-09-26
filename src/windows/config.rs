@@ -1,7 +1,13 @@
 use iced::{
-    alignment::Horizontal::Left, widget::{
+    alignment::Horizontal::Left,
+    widget::{
         button, column, container, horizontal_space, row, svg, svg::Handle, text, vertical_space,
-    }, window::Id, Alignment::{self, Center}, ContentFit, Length::Fill, Task
+    },
+    window::Id,
+    Alignment::{self, Center},
+    ContentFit,
+    Length::Fill,
+    Task,
 };
 
 use crate::{
@@ -24,7 +30,7 @@ impl ConfigureWindow {
             ConfigEvent::OpenFolder => {
                 self.open_directory();
                 Task::none()
-            },
+            }
             ConfigEvent::ToggleTheme => {
                 self.toggle_theme();
                 Task::done(AppEvent::UpdateConfig(id))

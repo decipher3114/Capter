@@ -18,5 +18,7 @@ pub fn get_fullscreen() -> Option<RgbaImage> {
 }
 
 pub fn capture_fullscreen(config: &Config) {
-    if let Some(image) = get_fullscreen() { save_image(config, image) }
+    if let Some(image) = get_fullscreen() {
+        save_image(config, image)
+    }
 }

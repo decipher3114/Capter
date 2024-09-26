@@ -13,7 +13,7 @@ pub struct Config {
 #[derive(Debug)]
 pub struct ConfigureWindow {
     pub config: Config,
-    pub path: String
+    pub path: String,
 }
 
 #[derive(Debug, Clone)]

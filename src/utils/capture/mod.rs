@@ -14,13 +14,11 @@ fn save_image(config: &Config, image: RgbaImage) {
 
     Clipboard::new()
         .unwrap()
-        .set_image(
-            ImageData {
-                width: image.width() as usize,
-                height: image.height() as usize,
-                bytes: std::borrow::Cow::Borrowed(image.as_raw()),
-            }
-        )
+        .set_image(ImageData {
+            width: image.width() as usize,
+            height: image.height() as usize,
+            bytes: std::borrow::Cow::Borrowed(image.as_raw()),
+        })
         .unwrap();
 
     image
