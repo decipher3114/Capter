@@ -6,19 +6,17 @@ use std::{
     process::Command,
 };
 
+use iced_anim::Spring;
 use rfd::FileDialog;
 
-use crate::entities::{
-    config::{Config, ConfigureWindow},
-    theme::Theme,
-};
+use crate::entities::config::{Config, ConfigureWindow};
 
 use super::shorten_path;
 
 impl Default for Config {
     fn default() -> Self {
         Self {
-            theme: Theme::default(),
+            theme: Spring::default(),
             directory: Config::default_path(),
         }
     }
@@ -111,12 +109,6 @@ impl ConfigureWindow {
         Self {
             config: config.clone(),
             path: shorten_path(config.directory.clone()),
-        }
-    }
-    pub fn toggle_theme(&mut self) {
-        self.config.theme = match self.config.theme {
-            Theme::Light => Theme::Dark,
-            Theme::Dark => Theme::Light,
         }
     }
 

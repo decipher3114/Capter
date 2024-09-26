@@ -686,6 +686,7 @@ dependencies = [
  "display-info",
  "gtk",
  "iced",
+ "iced_anim",
  "interprocess",
  "rdev",
  "rfd",
@@ -2245,6 +2246,27 @@ dependencies = [
  "iced_winit",
  "image 0.24.9",
  "thiserror",
+]
+
+[[package]]
+name = "iced_anim"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6764a9667ffd3c98162cf594182d8c866e1d7231899089154476d09ec4347edf"
+dependencies = [
+ "iced",
+ "iced_anim_derive",
+ "serde",
+]
+
+[[package]]
+name = "iced_anim_derive"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b5b89898a5300d2800451406a3d6cfaed89ef08797dc392143f7c16c5c747e95"
+dependencies = [
+ "quote",
+ "syn 2.0.77",
 ]
 
 [[package]]

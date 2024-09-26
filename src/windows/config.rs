@@ -9,6 +9,7 @@ use iced::{
     Length::Fill,
     Task,
 };
+use iced_anim::SpringEvent;
 
 use crate::{
     assets::{BOLD, SVG_FOLDER_OPEN},
@@ -31,9 +32,14 @@ impl ConfigureWindow {
                 self.open_directory();
                 Task::none()
             }
-            ConfigEvent::ToggleTheme => {
-                self.toggle_theme();
-                Task::done(AppEvent::UpdateConfig(id))
+            ConfigEvent::UpdateTheme(event) => {
+                if let SpringEvent::Target(_) = event {
+                    self.config.theme.update(event);
+                    Task::done(AppEvent::UpdateConfig(id))
+                } else {
+                    self.config.theme.update(event);
+                    Task::none()
+                }
             }
             ConfigEvent::RequestExit => Task::done(AppEvent::ExitApp),
         }
@@ -83,10 +89,16 @@ impl ConfigureWindow {
                 row![
                     text("App Theme").align_x(Left).size(22).font(BOLD),
                     horizontal_space().width(Fill),
-                    button(text(self.config.theme.to_string()).size(20).center())
-                        .height(40)
-                        .width(160)
-                        .on_press(ConfigEvent::ToggleTheme)
+                    button(
+                        text(self.config.theme.target().to_string())
+                            .size(20)
+                            .center()
+                    )
+                    .height(40)
+                    .width(160)
+                    .on_press(ConfigEvent::UpdateTheme(
+                        self.config.theme.target().toggle().into()
+                    ))
                 ]
                 .align_y(Alignment::Center)
                 .width(Fill)

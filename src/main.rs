@@ -11,7 +11,7 @@ use std::collections::BTreeMap;
 use assets::{APPNAME, FONT_BOLD, FONT_MEDIUM, ICON, MEDIUM};
 use entities::{
     app::{App, AppEvent},
-    config::{Config, ConfigureWindow},
+    config::{Config, ConfigEvent, ConfigureWindow},
     crop::CropWindow,
     theme::Theme,
     window::WindowType,
@@ -28,6 +28,7 @@ use iced::{
     },
     Size, Subscription, Task,
 };
+use iced_anim::Animation;
 use interprocess::local_socket::{traits::Stream, GenericNamespaced, ToNsName};
 use style::Element;
 use utils::{
@@ -189,11 +190,13 @@ impl App {
             None => horizontal_space().into(),
         };
 
-        content
+        Animation::new(&self.config.theme, content)
+            .on_update(move |event| AppEvent::Config(id, ConfigEvent::UpdateTheme(event)))
+            .into()
     }
 
     pub fn theme(&self, _id: Id) -> Theme {
-        self.config.theme.clone()
+        self.config.theme.value().clone()
     }
 
     pub fn style(&self, theme: &Theme) -> Appearance {
