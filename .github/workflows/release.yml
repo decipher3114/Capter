@@ -104,7 +104,7 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
-          name: ${{ github.ref_name }}
+          name: ${{ github.event.head_commit.message }} 
           body: |
             ${{ steps.changelog.outputs.changes }}
           files: |
