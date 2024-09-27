@@ -5,6 +5,7 @@ use iced::{
     daemon::{Appearance, DefaultStyle},
     Color,
 };
+use iced_anim::Animate;
 
 use crate::entities::theme::{Palette, Theme};
 
@@ -16,23 +17,23 @@ mod text;
 pub type Element<'a, Message> = iced::Element<'a, Message, Theme>;
 
 pub const LIGHT: Palette = Palette {
-    background: color!(220, 220, 220),
-    surface: color!(210, 210, 210),
-    text: color!(50, 50, 50),
-    primary: color!(190, 190, 190),
-    secondary: color!(170, 170, 170),
-    danger_primary: color!(255, 100, 100),
-    danger_secondary: color!(245, 90, 90),
+    background: color!(0xdcdcdc),
+    surface: color!(0xd2d2d2),
+    text: color!(0x323232),
+    primary: color!(0xbebebe),
+    secondary: color!(0xaaaaaa),
+    danger_primary: color!(0xff6464),
+    danger_secondary: color!(0xf55a5a),
 };
 
 pub const DARK: Palette = Palette {
-    background: color!(40, 40, 40),
-    surface: color!(50, 50, 50),
-    text: color!(210, 210, 210),
-    primary: color!(70, 70, 70),
-    secondary: color!(90, 90, 90),
-    danger_primary: color!(228, 67, 67),
-    danger_secondary: color!(238, 77, 77),
+    background: color!(0x282828),
+    surface: color!(0x323232),
+    text: color!(0xd2d2d2),
+    primary: color!(0x464646),
+    secondary: color!(0x5a5a5a),
+    danger_primary: color!(0xe44343),
+    danger_secondary: color!(0xee4d4d),
 };
 
 impl Theme {
@@ -44,7 +45,6 @@ impl Theme {
         }
     }
 
-    /// Toggles the theme between light and dark, defaulting to `Light` if using a custom palette.
     pub fn toggle(&self) -> Self {
         match self {
             Theme::Light => Theme::Dark,
@@ -72,18 +72,18 @@ impl DefaultStyle for Theme {
     }
 }
 
-impl iced_anim::Animate for Theme {
+impl Animate for Theme {
     fn components() -> usize {
         Palette::components()
-    }
-
-    fn distance_to(&self, end: &Self) -> Vec<f32> {
-        self.palette().distance_to(&end.palette())
     }
 
     fn update(&mut self, components: &mut impl Iterator<Item = f32>) {
         let mut palette = self.palette();
         palette.update(components);
         *self = Theme::Custom(palette);
+    }
+
+    fn distance_to(&self, end: &Self) -> Vec<f32> {
+        self.palette().distance_to(&end.palette())
     }
 }

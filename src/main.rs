@@ -2,7 +2,7 @@
 
 mod assets;
 mod entities;
-mod style;
+mod theme;
 mod utils;
 mod windows;
 
@@ -11,7 +11,7 @@ use std::collections::BTreeMap;
 use assets::{APPNAME, FONT_BOLD, FONT_MEDIUM, ICON, MEDIUM};
 use entities::{
     app::{App, AppEvent},
-    config::{Config, ConfigEvent, ConfigureWindow},
+    config::{Config, ConfigureWindow},
     crop::CropWindow,
     theme::Theme,
     window::WindowType,
@@ -28,13 +28,13 @@ use iced::{
     },
     Size, Subscription, Task,
 };
-use iced_anim::Animation;
 use interprocess::local_socket::{traits::Stream, GenericNamespaced, ToNsName};
-use style::Element;
+use theme::Element;
 use utils::{
     capture::{fullscreen::capture_fullscreen, window::capture_window},
     ipc::ipc,
     key_listener::global_key_listener,
+    shorten_path,
     tray_icon::{tray_icon, tray_icon_listener, tray_menu_listener},
 };
 
@@ -72,8 +72,12 @@ impl App {
         )
     }
 
-    pub fn title(&self, _id: Id) -> String {
-        String::from("Capter")
+    pub fn title(&self, id: Id) -> String {
+        match self.windows.get(&id) {
+            Some(WindowType::ConfigureWindow(_)) => String::from("Capter"),
+            Some(WindowType::CropWindow(_)) => String::from("Capter: Crop"),
+            None => String::new(),
+        }
     }
 
     pub fn update(&mut self, message: AppEvent) -> Task<AppEvent> {
@@ -102,16 +106,22 @@ impl App {
                     });
                     self.windows.insert(
                         id,
-                        WindowType::ConfigureWindow(ConfigureWindow::new(&self.config)),
+                        WindowType::ConfigureWindow(ConfigureWindow::new(
+                            shorten_path(self.config.directory.clone()),
+                            self.config.theme.clone(),
+                        )),
                     );
                     open_task.discard().chain(gain_focus(id))
                 } else {
                     Task::none()
                 }
             }
-            AppEvent::UpdateConfig(id) => {
-                if let Some(WindowType::ConfigureWindow(config_window)) = self.windows.get(&id) {
-                    self.config = config_window.config.clone();
+            AppEvent::OpenDirectory => self.config.open_directory().into(),
+            AppEvent::UpdateDirectory(id) => {
+                self.config.update_directory();
+                if let Some(WindowType::ConfigureWindow(config_window)) = self.windows.get_mut(&id)
+                {
+                    config_window.path = shorten_path(self.config.directory.clone());
                 }
                 Task::none()
             }
@@ -152,7 +162,10 @@ impl App {
                     Some(WindowType::CropWindow(crop_window)) => {
                         crop_window.crop_screenshot(&self.config);
                     }
-                    Some(WindowType::ConfigureWindow(_)) => self.config.update_config(),
+                    Some(WindowType::ConfigureWindow(config_window)) => {
+                        self.config.theme = config_window.theme.target().clone();
+                        self.config.update_config()
+                    }
                     None => (),
                 }
                 Task::none()
@@ -190,13 +203,14 @@ impl App {
             None => horizontal_space().into(),
         };
 
-        Animation::new(&self.config.theme, content)
-            .on_update(move |event| AppEvent::Config(id, ConfigEvent::UpdateTheme(event)))
-            .into()
+        content
     }
 
-    pub fn theme(&self, _id: Id) -> Theme {
-        self.config.theme.value().clone()
+    pub fn theme(&self, id: Id) -> Theme {
+        match self.windows.get(&id) {
+            Some(WindowType::ConfigureWindow(config_window)) => config_window.theme.value().clone(),
+            _ => self.config.theme.clone(),
+        }
     }
 
     pub fn style(&self, theme: &Theme) -> Appearance {

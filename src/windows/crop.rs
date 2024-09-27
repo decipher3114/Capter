@@ -18,7 +18,7 @@ use crate::{
         crop::{CropEvent, CropWindow},
         theme::Theme,
     },
-    style::Element,
+    theme::Element,
     utils::evaluate_points,
     AppEvent,
 };

@@ -9,32 +9,32 @@ use iced::{
     Length::Fill,
     Task,
 };
+use iced_anim::{Animation, Spring};
 
 use crate::{
     assets::{BOLD, SVG_FOLDER_OPEN},
     entities::{
         config::{ConfigEvent, ConfigureWindow},
         style::ButtonClass,
+        theme::Theme,
     },
-    style::Element,
+    theme::Element,
     AppEvent,
 };
 
 impl ConfigureWindow {
+    pub fn new(path: String, theme: Theme) -> Self {
+        Self {
+            path,
+            theme: Spring::new(theme),
+        }
+    }
+
     pub fn update(&mut self, id: Id, message: ConfigEvent) -> Task<AppEvent> {
         match message {
-            ConfigEvent::UpdateFolderPath => {
-                self.update_directory();
-                Task::done(AppEvent::UpdateConfig(id))
-            }
-            ConfigEvent::OpenFolder => {
-                self.open_directory();
-                Task::none()
-            }
-            ConfigEvent::UpdateTheme(event) => {
-                self.config.theme.update(event);
-                Task::done(AppEvent::UpdateConfig(id))
-            }
+            ConfigEvent::UpdateFolderPath => Task::done(AppEvent::UpdateDirectory(id)),
+            ConfigEvent::OpenFolder => Task::done(AppEvent::OpenDirectory),
+            ConfigEvent::UpdateTheme(event) => self.theme.update(event).into(),
             ConfigEvent::RequestExit => Task::done(AppEvent::ExitApp),
         }
     }
@@ -83,16 +83,12 @@ impl ConfigureWindow {
                 row![
                     text("App Theme").align_x(Left).size(22).font(BOLD),
                     horizontal_space().width(Fill),
-                    button(
-                        text(self.config.theme.target().to_string())
-                            .size(20)
-                            .center()
-                    )
-                    .height(40)
-                    .width(160)
-                    .on_press(ConfigEvent::UpdateTheme(
-                        self.config.theme.target().toggle().into()
-                    ))
+                    button(text(self.theme.target().to_string()).size(20).center())
+                        .height(40)
+                        .width(160)
+                        .on_press(ConfigEvent::UpdateTheme(
+                            self.theme.target().toggle().into()
+                        ))
                 ]
                 .align_y(Alignment::Center)
                 .width(Fill)
@@ -129,7 +125,10 @@ impl ConfigureWindow {
             .width(Fill)
             .padding(10),
         );
+        let content = column![header, body, footer].spacing(10).padding(15);
 
-        column![header, body, footer].spacing(10).padding(15).into()
+        Animation::new(&self.theme, content)
+            .on_update(ConfigEvent::UpdateTheme)
+            .into()
     }
 }

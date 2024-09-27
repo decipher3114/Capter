@@ -6,17 +6,14 @@ use std::{
     process::Command,
 };
 
-use iced_anim::Spring;
 use rfd::FileDialog;
 
-use crate::entities::config::{Config, ConfigureWindow, StoredConfig};
-
-use super::shorten_path;
+use crate::entities::{config::Config, theme::Theme};
 
 impl Default for Config {
     fn default() -> Self {
         Self {
-            theme: Spring::default(),
+            theme: Theme::Light,
             directory: Config::default_path(),
         }
     }
@@ -29,7 +26,7 @@ impl Config {
                 let mut file_content = String::new();
                 let _ = file.read_to_string(&mut file_content).unwrap();
                 let bool = file_content.is_empty();
-                let config: Config = match toml::from_str::<StoredConfig>(&file_content) {
+                let config: Config = match toml::from_str::<Config>(&file_content) {
                     Ok(config) => config.into(),
                     Err(_) => {
                         let config = Self::default();
@@ -74,8 +71,7 @@ impl Config {
         match Self::get_config_file() {
             Ok(mut file) => {
                 file.set_len(0).unwrap();
-                let config = StoredConfig::from(self);
-                let contents = toml::to_string(&config).unwrap();
+                let contents = toml::to_string(self).unwrap();
                 file.write_all(contents.as_bytes()).unwrap();
             }
             Err(_) => println!("Config can't be updated"),
@@ -103,42 +99,13 @@ impl Config {
 
         path
     }
-}
-
-// From impls to convert betwen different config types
-impl From<StoredConfig> for Config {
-    fn from(config: StoredConfig) -> Self {
-        Self {
-            theme: Spring::new(config.theme),
-            directory: config.directory,
-        }
-    }
-}
-
-impl From<&Config> for StoredConfig {
-    fn from(config: &Config) -> Self {
-        Self {
-            theme: config.theme.target().clone(),
-            directory: config.directory.clone(),
-        }
-    }
-}
-
-impl ConfigureWindow {
-    pub fn new(config: &Config) -> Self {
-        Self {
-            config: config.clone(),
-            path: shorten_path(config.directory.clone()),
-        }
-    }
 
     pub fn update_directory(&mut self) {
         if let Some(path) = FileDialog::new()
-            .set_directory(self.config.directory.clone())
+            .set_directory(self.directory.clone())
             .pick_folder()
         {
-            self.config.directory = path.into_os_string().into_string().unwrap();
-            self.path = shorten_path(self.config.directory.clone());
+            self.directory = path.into_os_string().into_string().unwrap();
         }
     }
 
@@ -149,9 +116,6 @@ impl ConfigureWindow {
         let cmd = "xdg-open";
         #[cfg(target_os = "macos")]
         let cmd = "open";
-        Command::new(cmd)
-            .arg(&self.config.directory)
-            .spawn()
-            .unwrap();
+        Command::new(cmd).arg(&self.directory).spawn().unwrap();
     }
 }
