@@ -12,6 +12,7 @@ arboard = { version = "3.4", features = ["wayland-data-control", "wl-clipboard-r
 chrono = "0.4"
 display-info = { version = "0.5"}
 iced = { version = "0.13", features = ["advanced", "canvas", "multi-window", "image", "tokio", "svg"] }
+iced_anim = { version = "0.1.1", features = ["derive", "serde"] }
 interprocess = { version = "2.2", features = ["tokio"] }
 rdev = { git = "https://github.com/rustdesk-org/rdev", branch = "master"}
 rfd = { version = "0.14", features = ["gtk3", "tokio"], default-features = false }

@@ -40,6 +40,15 @@ impl Theme {
         match self {
             Theme::Light => LIGHT,
             Theme::Dark => DARK,
+            Theme::Custom(palette) => *palette,
+        }
+    }
+
+    /// Toggles the theme between light and dark, defaulting to `Light` if using a custom palette.
+    pub fn toggle(&self) -> Self {
+        match self {
+            Theme::Light => Theme::Dark,
+            _ => Theme::Light,
         }
     }
 }
@@ -49,6 +58,7 @@ impl Display for Theme {
         match self {
             Self::Light => write!(f, "Light"),
             Self::Dark => write!(f, "Dark"),
+            Self::Custom(_) => write!(f, "Custom"),
         }
     }
 }
@@ -59,5 +69,21 @@ impl DefaultStyle for Theme {
             background_color: self.palette().background,
             text_color: Color::default(),
         }
+    }
+}
+
+impl iced_anim::Animate for Theme {
+    fn components() -> usize {
+        Palette::components()
+    }
+
+    fn distance_to(&self, end: &Self) -> Vec<f32> {
+        self.palette().distance_to(&end.palette())
+    }
+
+    fn update(&mut self, components: &mut impl Iterator<Item = f32>) {
+        let mut palette = self.palette();
+        palette.update(components);
+        *self = Theme::Custom(palette);
     }
 }

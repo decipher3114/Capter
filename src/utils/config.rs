@@ -6,19 +6,17 @@ use std::{
     process::Command,
 };
 
+use iced_anim::Spring;
 use rfd::FileDialog;
 
-use crate::entities::{
-    config::{Config, ConfigureWindow},
-    theme::Theme,
-};
+use crate::entities::config::{Config, ConfigureWindow, StoredConfig};
 
 use super::shorten_path;
 
 impl Default for Config {
     fn default() -> Self {
         Self {
-            theme: Theme::default(),
+            theme: Spring::default(),
             directory: Config::default_path(),
         }
     }
@@ -31,12 +29,12 @@ impl Config {
                 let mut file_content = String::new();
                 let _ = file.read_to_string(&mut file_content).unwrap();
                 let bool = file_content.is_empty();
-                let config = match toml::from_str::<Config>(&file_content) {
-                    Ok(config) => config,
+                let config: Config = match toml::from_str::<StoredConfig>(&file_content) {
+                    Ok(config) => config.into(),
                     Err(_) => {
                         let config = Self::default();
                         Self::update_config(&config);
-                        config
+                        config.into()
                     }
                 };
                 (config, bool)
@@ -76,7 +74,8 @@ impl Config {
         match Self::get_config_file() {
             Ok(mut file) => {
                 file.set_len(0).unwrap();
-                let contents = toml::to_string(self).unwrap();
+                let config = StoredConfig::from(self);
+                let contents = toml::to_string(&config).unwrap();
                 file.write_all(contents.as_bytes()).unwrap();
             }
             Err(_) => println!("Config can't be updated"),
@@ -106,17 +105,30 @@ impl Config {
     }
 }
 
+// From impls to convert betwen different config types
+impl From<StoredConfig> for Config {
+    fn from(config: StoredConfig) -> Self {
+        Self {
+            theme: Spring::new(config.theme),
+            directory: config.directory,
+        }
+    }
+}
+
+impl From<&Config> for StoredConfig {
+    fn from(config: &Config) -> Self {
+        Self {
+            theme: config.theme.target().clone(),
+            directory: config.directory.clone(),
+        }
+    }
+}
+
 impl ConfigureWindow {
     pub fn new(config: &Config) -> Self {
         Self {
             config: config.clone(),
             path: shorten_path(config.directory.clone()),
-        }
-    }
-    pub fn toggle_theme(&mut self) {
-        self.config.theme = match self.config.theme {
-            Theme::Light => Theme::Dark,
-            Theme::Dark => Theme::Light,
         }
     }
 
