@@ -1,11 +1,14 @@
 use iced::{
     advanced::graphics::geometry,
-    mouse::{Cursor, Interaction},
+    event::Status,
+    mouse::{Button, Cursor, Interaction},
     widget::{
-        canvas::{Frame, Geometry, LineCap, LineDash, LineJoin, Path, Program, Stroke, Style},
+        canvas::{
+            Event, Frame, Geometry, LineCap, LineDash, LineJoin, Path, Program, Stroke, Style,
+        },
         column, container, horizontal_space,
         image::Handle,
-        mouse_area, row, stack, text, vertical_space, Canvas, Image,
+        row, stack, text, vertical_space, Canvas, Image,
     },
     Alignment::Center,
     Color,
@@ -74,10 +77,7 @@ impl CropWindow {
                     horizontal_space().width(Fill)
                 ]
             ],
-            mouse_area(Canvas::new(self).height(Fill).width(Fill))
-                .on_move(CropEvent::UpdateCurrentPosition)
-                .on_press(CropEvent::SetInitialPoint)
-                .on_release(CropEvent::SetFinalPoint)
+            Canvas::new(self).height(Fill).width(Fill)
         ]
         .height(Fill)
         .width(Fill)
@@ -187,6 +187,39 @@ impl Program<CropEvent, Theme> for CropWindow {
             frame.fill_rectangle(Point::ORIGIN, bounds.size(), overlay);
         }
         vec![frame.into_geometry()]
+    }
+
+    fn update(
+        &self,
+        _state: &mut Self::State,
+        event: Event,
+        _bounds: Rectangle,
+        _cursor: Cursor,
+    ) -> (Status, Option<CropEvent>) {
+        match event {
+            iced::widget::canvas::Event::Mouse(event) => match event {
+                iced::mouse::Event::CursorMoved { position } => (
+                    Status::Captured,
+                    Some(CropEvent::UpdateCurrentPosition(position)),
+                ),
+                iced::mouse::Event::ButtonPressed(button) => {
+                    if button == Button::Left {
+                        (Status::Captured, Some(CropEvent::SetInitialPoint))
+                    } else {
+                        (Status::Ignored, None)
+                    }
+                }
+                iced::mouse::Event::ButtonReleased(button) => {
+                    if button == Button::Left {
+                        (Status::Captured, Some(CropEvent::SetFinalPoint))
+                    } else {
+                        (Status::Ignored, None)
+                    }
+                }
+                _ => (Status::Ignored, None),
+            },
+            _ => (Status::Ignored, None),
+        }
     }
 
     fn mouse_interaction(
