@@ -24,7 +24,7 @@ use iced::{
     widget::horizontal_space,
     window::{
         self, change_mode, close, close_events, gain_focus, icon, settings::PlatformSpecific, Id,
-        Mode,
+        Mode, Position,
     },
     Size, Subscription, Task,
 };
@@ -89,6 +89,7 @@ impl App {
                             width: 700.0,
                             height: 430.0,
                         },
+                        position: Position::Centered,
                         resizable: false,
                         icon: Some(icon::from_file_data(ICON, Some(ImageFormat::Png)).unwrap()),
                         #[cfg(target_os = "macos")]
@@ -164,10 +165,10 @@ impl App {
                     }
                     Some(WindowType::ConfigureWindow(config_window)) => {
                         self.config.theme = config_window.theme.target().clone();
-                        self.config.update_config()
+                        self.config.update_config();
                     }
                     None => (),
-                }
+                };
                 Task::none()
             }
             AppEvent::ExitApp => {
