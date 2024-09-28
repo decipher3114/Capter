@@ -1,2 +1,2 @@
 pub mod config;
-pub mod crop;
+pub mod capture;

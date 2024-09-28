@@ -34,7 +34,7 @@ pub fn tray_icon() -> TrayIcon {
     menu.append_items(&[
         &MenuItem::with_id("open", "Open", true, None),
         &PredefinedMenuItem::separator(),
-        &MenuItem::with_id("crop", "Capture & Crop", true, None),
+        &MenuItem::with_id("capture", "Capture", true, None),
         &MenuItem::with_id("fullscreen", "Capture FullScreen", true, None),
         &PredefinedMenuItem::separator(),
         &MenuItem::with_id("exit", "Exit", true, None),
@@ -91,9 +91,9 @@ pub fn tray_menu_listener() -> impl Stream<Item = AppEvent> {
             if let Some(MenuEvent { id: MenuId(id) }) = reciever.recv().await {
                 let event = match id.as_str() {
                     "open" => AppEvent::OpenConfigureWindow,
-                    "crop" => {
+                    "capture" => {
                         sleep(Duration::from_secs(1));
-                        AppEvent::OpenCropWindow
+                        AppEvent::OpenCaptureWindow
                     }
                     "fullscreen" => {
                         sleep(Duration::from_secs(1));

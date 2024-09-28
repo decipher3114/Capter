@@ -5,7 +5,7 @@ use tray_icon::TrayIcon;
 
 use crate::entities::{
     config::{Config, ConfigEvent},
-    crop::CropEvent,
+    capture::CaptureEvent,
     window::WindowType,
 };
 
@@ -20,12 +20,12 @@ pub enum AppEvent {
     OpenConfigureWindow,
     OpenDirectory,
     UpdateDirectory(Id),
-    OpenCropWindow,
+    OpenCaptureWindow,
     CaptureFullscreen,
     CaptureWindow,
     CloseWindow,
     WindowClosed(Id),
     ExitApp,
     Config(Id, ConfigEvent),
-    Crop(Id, CropEvent),
+    Capture(Id, CaptureEvent),
 }

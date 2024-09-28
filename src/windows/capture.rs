@@ -18,7 +18,7 @@ use iced::{
 
 use crate::{
     entities::{
-        crop::{CropEvent, CropWindow},
+        capture::{CaptureEvent, CaptureWindow},
         theme::Theme,
     },
     theme::Element,
@@ -26,17 +26,17 @@ use crate::{
     AppEvent,
 };
 
-impl CropWindow {
-    pub fn update(&mut self, message: CropEvent) -> Task<AppEvent> {
+impl CaptureWindow {
+    pub fn update(&mut self, message: CaptureEvent) -> Task<AppEvent> {
         match message {
-            CropEvent::SetInitialPoint => {
+            CaptureEvent::SetInitialPoint => {
                 self.selection_area.final_pos = None;
                 self.selection_area.initial_pos = Some(self.cursor_position);
             }
-            CropEvent::UpdateCurrentPosition(point) => {
+            CaptureEvent::UpdateCurrentPosition(point) => {
                 self.cursor_position = point;
             }
-            CropEvent::SetFinalPoint => {
+            CaptureEvent::SetFinalPoint => {
                 if Some(self.cursor_position) != self.selection_area.initial_pos {
                     self.selection_area.final_pos = Some(self.cursor_position);
                 } else {
@@ -47,7 +47,7 @@ impl CropWindow {
         Task::none()
     }
 
-    pub fn view(&self) -> Element<CropEvent> {
+    pub fn view(&self) -> Element<CaptureEvent> {
         let background: Image<Handle> = Image::new(Handle::from_rgba(
             self.image.width(),
             self.image.height(),
@@ -85,7 +85,7 @@ impl CropWindow {
     }
 }
 
-impl Program<CropEvent, Theme> for CropWindow {
+impl Program<CaptureEvent, Theme> for CaptureWindow {
     type State = ();
 
     fn draw(
@@ -195,23 +195,23 @@ impl Program<CropEvent, Theme> for CropWindow {
         event: Event,
         _bounds: Rectangle,
         _cursor: Cursor,
-    ) -> (Status, Option<CropEvent>) {
+    ) -> (Status, Option<CaptureEvent>) {
         match event {
             iced::widget::canvas::Event::Mouse(event) => match event {
                 iced::mouse::Event::CursorMoved { position } => (
                     Status::Captured,
-                    Some(CropEvent::UpdateCurrentPosition(position)),
+                    Some(CaptureEvent::UpdateCurrentPosition(position)),
                 ),
                 iced::mouse::Event::ButtonPressed(button) => {
                     if button == Button::Left {
-                        (Status::Captured, Some(CropEvent::SetInitialPoint))
+                        (Status::Captured, Some(CaptureEvent::SetInitialPoint))
                     } else {
                         (Status::Ignored, None)
                     }
                 }
                 iced::mouse::Event::ButtonReleased(button) => {
                     if button == Button::Left {
-                        (Status::Captured, Some(CropEvent::SetFinalPoint))
+                        (Status::Captured, Some(CaptureEvent::SetFinalPoint))
                     } else {
                         (Status::Ignored, None)
                     }

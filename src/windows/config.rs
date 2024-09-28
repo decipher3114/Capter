@@ -118,7 +118,7 @@ impl ConfigureWindow {
             column![
                 text("Keybindings:").size(22).font(BOLD),
                 vertical_space().height(10),
-                footer_row("Alt+Shift+S", "Capture and Crop Screenshot"),
+                footer_row("Alt+Shift+S", "Open Capture UI"),
                 footer_row("Alt+Shift+F", "Captures Full Screenshot"),
                 footer_row("Alt+Shift+W", "Captures Focused Window"),
             ]

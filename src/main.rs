@@ -12,7 +12,7 @@ use assets::{APPNAME, FONT_BOLD, FONT_MEDIUM, ICON, MEDIUM};
 use entities::{
     app::{App, AppEvent},
     config::{Config, ConfigureWindow},
-    crop::CropWindow,
+    capture::CaptureWindow,
     theme::Theme,
     window::WindowType,
 };
@@ -74,8 +74,8 @@ impl App {
 
     pub fn title(&self, id: Id) -> String {
         match self.windows.get(&id) {
-            Some(WindowType::ConfigureWindow(_)) => String::from("Capter"),
-            Some(WindowType::CropWindow(_)) => String::from("Capter: Crop"),
+            Some(WindowType::Configure(_)) => String::from("Capter"),
+            Some(WindowType::Capture(_)) => String::from("Capter: Capture"),
             None => String::new(),
         }
     }
@@ -107,7 +107,7 @@ impl App {
                     });
                     self.windows.insert(
                         id,
-                        WindowType::ConfigureWindow(ConfigureWindow::new(
+                        WindowType::Configure(ConfigureWindow::new(
                             shorten_path(self.config.directory.clone()),
                             self.config.theme.clone(),
                         )),
@@ -120,13 +120,13 @@ impl App {
             AppEvent::OpenDirectory => self.config.open_directory().into(),
             AppEvent::UpdateDirectory(id) => {
                 self.config.update_directory();
-                if let Some(WindowType::ConfigureWindow(config_window)) = self.windows.get_mut(&id)
+                if let Some(WindowType::Configure(config_window)) = self.windows.get_mut(&id)
                 {
                     config_window.path = shorten_path(self.config.directory.clone());
                 }
                 Task::none()
             }
-            AppEvent::OpenCropWindow => {
+            AppEvent::OpenCaptureWindow => {
                 if self.windows.len() <= 1 {
                     let (id, open_task) = window::open(window::Settings {
                         transparent: true,
@@ -139,8 +139,8 @@ impl App {
                         },
                         ..Default::default()
                     });
-                    let crop_window = CropWindow::new();
-                    self.windows.insert(id, WindowType::CropWindow(crop_window));
+                    let capture_window = CaptureWindow::new();
+                    self.windows.insert(id, WindowType::Capture(capture_window));
                     open_task
                         .discard()
                         .chain(gain_focus(id))
@@ -160,10 +160,10 @@ impl App {
             AppEvent::CloseWindow => window::get_latest().and_then::<Id>(close).discard(),
             AppEvent::WindowClosed(id) => {
                 match self.windows.remove(&id) {
-                    Some(WindowType::CropWindow(crop_window)) => {
-                        crop_window.crop_screenshot(&self.config);
+                    Some(WindowType::Capture(capture_window)) => {
+                        capture_window.crop_screenshot(&self.config);
                     }
-                    Some(WindowType::ConfigureWindow(config_window)) => {
+                    Some(WindowType::Configure(config_window)) => {
                         self.config.theme = config_window.theme.target().clone();
                         self.config.update_config();
                     }
@@ -176,16 +176,16 @@ impl App {
                 iced::exit()
             }
             AppEvent::Config(id, message) => {
-                if let Some(WindowType::ConfigureWindow(config_window)) = self.windows.get_mut(&id)
+                if let Some(WindowType::Configure(config_window)) = self.windows.get_mut(&id)
                 {
                     config_window.update(id, message)
                 } else {
                     Task::none()
                 }
             }
-            AppEvent::Crop(id, message) => {
-                if let Some(WindowType::CropWindow(crop_window)) = self.windows.get_mut(&id) {
-                    crop_window.update(message)
+            AppEvent::Capture(id, message) => {
+                if let Some(WindowType::Capture(capture_window)) = self.windows.get_mut(&id) {
+                    capture_window.update(message)
                 } else {
                     Task::none()
                 }
@@ -195,12 +195,12 @@ impl App {
 
     pub fn view(&self, id: Id) -> Element<AppEvent> {
         let content = match &self.windows.get(&id) {
-            Some(WindowType::ConfigureWindow(config_window)) => config_window
+            Some(WindowType::Configure(config_window)) => config_window
                 .view()
                 .map(move |message| AppEvent::Config(id, message)),
-            Some(WindowType::CropWindow(crop_window)) => crop_window
+            Some(WindowType::Capture(capture_window)) => capture_window
                 .view()
-                .map(move |message| AppEvent::Crop(id, message)),
+                .map(move |message| AppEvent::Capture(id, message)),
             None => horizontal_space().into(),
         };
 
@@ -209,7 +209,7 @@ impl App {
 
     pub fn theme(&self, id: Id) -> Theme {
         match self.windows.get(&id) {
-            Some(WindowType::ConfigureWindow(config_window)) => config_window.theme.value().clone(),
+            Some(WindowType::Configure(config_window)) => config_window.theme.value().clone(),
             _ => self.config.theme.clone(),
         }
     }
@@ -229,7 +229,7 @@ impl App {
                 if m.contains(Modifiers::SHIFT) && m.contains(Modifiers::ALT) =>
             {
                 match char.as_str() {
-                    "s" => Some(AppEvent::OpenCropWindow),
+                    "s" => Some(AppEvent::OpenCaptureWindow),
                     "f" => Some(AppEvent::CaptureFullscreen),
                     _ => None,
                 }

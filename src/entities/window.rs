@@ -1,7 +1,7 @@
-use crate::entities::{config::ConfigureWindow, crop::CropWindow};
+use crate::entities::{config::ConfigureWindow, capture::CaptureWindow};
 
 #[derive(Debug)]
 pub enum WindowType {
-    ConfigureWindow(ConfigureWindow),
-    CropWindow(CropWindow),
+    Configure(ConfigureWindow),
+    Capture(CaptureWindow),
 }
