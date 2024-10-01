@@ -2,7 +2,7 @@ use iced::{
     futures::{SinkExt, Stream},
     stream,
 };
-use rdev::{listen, EventType, Key};
+use rdev::{grab, EventType, Key};
 use tokio::sync::mpsc::channel;
 
 use crate::entities::app::AppEvent;
@@ -12,8 +12,9 @@ pub fn global_key_listener() -> impl Stream<Item = AppEvent> {
         let (sender, mut receiver) = channel(10);
 
         std::thread::spawn(move || {
-            listen(move |event| {
-                sender.blocking_send(event.clone()).unwrap();
+            grab(move |event| {
+                sender.blocking_send(event.clone()).ok();
+                Some(event)
             })
             .unwrap()
         });
