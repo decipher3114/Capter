@@ -17,12 +17,12 @@ use tray_icon::{
 };
 
 use crate::{
-    assets::{APPNAME, ICON},
+    assets::{APPICON, APPNAME},
     entities::app::AppEvent,
 };
 
 pub fn tray_icon() -> TrayIcon {
-    let icon_image = load_from_memory(ICON).unwrap();
+    let icon_image = load_from_memory(APPICON).unwrap();
     let (width, height) = (icon_image.width(), icon_image.height());
 
     let icon = Icon::from_rgba(icon_image.into_bytes(), width, height).unwrap();
@@ -89,20 +89,19 @@ pub fn tray_menu_listener() -> impl Stream<Item = AppEvent> {
 
         loop {
             if let Some(MenuEvent { id: MenuId(id) }) = reciever.recv().await {
-                let event = match id.as_str() {
-                    "open" => AppEvent::OpenConfigureWindow,
+                match id.as_str() {
+                    "open" => output.send(AppEvent::OpenConfigureWindow).await.unwrap(),
                     "capture" => {
                         sleep(Duration::from_secs(1));
-                        AppEvent::OpenCaptureWindow
+                        output.send(AppEvent::OpenCaptureWindow).await.unwrap()
                     }
                     "fullscreen" => {
                         sleep(Duration::from_secs(1));
-                        AppEvent::CaptureFullscreen
+                        output.send(AppEvent::CaptureFullscreen).await.unwrap()
                     }
-                    "exit" => AppEvent::ExitApp,
-                    _ => AppEvent::CloseWindow,
-                };
-                output.send(event).await.unwrap()
+                    "exit" => output.send(AppEvent::ExitApp).await.unwrap(),
+                    _ => (),
+                }
             }
         }
     })

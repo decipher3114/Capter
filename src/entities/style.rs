@@ -1,10 +1,14 @@
+use iced::Color;
+
 pub struct ContainerClass;
 
 pub enum ButtonClass {
     Default,
     Danger,
+    Selected,
 }
 
-pub struct TextClass;
-
-pub struct SvgClass;
+pub enum TextClass {
+    Default,
+    Custom(Color),
+}

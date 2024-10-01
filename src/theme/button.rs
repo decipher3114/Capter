@@ -21,10 +21,12 @@ impl Catalog for Theme {
                     Status::Active => match class {
                         ButtonClass::Default => Some(Background::Color(palette.primary)),
                         ButtonClass::Danger => Some(Background::Color(palette.danger_primary)),
+                        ButtonClass::Selected => Some(Background::Color(palette.active_primary)),
                     },
                     Status::Hovered | Status::Pressed => match class {
                         ButtonClass::Default => Some(Background::Color(palette.secondary)),
                         ButtonClass::Danger => Some(Background::Color(palette.danger_secondary)),
+                        ButtonClass::Selected => Some(Background::Color(palette.active_secondary)),
                     },
                     _ => Some(Background::Color(Color::default())),
                 }

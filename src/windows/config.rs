@@ -1,18 +1,15 @@
 use iced::{
     alignment::Horizontal::Left,
-    widget::{
-        button, column, container, horizontal_space, row, svg, svg::Handle, text, vertical_space,
-    },
+    widget::{button, column, container, horizontal_space, row, text, vertical_space},
     window::Id,
     Alignment::{self, Center},
-    ContentFit,
     Length::Fill,
     Task,
 };
 use iced_anim::{Animation, Spring};
 
 use crate::{
-    assets::{BOLD, SVG_FOLDER_OPEN},
+    assets::{BOLD, FOLDER_ICON, ICON},
     entities::{
         config::{ConfigEvent, ConfigureWindow},
         style::ButtonClass,
@@ -59,14 +56,10 @@ impl ConfigureWindow {
                         .size(22)
                         .font(BOLD),
                     horizontal_space().width(Fill),
-                    button(
-                        svg(Handle::from_memory(SVG_FOLDER_OPEN))
-                            .height(0.1)
-                            .content_fit(ContentFit::ScaleDown)
-                    )
-                    .height(40)
-                    .width(40)
-                    .on_press(ConfigEvent::OpenFolder),
+                    button(text(FOLDER_ICON).font(ICON).size(20).center())
+                        .height(40)
+                        .width(40)
+                        .on_press(ConfigEvent::OpenFolder),
                     horizontal_space().width(10),
                     button(text(&self.path).size(20).center())
                         .height(40)

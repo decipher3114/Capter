@@ -4,8 +4,8 @@ use iced::window::Id;
 use tray_icon::TrayIcon;
 
 use crate::entities::{
-    config::{Config, ConfigEvent},
     capture::CaptureEvent,
+    config::{Config, ConfigEvent},
     window::WindowType,
 };
 
@@ -20,10 +20,13 @@ pub enum AppEvent {
     OpenConfigureWindow,
     OpenDirectory,
     UpdateDirectory(Id),
+    GetScaleFactor(Id, f32),
     OpenCaptureWindow,
     CaptureFullscreen,
     CaptureWindow,
-    CloseWindow,
+    Done,
+    Cancel,
+    RequestClose,
     WindowClosed(Id),
     ExitApp,
     Config(Id, ConfigEvent),

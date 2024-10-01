@@ -27,11 +27,11 @@ impl Config {
                 let _ = file.read_to_string(&mut file_content).unwrap();
                 let bool = file_content.is_empty();
                 let config: Config = match toml::from_str::<Config>(&file_content) {
-                    Ok(config) => config.into(),
+                    Ok(config) => config,
                     Err(_) => {
                         let config = Self::default();
                         Self::update_config(&config);
-                        config.into()
+                        config
                     }
                 };
                 (config, bool)
@@ -92,7 +92,7 @@ impl Config {
             var_os("HOME").unwrap().to_string_lossy()
         );
 
-        let _ = DirBuilder::new()
+        DirBuilder::new()
             .recursive(true)
             .create(Path::new(&path))
             .unwrap();

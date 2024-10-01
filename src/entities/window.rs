@@ -1,6 +1,5 @@
-use crate::entities::{config::ConfigureWindow, capture::CaptureWindow};
+use crate::entities::{capture::CaptureWindow, config::ConfigureWindow};
 
-#[derive(Debug)]
 pub enum WindowType {
     Configure(ConfigureWindow),
     Capture(CaptureWindow),

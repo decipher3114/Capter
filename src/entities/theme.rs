@@ -18,6 +18,8 @@ pub struct Palette {
     pub text: Color,
     pub primary: Color,
     pub secondary: Color,
+    pub active_primary: Color,
+    pub active_secondary: Color,
     pub danger_primary: Color,
     pub danger_secondary: Color,
 }

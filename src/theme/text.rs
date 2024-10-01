@@ -6,12 +6,15 @@ impl Catalog for Theme {
     type Class<'a> = TextClass;
 
     fn default<'a>() -> Self::Class<'a> {
-        TextClass
+        TextClass::Default
     }
 
-    fn style(&self, _item: &Self::Class<'_>) -> Style {
+    fn style(&self, item: &Self::Class<'_>) -> Style {
         Style {
-            color: Some(self.palette().text),
+            color: match item {
+                TextClass::Default => Some(self.palette().text),
+                TextClass::Custom(color) => Some(*color),
+            },
         }
     }
 }

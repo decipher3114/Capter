@@ -8,11 +8,11 @@ mod windows;
 
 use std::collections::BTreeMap;
 
-use assets::{APPNAME, FONT_BOLD, FONT_MEDIUM, ICON, MEDIUM};
+use assets::{APPICON, APPNAME, FONT_BOLD, FONT_ICONS, FONT_MEDIUM, MEDIUM};
 use entities::{
     app::{App, AppEvent},
+    capture::{CaptureEvent, CaptureWindow},
     config::{Config, ConfigureWindow},
-    capture::CaptureWindow,
     theme::Theme,
     window::WindowType,
 };
@@ -23,8 +23,8 @@ use iced::{
     keyboard::{key, on_key_press, Modifiers},
     widget::horizontal_space,
     window::{
-        self, change_mode, close, close_events, gain_focus, icon, settings::PlatformSpecific, Id,
-        Mode, Position,
+        self, change_mode, close, close_events, gain_focus, get_latest, get_scale_factor, icon,
+        settings::PlatformSpecific, Id, Mode, Position,
     },
     Size, Subscription, Task,
 };
@@ -41,16 +41,18 @@ use utils::{
 pub fn main() -> Result<(), iced::Error> {
     let name = APPNAME.to_ns_name::<GenericNamespaced>().unwrap();
 
-    if let Ok(_) = interprocess::local_socket::Stream::connect(name) {
+    if interprocess::local_socket::Stream::connect(name).is_ok() {
         return Ok(());
     };
     daemon(App::title, App::update, App::view)
         .font(FONT_MEDIUM)
         .font(FONT_BOLD)
+        .font(FONT_ICONS)
         .default_font(MEDIUM)
         .style(App::style)
         .theme(App::theme)
         .subscription(App::subscription)
+        .antialiasing(true)
         .run_with(App::new)
 }
 
@@ -91,7 +93,7 @@ impl App {
                         },
                         position: Position::Centered,
                         resizable: false,
-                        icon: Some(icon::from_file_data(ICON, Some(ImageFormat::Png)).unwrap()),
+                        icon: Some(icon::from_file_data(APPICON, Some(ImageFormat::Png)).unwrap()),
                         #[cfg(target_os = "macos")]
                         platform_specific: PlatformSpecific {
                             title_hidden: true,
@@ -112,22 +114,34 @@ impl App {
                             self.config.theme.clone(),
                         )),
                     );
-                    open_task.discard().chain(gain_focus(id))
-                } else {
-                    Task::none()
+                    return open_task.discard().chain(gain_focus(id));
                 }
+                Task::none()
             }
-            AppEvent::OpenDirectory => self.config.open_directory().into(),
+            AppEvent::OpenDirectory => {
+                self.config.open_directory();
+                Task::none()
+            }
             AppEvent::UpdateDirectory(id) => {
                 self.config.update_directory();
-                if let Some(WindowType::Configure(config_window)) = self.windows.get_mut(&id)
-                {
+                if let Some(WindowType::Configure(config_window)) = self.windows.get_mut(&id) {
                     config_window.path = shorten_path(self.config.directory.clone());
                 }
                 Task::none()
             }
+            AppEvent::GetScaleFactor(id, scale_factor) => {
+                if let Some(WindowType::Capture(capture_window)) = self.windows.get_mut(&id) {
+                    capture_window.scale_factor = scale_factor;
+                }
+                Task::none()
+            }
             AppEvent::OpenCaptureWindow => {
-                if self.windows.len() <= 1 {
+                if self.windows.is_empty()
+                    || !matches!(
+                        self.windows.first_key_value().unwrap().1,
+                        WindowType::Capture(_)
+                    )
+                {
                     let (id, open_task) = window::open(window::Settings {
                         transparent: true,
                         decorations: false,
@@ -141,13 +155,17 @@ impl App {
                     });
                     let capture_window = CaptureWindow::new();
                     self.windows.insert(id, WindowType::Capture(capture_window));
-                    open_task
+                    return open_task
                         .discard()
                         .chain(gain_focus(id))
                         .chain(change_mode(id, Mode::Fullscreen))
-                } else {
-                    Task::none()
+                        .chain(
+                            get_scale_factor(id).map(move |scale_factor| {
+                                AppEvent::GetScaleFactor(id, scale_factor)
+                            }),
+                        );
                 }
+                Task::none()
             }
             AppEvent::CaptureFullscreen => {
                 capture_fullscreen(&self.config);
@@ -157,11 +175,23 @@ impl App {
                 capture_window(&self.config);
                 Task::none()
             }
-            AppEvent::CloseWindow => window::get_latest().and_then::<Id>(close).discard(),
+            AppEvent::Done => {
+                if let Some((id, WindowType::Capture(_))) = self.windows.last_key_value() {
+                    return Task::done(AppEvent::Capture(*id, CaptureEvent::Done));
+                }
+                Task::none()
+            }
+            AppEvent::Cancel => {
+                if let Some((id, WindowType::Capture(_))) = self.windows.last_key_value() {
+                    return Task::done(AppEvent::Capture(*id, CaptureEvent::Cancel));
+                }
+                Task::none()
+            }
+            AppEvent::RequestClose => get_latest().and_then::<Id>(close).discard(),
             AppEvent::WindowClosed(id) => {
                 match self.windows.remove(&id) {
                     Some(WindowType::Capture(capture_window)) => {
-                        capture_window.crop_screenshot(&self.config);
+                        capture_window.take_screenshot(&self.config);
                     }
                     Some(WindowType::Configure(config_window)) => {
                         self.config.theme = config_window.theme.target().clone();
@@ -176,19 +206,16 @@ impl App {
                 iced::exit()
             }
             AppEvent::Config(id, message) => {
-                if let Some(WindowType::Configure(config_window)) = self.windows.get_mut(&id)
-                {
-                    config_window.update(id, message)
-                } else {
-                    Task::none()
+                if let Some(WindowType::Configure(config_window)) = self.windows.get_mut(&id) {
+                    return config_window.update(id, message);
                 }
+                Task::none()
             }
             AppEvent::Capture(id, message) => {
                 if let Some(WindowType::Capture(capture_window)) = self.windows.get_mut(&id) {
-                    capture_window.update(message)
-                } else {
-                    Task::none()
+                    return capture_window.update(message);
                 }
+                Task::none()
             }
         }
     }
@@ -222,9 +249,8 @@ impl App {
         let window_events = close_events().map(AppEvent::WindowClosed);
 
         let app_key_listener = on_key_press(|key, modifiers| match (key, modifiers) {
-            (key::Key::Named(key::Named::Escape | key::Named::Enter), _) => {
-                Some(AppEvent::CloseWindow)
-            }
+            (key::Key::Named(key::Named::Escape), _) => Some(AppEvent::Cancel),
+            (key::Key::Named(key::Named::Enter), _) => Some(AppEvent::Done),
             (key::Key::Character(char), m)
                 if m.contains(Modifiers::SHIFT) && m.contains(Modifiers::ALT) =>
             {

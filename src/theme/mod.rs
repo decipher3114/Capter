@@ -11,7 +11,6 @@ use crate::entities::theme::{Palette, Theme};
 
 mod button;
 mod container;
-mod svg;
 mod text;
 
 pub type Element<'a, Message> = iced::Element<'a, Message, Theme>;
@@ -22,6 +21,8 @@ pub const LIGHT: Palette = Palette {
     text: color!(0x323232),
     primary: color!(0xbebebe),
     secondary: color!(0xaaaaaa),
+    active_primary: color!(0x6464ff),
+    active_secondary: color!(0x5a5af5),
     danger_primary: color!(0xff6464),
     danger_secondary: color!(0xf55a5a),
 };
@@ -32,6 +33,8 @@ pub const DARK: Palette = Palette {
     text: color!(0xd2d2d2),
     primary: color!(0x464646),
     secondary: color!(0x5a5a5a),
+    active_primary: color!(0x4343e4),
+    active_secondary: color!(0x4d4dee),
     danger_primary: color!(0xe44343),
     danger_secondary: color!(0xee4d4d),
 };

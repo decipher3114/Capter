@@ -10,13 +10,13 @@ build = "build.rs"
 active-win-pos-rs = "0.8"
 arboard = { version = "3.4", features = ["wayland-data-control", "wl-clipboard-rs"] }
 chrono = "0.4"
-display-info = { version = "0.5"}
-iced = { version = "0.13", features = ["advanced", "canvas", "multi-window", "image", "tokio", "svg"] }
+iced = { version = "0.13", features = ["advanced", "canvas", "multi-window", "image", "tokio"] }
 iced_anim = { version = "0.1", features = ["derive", "serde"] }
 interprocess = { version = "2.2", features = ["tokio"] }
 rdev = { git = "https://github.com/rustdesk-org/rdev", branch = "master"}
 rfd = { version = "0.14", features = ["gtk3", "tokio"], default-features = false }
 serde = { version = "1.0", features = ["derive"] }
+tiny-skia = "0.11"
 tokio = { version = "1.39", features = ["full", "rt"] }
 toml = "0.8"
 tray-icon = "0.17"
