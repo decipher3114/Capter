@@ -19,7 +19,7 @@ pub struct CaptureWindow {
 pub enum CaptureEvent {
     Cancel,
     Done,
-    ChooseShapeType(ShapeType, bool),
+    ChooseShapeType(ShapeType, bool, bool),
     ChangeStroke(ShapeStroke),
     ChangeColor(ShapeColor),
     SetInitialPoint,

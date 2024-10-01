@@ -2,18 +2,14 @@ use iced::{
     widget::{
         button, canvas, column, container, horizontal_space, image::Handle, row, stack, text,
         vertical_space, Image,
-    },
-    Alignment::Center,
-    Length::Fill,
-    Task,
+    }, Alignment::Center, Length::Fill, Task
 };
 
 pub mod annotate;
 
 use crate::{
     assets::{
-        CANCEL, DONE, ELLIPSE_FILLED, ELLIPSE_STROKE, ICON, LINE, RECT_FILLED, RECT_STROKE,
-        STROKE_BROAD, STROKE_MEDIUM, STROKE_THIN,
+        CANCEL, DONE, ELLIPSE_FILLED, ELLIPSE_STROKE, HIGHLIGHT, ICON, LINE, RECT_FILLED, RECT_STROKE, STROKE_BROAD, STROKE_MEDIUM, STROKE_THIN
     },
     entities::{
         capture::{
@@ -49,11 +45,12 @@ impl CaptureWindow {
                     self.endpoints.clear();
                 }
             }
-            CaptureEvent::ChooseShapeType(shape_type, is_filled) => {
+            CaptureEvent::ChooseShapeType(shape_type, is_filled, is_solid) => {
                 self.endpoints.clear();
                 self.mode = Mode::Draw;
                 self.shape.shape_type = shape_type;
                 self.shape.is_filled = is_filled;
+                self.shape.is_solid = is_solid;
             }
             CaptureEvent::ChangeStroke(stroke_width) => {
                 self.shape.stroke_width = stroke_width;
@@ -125,10 +122,11 @@ impl CaptureWindow {
 
         toolbar = toolbar.push(horizontal_space().width(Fill));
 
-        let shapes_icon = |utf, shape_type, is_filled| {
+        let shapes_icon = |utf, shape_type, is_filled, is_solid| {
             let button_class = if self.mode == Mode::Draw
                 && self.shape.shape_type == shape_type
                 && self.shape.is_filled == is_filled
+                && self.shape.is_solid == is_solid
             {
                 ButtonClass::Selected
             } else {
@@ -136,7 +134,7 @@ impl CaptureWindow {
             };
 
             button(text(utf).font(ICON).size(TEXT).center())
-                .on_press(CaptureEvent::ChooseShapeType(shape_type, is_filled))
+                .on_press(CaptureEvent::ChooseShapeType(shape_type, is_filled, is_solid))
                 .height(SQUARE)
                 .width(SQUARE)
                 .class(button_class)
@@ -144,11 +142,12 @@ impl CaptureWindow {
 
         let shapes = panel(
             row![
-                shapes_icon(RECT_FILLED, ShapeType::Rectangle, true),
-                shapes_icon(RECT_STROKE, ShapeType::Rectangle, false),
-                shapes_icon(ELLIPSE_FILLED, ShapeType::Ellipse, true),
-                shapes_icon(ELLIPSE_STROKE, ShapeType::Ellipse, false),
-                shapes_icon(LINE, ShapeType::Line, false),
+                shapes_icon(RECT_FILLED, ShapeType::Rectangle, true, true),
+                shapes_icon(RECT_STROKE, ShapeType::Rectangle, false, true),
+                shapes_icon(ELLIPSE_FILLED, ShapeType::Ellipse, true, true),
+                shapes_icon(ELLIPSE_STROKE, ShapeType::Ellipse, false, true),
+                shapes_icon(LINE, ShapeType::Line, false, true),
+                shapes_icon(HIGHLIGHT, ShapeType::Rectangle, true, false)
             ]
             .spacing(ROW),
         );
@@ -192,7 +191,8 @@ impl CaptureWindow {
                         .font(ICON)
                         .size(TEXT)
                         .center()
-                        .class(TextClass::Custom(color.into_iced_color())),
+                        // .color(color!(0.0, 0.0, 0.0, 1.0))
+                        .class(TextClass::Custom(color.into_iced_color(true))),
                 )
                 .on_press(CaptureEvent::ChangeColor(color))
                 .height(SQUARE)

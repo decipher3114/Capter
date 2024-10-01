@@ -46,7 +46,7 @@ impl CaptureWindow {
             let initial_pt = shape.endpoints.initial_pt.unwrap();
             let final_pt = shape.endpoints.final_pt.unwrap();
             let mut paint = Paint::default();
-            let color = shape.color.into_paint();
+            let color = shape.color.into_paint(shape.is_solid);
             paint.set_color(color);
             let mut stroke = Stroke::default();
             if !shape.is_filled {

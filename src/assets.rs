@@ -4,7 +4,7 @@ pub const FONT_MEDIUM: &[u8; 86616] = include_bytes!("../assets/fonts/SpaceGrote
 
 pub const FONT_BOLD: &[u8; 86520] = include_bytes!("../assets/fonts/SpaceGrotesk-Bold.ttf");
 
-pub const FONT_ICONS: &[u8; 2168] = include_bytes!("../assets/fonts/icons.ttf");
+pub const FONT_ICONS: &[u8; 2336] = include_bytes!("../assets/fonts/icons.ttf");
 
 pub const APPICON: &[u8; 1358] = include_bytes!("../assets/icons/icon.png");
 
@@ -24,26 +24,28 @@ pub const BOLD: Font = Font {
     style: iced::font::Style::Normal,
 };
 
-pub const ICON: Font = Font::with_name("icomoon");
+pub const ICON: Font = Font::with_name("icons");
 
-pub const FOLDER_ICON: char = '\u{E901}';
+pub const FOLDER_ICON: char = '\u{E100}';
 
-pub const CANCEL: char = '\u{E902}';
+pub const RECT_FILLED: char = '\u{F101}';
 
-pub const DONE: char = '\u{E903}';
+pub const RECT_STROKE: char = '\u{F102}';
 
-pub const RECT_FILLED: char = '\u{E904}';
+pub const ELLIPSE_FILLED: char = '\u{F103}';
 
-pub const RECT_STROKE: char = '\u{E905}';
+pub const ELLIPSE_STROKE: char = '\u{F104}';
 
-pub const ELLIPSE_FILLED: char = '\u{E906}';
+pub const LINE: char = '\u{F105}';
 
-pub const ELLIPSE_STROKE: char = '\u{E907}';
+pub const HIGHLIGHT: char = '\u{F106}';
 
-pub const LINE: char = '\u{E908}';
+pub const CANCEL: char = '\u{F201}';
 
-pub const STROKE_THIN: char = '\u{E909}';
+pub const DONE: char = '\u{F202}';
 
-pub const STROKE_MEDIUM: char = '\u{E910}';
+pub const STROKE_THIN: char = '\u{F301}';
 
-pub const STROKE_BROAD: char = '\u{E911}';
+pub const STROKE_MEDIUM: char = '\u{F302}';
+
+pub const STROKE_BROAD: char = '\u{F303}';

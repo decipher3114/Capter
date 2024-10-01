@@ -190,7 +190,7 @@ fn draw_shape(frame: &mut Frame, shape: &Shape) {
         (shape.endpoints.initial_pt, shape.endpoints.final_pt)
     {
         let shape_type = shape.shape_type;
-        let color = shape.color.into_iced_color();
+        let color = shape.color.into_iced_color(shape.is_solid);
         match shape_type {
             ShapeType::Rectangle => {
                 let top_left = initial_pt;

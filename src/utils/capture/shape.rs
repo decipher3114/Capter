@@ -1,27 +1,27 @@
-use iced::color;
-
 use crate::entities::capture::shape::{ShapeColor, ShapeStroke};
 
 impl ShapeColor {
-    pub fn into_iced_color(self) -> iced::Color {
+    pub fn into_iced_color(self, solid: bool) -> iced::Color {
+        let opacity = if solid { 1.0 } else { 0.3 };
         match self {
-            Self::Red => color!(0xff0000),
-            Self::Blue => color!(0x0000ff),
-            Self::Green => color!(0x00ff00),
-            Self::Yellow => color!(0xffff00),
-            Self::Black => color!(0x000000),
-            Self::White => color!(0xffffff),
+            ShapeColor::Red => iced::Color::from_rgba8(255, 0, 0, opacity),
+            ShapeColor::Green => iced::Color::from_rgba8(0, 255, 0, opacity),
+            ShapeColor::Blue => iced::Color::from_rgba8(0, 0, 255, opacity),
+            ShapeColor::Yellow => iced::Color::from_rgba8(255, 255, 0, opacity),
+            ShapeColor::Black => iced::Color::from_rgba8(0, 0, 0, opacity),
+            ShapeColor::White => iced::Color::from_rgba8(255, 255, 255, opacity),
         }
     }
 
-    pub fn into_paint(self) -> tiny_skia::Color {
+    pub fn into_paint(self, solid: bool) -> tiny_skia::Color {
+        let opacity = if solid { 255 } else { 77 };
         match self {
-            ShapeColor::Red => tiny_skia::Color::from_rgba8(255, 0, 0, 255),
-            ShapeColor::Green => tiny_skia::Color::from_rgba8(0, 255, 0, 255),
-            ShapeColor::Blue => tiny_skia::Color::from_rgba8(0, 0, 255, 255),
-            ShapeColor::Yellow => tiny_skia::Color::from_rgba8(255, 255, 0, 255),
-            ShapeColor::Black => tiny_skia::Color::from_rgba8(0, 0, 0, 255),
-            ShapeColor::White => tiny_skia::Color::from_rgba8(255, 255, 255, 255),
+            ShapeColor::Red => tiny_skia::Color::from_rgba8(255, 0, 0, opacity),
+            ShapeColor::Green => tiny_skia::Color::from_rgba8(0, 255, 0, opacity),
+            ShapeColor::Blue => tiny_skia::Color::from_rgba8(0, 0, 255, opacity),
+            ShapeColor::Yellow => tiny_skia::Color::from_rgba8(255, 255, 0, opacity),
+            ShapeColor::Black => tiny_skia::Color::from_rgba8(0, 0, 0, opacity),
+            ShapeColor::White => tiny_skia::Color::from_rgba8(255, 255, 255, opacity),
         }
     }
 }

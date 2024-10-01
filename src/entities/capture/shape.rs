@@ -6,6 +6,7 @@ pub struct Shape {
     pub endpoints: Endpoints,
     pub color: ShapeColor,
     pub is_filled: bool,
+    pub is_solid: bool,
     pub stroke_width: ShapeStroke,
 }
 
