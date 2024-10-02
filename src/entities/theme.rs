@@ -2,7 +2,7 @@ use iced::Color;
 use iced_anim::Animate;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, PartialEq, Deserialize)]
 pub enum Theme {
     #[default]
     Light,

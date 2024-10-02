@@ -3,7 +3,7 @@ use super::Endpoints;
 #[derive(Debug, Default, Clone, Copy)]
 pub struct Shape {
     pub shape_type: ShapeType,
-    pub endpoints: Endpoints,
+    pub endpoints: Option<Endpoints>,
     pub color: ShapeColor,
     pub is_filled: bool,
     pub is_solid: bool,

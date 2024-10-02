@@ -10,7 +10,10 @@ use iced::{
 };
 use tokio::sync::mpsc;
 use tray_icon::{
-    menu::{Menu, MenuEvent, MenuId, MenuItem, PredefinedMenuItem},
+    menu::{
+        accelerator::{Accelerator, Code, Modifiers},
+        Menu, MenuEvent, MenuId, MenuItem, PredefinedMenuItem,
+    },
     Icon,
     MouseButton::Left,
     TrayIcon, TrayIconAttributes, TrayIconEvent,
@@ -30,12 +33,26 @@ pub fn tray_icon() -> TrayIcon {
     #[cfg(target_os = "linux")]
     gtk::init().unwrap();
 
-    let menu = Menu::new();
-    menu.append_items(&[
-        &MenuItem::with_id("open", "Open", true, None),
+    let menu = Menu::with_items(&[
+        &MenuItem::with_id(
+            "open",
+            "Open",
+            true,
+            Some(Accelerator::new(
+                Some(Modifiers::SHIFT.union(Modifiers::ALT)),
+                Code::KeyO,
+            )),
+        ),
         &PredefinedMenuItem::separator(),
-        &MenuItem::with_id("capture", "Capture", true, None),
-        &MenuItem::with_id("fullscreen", "Capture FullScreen", true, None),
+        &MenuItem::with_id(
+            "capture",
+            "Capture",
+            true,
+            Some(Accelerator::new(
+                Some(Modifiers::SHIFT.union(Modifiers::ALT)),
+                Code::KeyS,
+            )),
+        ),
         &PredefinedMenuItem::separator(),
         &MenuItem::with_id("exit", "Exit", true, None),
     ])
@@ -64,14 +81,17 @@ pub fn tray_icon_listener() -> impl Stream<Item = AppEvent> {
         });
 
         loop {
-            if let Some(TrayIconEvent::DoubleClick {
-                id: _,
-                position: _,
-                rect: _,
-                button: Left,
-            }) = reciever.recv().await
-            {
-                output.send(AppEvent::OpenConfigureWindow).await.unwrap();
+            match reciever.recv().await {
+                Some(event) => match event {
+                    TrayIconEvent::Click { button: Left, .. } => {
+                        output.send(AppEvent::OpenConfigureWindow).await.unwrap()
+                    }
+                    TrayIconEvent::DoubleClick { button: Left, .. } => {
+                        output.send(AppEvent::OpenCaptureWindow).await.unwrap()
+                    }
+                    _ => (),
+                },
+                None => (),
             }
         }
     })
@@ -94,10 +114,6 @@ pub fn tray_menu_listener() -> impl Stream<Item = AppEvent> {
                     "capture" => {
                         sleep(Duration::from_secs(1));
                         output.send(AppEvent::OpenCaptureWindow).await.unwrap()
-                    }
-                    "fullscreen" => {
-                        sleep(Duration::from_secs(1));
-                        output.send(AppEvent::CaptureFullscreen).await.unwrap()
                     }
                     "exit" => output.send(AppEvent::ExitApp).await.unwrap(),
                     _ => (),

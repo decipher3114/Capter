@@ -23,7 +23,7 @@ use iced::{
     keyboard::{key, on_key_press, Modifiers},
     widget::horizontal_space,
     window::{
-        self, change_mode, close, close_events, gain_focus, get_latest, get_scale_factor, icon,
+        self, change_mode, close, close_events, gain_focus, get_scale_factor, icon,
         settings::PlatformSpecific, Id, Mode, Position,
     },
     Size, Subscription, Task,
@@ -31,7 +31,6 @@ use iced::{
 use interprocess::local_socket::{traits::Stream, GenericNamespaced, ToNsName};
 use theme::Element;
 use utils::{
-    capture::{fullscreen::capture_fullscreen, window::capture_window},
     ipc::ipc,
     key_listener::global_key_listener,
     shorten_path,
@@ -167,12 +166,10 @@ impl App {
                 }
                 Task::none()
             }
-            AppEvent::CaptureFullscreen => {
-                capture_fullscreen(&self.config);
-                Task::none()
-            }
-            AppEvent::CaptureWindow => {
-                capture_window(&self.config);
+            AppEvent::Undo => {
+                if let Some((id, WindowType::Capture(_))) = self.windows.last_key_value() {
+                    return Task::done(AppEvent::Capture(*id, CaptureEvent::Undo));
+                }
                 Task::none()
             }
             AppEvent::Done => {
@@ -187,7 +184,7 @@ impl App {
                 }
                 Task::none()
             }
-            AppEvent::RequestClose => get_latest().and_then::<Id>(close).discard(),
+            AppEvent::RequestClose(id) => close(id),
             AppEvent::WindowClosed(id) => {
                 match self.windows.remove(&id) {
                     Some(WindowType::Capture(capture_window)) => {
@@ -213,7 +210,7 @@ impl App {
             }
             AppEvent::Capture(id, message) => {
                 if let Some(WindowType::Capture(capture_window)) = self.windows.get_mut(&id) {
-                    return capture_window.update(message);
+                    return capture_window.update(id, message);
                 }
                 Task::none()
             }
@@ -256,8 +253,13 @@ impl App {
             {
                 match char.as_str() {
                     "s" => Some(AppEvent::OpenCaptureWindow),
-                    "f" => Some(AppEvent::CaptureFullscreen),
                     _ => None,
+                }
+            }
+            (key::Key::Character(char), Modifiers::CTRL) => {
+                match char.as_str() {
+                    "z" => Some(AppEvent::Undo),
+                    _ => None
                 }
             }
             _ => None,

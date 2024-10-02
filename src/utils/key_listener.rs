@@ -31,11 +31,8 @@ pub fn global_key_listener() -> impl Stream<Item = AppEvent> {
                     Key::KeyS if alt_pressed && shift_pressed => {
                         output.send(AppEvent::OpenCaptureWindow).await.unwrap();
                     }
-                    Key::KeyF if alt_pressed && shift_pressed => {
-                        output.send(AppEvent::CaptureFullscreen).await.unwrap();
-                    }
-                    Key::KeyW if alt_pressed && shift_pressed => {
-                        output.send(AppEvent::CaptureWindow).await.unwrap();
+                    Key::KeyO if alt_pressed && shift_pressed => {
+                        output.send(AppEvent::OpenConfigureWindow).await.unwrap()
                     }
                     _ => (),
                 },

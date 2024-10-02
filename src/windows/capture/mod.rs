@@ -2,51 +2,60 @@ use iced::{
     widget::{
         button, canvas, column, container, horizontal_space, image::Handle, row, stack, text,
         vertical_space, Image,
-    }, Alignment::Center, Length::Fill, Task
+    },
+    window::Id,
+    Alignment::Center,
+    Length::Fill,
+    Point, Task,
 };
 
 pub mod annotate;
 
 use crate::{
     assets::{
-        CANCEL, DONE, ELLIPSE_FILLED, ELLIPSE_STROKE, HIGHLIGHT, ICON, LINE, RECT_FILLED, RECT_STROKE, STROKE_BROAD, STROKE_MEDIUM, STROKE_THIN
+        ELLIPSE_FILLED, ELLIPSE_STROKE, HIGHLIGHT, ICON, LINE, RECT_FILLED, RECT_STROKE,
+        STROKE_BROAD, STROKE_MEDIUM, STROKE_THIN,
     },
     entities::{
         capture::{
             shape::{ShapeColor, ShapeStroke, ShapeType},
-            CaptureEvent, CaptureWindow, Mode,
+            CaptureEvent, CaptureWindow, Endpoints, Mode, CropMode,
         },
         style::{ButtonClass, TextClass},
     },
     theme::Element,
-    utils::evaluate_points,
     AppEvent,
 };
 
 impl CaptureWindow {
-    pub fn update(&mut self, message: CaptureEvent) -> Task<AppEvent> {
+    pub fn update(&mut self, id: Id, message: CaptureEvent) -> Task<AppEvent> {
         match message {
+            CaptureEvent::Undo => {
+                if matches!(self.mode, Mode::Draw) {
+                    self.shapes.pop();
+                    self.cache.clear();
+                } else {
+                    self.crop_mode = CropMode::FullScreen;
+                }
+            }
             CaptureEvent::Done => {
-                if self.mode == Mode::Draw {
+                if matches!(self.mode, Mode::Draw) {
                     self.mode = Mode::Crop;
                 } else {
-                    return Task::done(AppEvent::RequestClose);
+                    return Task::done(AppEvent::RequestClose(id));
                 }
             }
             CaptureEvent::Cancel => {
-                if self.mode == Mode::Draw {
+                if matches!(self.mode, Mode::Draw) {
                     self.shapes.clear();
                     self.cache.clear();
                     self.mode = Mode::Crop;
                 } else {
-                    if self.endpoints.final_pt.is_none() {
-                        return Task::done(AppEvent::RequestClose);
-                    }
-                    self.endpoints.clear();
+                    return Task::done(AppEvent::RequestClose(id));
                 }
             }
             CaptureEvent::ChooseShapeType(shape_type, is_filled, is_solid) => {
-                self.endpoints.clear();
+                self.shape.endpoints = None;
                 self.mode = Mode::Draw;
                 self.shape.shape_type = shape_type;
                 self.shape.is_filled = is_filled;
@@ -59,41 +68,75 @@ impl CaptureWindow {
                 self.shape.color = color;
             }
             CaptureEvent::SetInitialPoint => match self.mode {
-                Mode::Draw => self.shape.endpoints.initial_pt = Some(self.cursor_position),
+                Mode::Draw => {
+                    self.shape.endpoints = Some(Endpoints {
+                        initial_pt: self.cursor_position,
+                        final_pt: self.cursor_position,
+                    })
+                }
                 Mode::Crop => {
-                    self.endpoints.clear();
-                    self.endpoints.initial_pt = Some(self.cursor_position)
+                    self.crop_mode = CropMode::SelectionInProgress;
+                    self.endpoints.initial_pt = self.cursor_position;
+                    self.endpoints.final_pt = self.cursor_position;
                 }
             },
             CaptureEvent::UpdateCurrentPosition(final_pt) => {
-                if self.mode == Mode::Draw {
-                    if let Some(initial_pt) = self.shape.endpoints.initial_pt {
-                        match self.shape.shape_type {
-                            ShapeType::Rectangle | ShapeType::Ellipse => {
-                                let (initial_pt, final_pt) = evaluate_points(initial_pt, final_pt);
-                                self.shape.endpoints.initial_pt = Some(initial_pt);
-                                self.shape.endpoints.final_pt = Some(final_pt);
-                            }
-                            ShapeType::Line => self.shape.endpoints.final_pt = Some(final_pt),
-                        }
-                    }
-                }
                 self.cursor_position = final_pt;
+                if matches!(self.mode, Mode::Draw) {
+                    if let Some(ref mut endpoints) = self.shape.endpoints {
+                        endpoints.final_pt = final_pt;
+                    }
+                } else if matches!(
+                    self.crop_mode,
+                    CropMode::FullScreen | CropMode::SpecificWindow(_)
+                ) {
+                    let window = self.windows.iter().find_map(|(id, window)| {
+                        let scale = self.scale_factor;
+                        let top_left = (window.x as f32 / scale, window.y as f32 / scale);
+                        let bottom_right = (
+                            (window.x + window.width as i32) as f32 / scale,
+                            (window.y + window.height as i32) as f32 / scale,
+                        );
+                        if (top_left.0..bottom_right.0).contains(&(self.cursor_position.x as f32))
+                            && (top_left.1..bottom_right.1)
+                                .contains(&(self.cursor_position.y as f32))
+                        {
+                            Some((id, window.name.clone(), top_left, bottom_right))
+                        } else {
+                            None
+                        }
+                    });
+                    if let Some((id, name, top_left, bottom_right)) = window {
+                        self.endpoints.initial_pt = Point::new(top_left.0, top_left.1);
+                        self.endpoints.final_pt = Point::new(bottom_right.0, bottom_right.1);
+                        self.crop_mode = CropMode::SpecificWindow(*id);
+                        self.mode_desc = name;
+                    } else {
+                        self.crop_mode = CropMode::FullScreen;
+                        self.mode_desc = String::from("FullScreen");
+                    }
+                } else if matches!(self.crop_mode, CropMode::SelectionInProgress) {
+                    self.endpoints.final_pt = final_pt;
+                    let (initial_pt, final_pt) = self.endpoints.normalize();
+                    let size = initial_pt - final_pt;
+                    self.mode_desc = format!("{} x {}", size.x as u32, size.y as u32);
+                }
             }
             CaptureEvent::SetFinalPoint => {
                 match self.mode {
                     Mode::Draw => {
-                        if self.shape.endpoints.initial_pt != Some(self.cursor_position) {
+                        if self.shape.endpoints.is_some() {
                             self.shapes.push(self.shape);
                             self.cache.clear();
                         }
-                        self.shape.endpoints.clear();
+                        self.shape.endpoints = None
                     }
                     Mode::Crop => {
-                        if self.endpoints.initial_pt != Some(self.cursor_position) {
-                            self.endpoints.final_pt = Some(self.cursor_position);
+                        if self.endpoints.initial_pt != self.cursor_position {
+                            self.endpoints.final_pt = self.cursor_position;
+                            self.crop_mode = CropMode::ManualSelection
                         } else {
-                            self.endpoints.clear();
+                            self.crop_mode = CropMode::FullScreen;
                         }
                     }
                 }
@@ -105,25 +148,31 @@ impl CaptureWindow {
 
     pub fn view(&self) -> Element<CaptureEvent> {
         let background = Image::new(Handle::from_rgba(
-            self.image.width(),
-            self.image.height(),
-            self.image.clone().into_raw(),
+            self.display.image.width(),
+            self.display.image.height(),
+            self.display.image.clone().into_raw(),
         ))
         .height(Fill)
         .width(Fill);
 
+        const CONTAINER: u16 = 8;
         const ROW: u16 = 8;
         const TEXT: u16 = 18;
         const SQUARE: u16 = 36;
 
-        let panel = |row| container(row).align_x(Center).align_y(Center).padding(8);
+        let panel = |row| {
+            container(row)
+                .align_x(Center)
+                .align_y(Center)
+                .padding(CONTAINER)
+        };
 
         let mut toolbar = row![].spacing(10);
 
         toolbar = toolbar.push(horizontal_space().width(Fill));
 
         let shapes_icon = |utf, shape_type, is_filled, is_solid| {
-            let button_class = if self.mode == Mode::Draw
+            let button_class = if matches!(self.mode, Mode::Draw)
                 && self.shape.shape_type == shape_type
                 && self.shape.is_filled == is_filled
                 && self.shape.is_solid == is_solid
@@ -134,7 +183,9 @@ impl CaptureWindow {
             };
 
             button(text(utf).font(ICON).size(TEXT).center())
-                .on_press(CaptureEvent::ChooseShapeType(shape_type, is_filled, is_solid))
+                .on_press(CaptureEvent::ChooseShapeType(
+                    shape_type, is_filled, is_solid,
+                ))
                 .height(SQUARE)
                 .width(SQUARE)
                 .class(button_class)
@@ -154,7 +205,7 @@ impl CaptureWindow {
 
         toolbar = toolbar.push(shapes);
 
-        if self.mode == Mode::Draw {
+        if matches!(self.mode, Mode::Draw) {
             if !self.shape.is_filled {
                 let stroke_icon = |utf, stroke| {
                     let button_class = if self.shape.stroke_width == stroke {
@@ -179,7 +230,7 @@ impl CaptureWindow {
                 ))
             };
 
-            let color_icon = |color| {
+            let color_icon = |color: ShapeColor| {
                 let button_class = if self.shape.color == color {
                     ButtonClass::Selected
                 } else {
@@ -199,6 +250,7 @@ impl CaptureWindow {
                 .width(SQUARE)
                 .class(button_class)
             };
+
             toolbar = toolbar.push(panel(
                 row![
                     color_icon(ShapeColor::Red),
@@ -212,43 +264,32 @@ impl CaptureWindow {
             ))
         };
 
-        let mut options = row![].spacing(ROW);
-
-        if self.mode == Mode::Draw || self.endpoints.final_pt.is_some() {
-            options = options.push(
-                button(text(DONE).font(ICON).size(TEXT).center())
-                    .on_press(CaptureEvent::Done)
-                    .height(SQUARE)
-                    .width(SQUARE)
-                    .class(ButtonClass::Selected),
-            )
-        };
-
-        options = options.push(
-            button(text(CANCEL).font(ICON).size(TEXT).center())
-                .on_press(CaptureEvent::Cancel)
-                .height(SQUARE)
-                .width(SQUARE)
-                .class(ButtonClass::Danger),
-        );
-
-        toolbar = toolbar.push(panel(options));
-
         toolbar = toolbar.push(horizontal_space().width(Fill));
 
         let mut overlay = column![vertical_space().height(5)];
 
-        if self.shape.endpoints.initial_pt.is_none() && (self.endpoints.final_pt.is_some() || self.endpoints.initial_pt.is_none()) {
+        if matches!(self.crop_mode, CropMode::SelectionInProgress) || self.shape.endpoints.is_none()
+        {
             overlay = overlay.push(toolbar);
         };
 
-        stack![
-            background,
-            canvas(self).height(Fill).width(Fill),
-            overlay
-        ]
-        .height(Fill)
-        .width(Fill)
-        .into()
+        overlay = overlay.push(vertical_space().height(Fill));
+        if matches!(self.mode, Mode::Crop) {
+            overlay = overlay.push(row![
+                horizontal_space().width(Fill),
+                container(text(self.mode_desc.clone()).size(TEXT).center())
+                    .align_x(Center)
+                    .align_y(Center)
+                    .padding(CONTAINER),
+                horizontal_space().width(Fill)
+            ]);
+        }
+
+        overlay = overlay.push(vertical_space().height(5));
+
+        stack![background, canvas(self).height(Fill).width(Fill), overlay]
+            .height(Fill)
+            .width(Fill)
+            .into()
     }
 }

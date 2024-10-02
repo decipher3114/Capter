@@ -1,6 +1,6 @@
 use iced::{
     alignment::Horizontal::Left,
-    widget::{button, column, container, horizontal_space, row, text, vertical_space},
+    widget::{button, column, container, horizontal_space, row, text},
     window::Id,
     Alignment::{self, Center},
     Length::Fill,
@@ -92,33 +92,7 @@ impl ConfigureWindow {
         ]
         .spacing(10);
 
-        let footer_row = |key_bind: &'static str, task: &'static str| {
-            let text_size = 18;
-            row![
-                text(key_bind)
-                    .font(BOLD)
-                    .size(text_size)
-                    .align_y(Center)
-                    .width(120),
-                horizontal_space().width(5),
-                text(":").size(text_size).align_y(Center).width(20),
-                horizontal_space().width(Fill),
-                text(task).size(text_size).align_y(Center).width(320)
-            ]
-        };
-
-        let footer = container(
-            column![
-                text("Keybindings:").size(22).font(BOLD),
-                vertical_space().height(10),
-                footer_row("Alt+Shift+S", "Open Capture UI"),
-                footer_row("Alt+Shift+F", "Captures Full Screenshot"),
-                footer_row("Alt+Shift+W", "Captures Focused Window"),
-            ]
-            .width(Fill)
-            .padding(10),
-        );
-        let content = column![header, body, footer].spacing(10).padding(15);
+        let content = column![header, body].spacing(10).padding(15);
 
         Animation::new(&self.theme, content)
             .on_update(ConfigEvent::UpdateTheme)

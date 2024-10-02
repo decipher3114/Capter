@@ -40,9 +40,9 @@ pub const LINE: char = '\u{F105}';
 
 pub const HIGHLIGHT: char = '\u{F106}';
 
-pub const CANCEL: char = '\u{F201}';
+// pub const CANCEL: char = '\u{F201}';
 
-pub const DONE: char = '\u{F202}';
+// pub const DONE: char = '\u{F202}';
 
 pub const STROKE_THIN: char = '\u{F301}';
 

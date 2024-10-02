@@ -8,15 +8,12 @@ use iced::{
     Color, Point, Radians, Rectangle, Renderer, Size, Vector,
 };
 
-use crate::{
-    entities::{
-        capture::{
-            shape::{Shape, ShapeType},
-            CaptureEvent, CaptureWindow, Mode,
-        },
-        theme::Theme,
+use crate::entities::{
+    capture::{
+        shape::{Shape, ShapeType},
+        CaptureEvent, CaptureWindow, Mode, CropMode,
     },
-    utils::evaluate_points,
+    theme::Theme,
 };
 
 impl Program<CaptureEvent, Theme> for CaptureWindow {
@@ -38,21 +35,15 @@ impl Program<CaptureEvent, Theme> for CaptureWindow {
 
         let mut frame = Frame::new(renderer, bounds.size());
 
-        let overlay = Fill::from(Color::from_rgba(0.0, 0.0, 0.0, 0.5));
-
         match self.mode {
             Mode::Draw => {
                 draw_shape(&mut frame, &self.shape);
             }
             Mode::Crop => {
-                if let Some(initial_pt) = self.endpoints.initial_pt {
-                    let final_pt = if let Some(final_pt) = self.endpoints.final_pt {
-                        final_pt
-                    } else {
-                        self.cursor_position
-                    };
+                if !matches!(self.crop_mode, CropMode::FullScreen) {
+                    let overlay = Fill::from(Color::from_rgba(0.0, 0.0, 0.0, 0.8));
+                    let (top_left, bottom_right) = self.endpoints.normalize();
 
-                    let (top_left, bottom_right) = evaluate_points(initial_pt, final_pt);
                     let selection = Path::rectangle(top_left, (bottom_right - top_left).into());
                     let stroke = Stroke {
                         style: Style::Solid(Color::from_rgba8(255, 255, 255, 0.2)),
@@ -129,9 +120,7 @@ impl Program<CaptureEvent, Theme> for CaptureWindow {
                     };
 
                     frame.stroke(&selection, dashed_stroke);
-                } else {
-                    frame.fill_rectangle(Point::ORIGIN, bounds.size(), overlay);
-                };
+                }
             }
         }
 
@@ -186,15 +175,13 @@ impl Program<CaptureEvent, Theme> for CaptureWindow {
 }
 
 fn draw_shape(frame: &mut Frame, shape: &Shape) {
-    if let (Some(initial_pt), Some(final_pt)) =
-        (shape.endpoints.initial_pt, shape.endpoints.final_pt)
-    {
+    if let Some(endpoints) = shape.endpoints {
         let shape_type = shape.shape_type;
         let color = shape.color.into_iced_color(shape.is_solid);
         match shape_type {
             ShapeType::Rectangle => {
-                let top_left = initial_pt;
-                let size = (final_pt - initial_pt).into();
+                let (top_left, bottom_right) = endpoints.normalize();
+                let size = (bottom_right - top_left).into();
                 let path = Path::rectangle(top_left, size);
                 if shape.is_filled {
                     let fill = Fill::from(color);
@@ -208,8 +195,8 @@ fn draw_shape(frame: &mut Frame, shape: &Shape) {
                 }
             }
             ShapeType::Ellipse => {
-                let top_left = initial_pt;
-                let size = final_pt - initial_pt;
+                let (top_left, bottom_right) = endpoints.normalize();
+                let size = bottom_right - top_left;
                 let radii = Vector::new(size.x / 2.0, size.y / 2.0);
                 let center = Point::new(top_left.x + radii.x, top_left.y + radii.y);
                 let arc = Elliptical {
@@ -233,7 +220,7 @@ fn draw_shape(frame: &mut Frame, shape: &Shape) {
                 };
             }
             ShapeType::Line => {
-                let path = Path::line(initial_pt, final_pt);
+                let path = Path::line(endpoints.initial_pt, endpoints.final_pt);
                 let stroke = Stroke::default()
                     .with_width(shape.stroke_width.f32())
                     .with_color(color);
