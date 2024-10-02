@@ -236,10 +236,16 @@ impl CaptureWindow {
 
         toolbar = toolbar.push(horizontal_space().width(Fill));
 
+        let mut overlay = column![vertical_space().height(5)];
+
+        if self.shape.endpoints.initial_pt.is_none() && (self.endpoints.final_pt.is_some() || self.endpoints.initial_pt.is_none()) {
+            overlay = overlay.push(toolbar);
+        };
+
         stack![
             background,
             canvas(self).height(Fill).width(Fill),
-            column![vertical_space().height(5), toolbar]
+            overlay
         ]
         .height(Fill)
         .width(Fill)
