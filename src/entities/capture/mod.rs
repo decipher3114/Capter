@@ -1,6 +1,5 @@
-use std::collections::BTreeMap;
-
 use iced::{widget::canvas, Point};
+use indexmap::IndexMap;
 use shape::{Shape, ShapeColor, ShapeStroke, ShapeType};
 use xcap::image::RgbaImage;
 
@@ -11,7 +10,7 @@ pub struct CaptureWindow {
     pub crop_mode: CropMode,
     pub mode_desc: String,
     pub display: CapturedMonitor,
-    pub windows: BTreeMap<u32, CapturedWindow>,
+    pub windows: IndexMap<u32, CapturedWindow>,
     pub cursor_position: Point,
     pub mode: Mode,
     pub endpoints: Endpoints,

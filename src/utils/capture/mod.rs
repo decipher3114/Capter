@@ -1,7 +1,6 @@
-use std::collections::BTreeMap;
-
 use arboard::{Clipboard, ImageData};
 use iced::{widget::canvas::Cache, Point};
+use indexmap::IndexMap;
 use tiny_skia::{FillRule, Paint, PathBuilder, Pixmap, Rect, Stroke, Transform};
 use xcap::{
     image::{imageops::overlay, DynamicImage, ImageFormat, RgbaImage},
@@ -99,7 +98,7 @@ impl CaptureWindow {
                 base
             }
             CropMode::SpecificWindow(id) => {
-                let window = self.windows.remove(&id).unwrap();
+                let window = self.windows.swap_remove(&id).unwrap();
 
                 let x = window.x;
                 let y = window.y;
@@ -151,7 +150,7 @@ pub fn get_display() -> CapturedMonitor {
     }
 }
 
-pub fn get_windows(monitor_id: u32) -> BTreeMap<u32, CapturedWindow> {
+pub fn get_windows(monitor_id: u32) -> IndexMap<u32, CapturedWindow> {
     let all_windows = xcap::Window::all().unwrap();
 
     let valid_windows = all_windows
