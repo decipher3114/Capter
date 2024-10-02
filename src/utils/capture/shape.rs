@@ -30,8 +30,8 @@ impl ShapeStroke {
     pub fn f32(&self) -> f32 {
         match self {
             Self::Thin => 2.0,
-            Self::Medium => 4.0,
-            Self::Broad => 6.0,
+            Self::Medium => 5.0,
+            Self::Broad => 8.0,
         }
     }
 }
