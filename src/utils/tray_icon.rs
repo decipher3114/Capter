@@ -81,7 +81,7 @@ pub fn tray_icon_listener() -> impl Stream<Item = AppEvent> {
         });
 
         loop {
-            if let Some(event) =  reciever.recv().await {
+            if let Some(event) = reciever.recv().await {
                 match event {
                     TrayIconEvent::Click { button: Left, .. } => {
                         output.send(AppEvent::OpenConfigureWindow).await.unwrap()

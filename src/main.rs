@@ -16,6 +16,7 @@ use entities::{
     theme::Theme,
     window::WindowType,
 };
+
 use iced::{
     advanced::graphics::image::image_rs::ImageFormat,
     application::DefaultStyle,
@@ -43,6 +44,7 @@ pub fn main() -> Result<(), iced::Error> {
     if interprocess::local_socket::Stream::connect(name).is_ok() {
         return Ok(());
     };
+
     daemon(App::title, App::update, App::view)
         .font(FONT_MEDIUM)
         .font(FONT_BOLD)
@@ -58,13 +60,9 @@ pub fn main() -> Result<(), iced::Error> {
 impl App {
     pub fn new() -> (App, Task<AppEvent>) {
         let (config, is_initial) = Config::new();
-        let _tray_icon = tray_icon();
+        let tray_icon = tray_icon();
         (
-            App {
-                _tray_icon,
-                config,
-                windows: BTreeMap::new(),
-            },
+            App::new_internal(tray_icon, config, BTreeMap::new()),
             if is_initial {
                 Task::done(AppEvent::OpenConfigureWindow)
             } else {
@@ -108,10 +106,10 @@ impl App {
                     });
                     self.windows.insert(
                         id,
-                        WindowType::Configure(ConfigureWindow::new(
+                        WindowType::Configure(Box::new(ConfigureWindow::new(
                             shorten_path(self.config.directory.clone()),
                             self.config.theme.clone(),
-                        )),
+                        ))),
                     );
                     return open_task.discard().chain(gain_focus(id));
                 }
@@ -153,7 +151,8 @@ impl App {
                         ..Default::default()
                     });
                     let capture_window = CaptureWindow::new();
-                    self.windows.insert(id, WindowType::Capture(capture_window));
+                    self.windows
+                        .insert(id, WindowType::Capture(Box::new(capture_window)));
                     return open_task
                         .discard()
                         .chain(gain_focus(id))

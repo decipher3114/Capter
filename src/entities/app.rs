@@ -10,9 +10,24 @@ use crate::entities::{
 };
 
 pub struct App {
-    pub _tray_icon: TrayIcon,
+    #[expect(dead_code)]
+    tray_icon: TrayIcon,
     pub config: Config,
     pub windows: BTreeMap<Id, WindowType>,
+}
+
+impl App {
+    pub(crate) fn new_internal(
+        tray_icon: TrayIcon,
+        config: Config,
+        windows: BTreeMap<Id, WindowType>,
+    ) -> Self {
+        Self {
+            tray_icon,
+            config,
+            windows,
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
