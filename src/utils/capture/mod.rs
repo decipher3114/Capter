@@ -10,7 +10,7 @@ use xcap::{
 use crate::entities::{
     capture::{
         shape::{Shape, ShapeType},
-        CaptureWindow, CapturedMonitor, CapturedWindow, Endpoints, Mode, CropMode,
+        CaptureWindow, CapturedMonitor, CapturedWindow, CropMode, Endpoints, Mode,
     },
     config::Config,
 };
@@ -77,8 +77,14 @@ impl CaptureWindow {
                 }
                 ShapeType::Line => {
                     let mut builder = PathBuilder::new();
-                    builder.move_to(endpoints.initial_pt.x * scale_factor, endpoints.initial_pt.y * scale_factor);
-                    builder.line_to(endpoints.final_pt.x * scale_factor, endpoints.final_pt.y * scale_factor);
+                    builder.move_to(
+                        endpoints.initial_pt.x * scale_factor,
+                        endpoints.initial_pt.y * scale_factor,
+                    );
+                    builder.line_to(
+                        endpoints.final_pt.x * scale_factor,
+                        endpoints.final_pt.y * scale_factor,
+                    );
                     let path = builder.finish().unwrap();
                     pixmap.stroke_path(&path, &paint, &stroke, transform, None);
                 }
@@ -87,7 +93,7 @@ impl CaptureWindow {
         RgbaImage::from_vec(width, height, pixmap.take()).unwrap()
     }
 
-    pub fn take_screenshot(mut self, config: &Config) {
+    pub fn take_screenshot(self, config: &Config) {
         let (img_width, img_height) = self.display.image.dimensions();
         let top = self.draw_shapes();
 
@@ -98,23 +104,22 @@ impl CaptureWindow {
                 base
             }
             CropMode::SpecificWindow(id) => {
-                let window = self.windows.swap_remove(&id).unwrap();
+                let window = self.windows.get(&id).unwrap();
 
                 let x = window.x;
                 let y = window.y;
                 let width = window.width;
                 let height = window.height;
-                let window_img = window.image.clone();
+                let window_img = &window.image;
 
                 let mut base = RgbaImage::new(img_width, img_height);
-                overlay(&mut base, &window_img, x as i64, y as i64);
+                overlay(&mut base, window_img, x as i64, y as i64);
                 overlay(&mut base, &top, 0, 0);
                 let x = if x < 0 { 0u32 } else { x as u32 };
                 let y = if y < 0 { 0u32 } else { y as u32 };
-                let final_image = DynamicImage::from(base)
+                DynamicImage::from(base)
                     .crop_imm(x, y, width, height)
-                    .into_rgba8();
-                final_image
+                    .into_rgba8()
             }
             CropMode::ManualSelection | CropMode::SelectionInProgress => {
                 let (top_left, bottom_right) = self.endpoints.normalize();
@@ -125,10 +130,9 @@ impl CaptureWindow {
                 let height = size.y * self.scale_factor;
                 let mut base = self.display.image;
                 overlay(&mut base, &top, 0, 0);
-                let final_image = DynamicImage::from(base)
+                DynamicImage::from(base)
                     .crop_imm(x as u32, y as u32, width as u32, height as u32)
-                    .into_rgba8();
-                final_image
+                    .into_rgba8()
             }
         };
 

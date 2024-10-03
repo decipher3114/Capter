@@ -11,7 +11,7 @@ use iced::{
 use crate::entities::{
     capture::{
         shape::{Shape, ShapeType},
-        CaptureEvent, CaptureWindow, Mode, CropMode,
+        CaptureEvent, CaptureWindow, CropMode, Mode,
     },
     theme::Theme,
 };

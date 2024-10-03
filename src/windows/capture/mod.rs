@@ -19,7 +19,7 @@ use crate::{
     entities::{
         capture::{
             shape::{ShapeColor, ShapeStroke, ShapeType},
-            CaptureEvent, CaptureWindow, Endpoints, Mode, CropMode,
+            CaptureEvent, CaptureWindow, CropMode, Endpoints, Mode,
         },
         style::{ButtonClass, TextClass},
     },
@@ -97,9 +97,9 @@ impl CaptureWindow {
                             (window.x + window.width as i32) as f32 / scale,
                             (window.y + window.height as i32) as f32 / scale,
                         );
-                        if (top_left.0..bottom_right.0).contains(&(self.cursor_position.x as f32))
+                        if (top_left.0..bottom_right.0).contains(&(self.cursor_position.x))
                             && (top_left.1..bottom_right.1)
-                                .contains(&(self.cursor_position.y as f32))
+                                .contains(&(self.cursor_position.y))
                         {
                             Some((id, window.name.clone(), top_left, bottom_right))
                         } else {

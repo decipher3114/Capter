@@ -256,12 +256,10 @@ impl App {
                     _ => None,
                 }
             }
-            (key::Key::Character(char), Modifiers::CTRL) => {
-                match char.as_str() {
-                    "z" => Some(AppEvent::Undo),
-                    _ => None
-                }
-            }
+            (key::Key::Character(char), Modifiers::CTRL) => match char.as_str() {
+                "z" => Some(AppEvent::Undo),
+                _ => None,
+            },
             _ => None,
         });
 
