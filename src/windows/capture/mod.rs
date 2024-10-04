@@ -118,7 +118,7 @@ impl CaptureWindow {
                 } else if matches!(self.crop_mode, CropMode::SelectionInProgress) {
                     self.endpoints.final_pt = final_pt;
                     let (initial_pt, final_pt) = self.endpoints.normalize();
-                    let size = initial_pt - final_pt;
+                    let size = final_pt - initial_pt;
                     self.mode_desc = format!("{} x {}", size.x as u32, size.y as u32);
                 }
             }
