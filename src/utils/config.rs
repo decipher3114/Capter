@@ -63,6 +63,7 @@ impl Config {
         return File::options()
             .read(true)
             .create(true)
+            .truncate(false)
             .write(true)
             .open(path);
     }
@@ -79,6 +80,8 @@ impl Config {
     }
 
     pub fn default_path() -> String {
+        // TODO: REPLACE the .unwrap() calls with .unwrap_or(DEFAULT_VALUE)
+
         #[cfg(target_os = "windows")]
         let path = format!(
             "{}{}\\Pictures\\Capter",
@@ -95,7 +98,7 @@ impl Config {
         DirBuilder::new()
             .recursive(true)
             .create(Path::new(&path))
-            .unwrap();
+            .expect("error creating directory.");
 
         path
     }

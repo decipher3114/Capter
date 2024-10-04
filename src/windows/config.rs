@@ -31,7 +31,10 @@ impl ConfigureWindow {
         match message {
             ConfigEvent::UpdateFolderPath => Task::done(AppEvent::UpdateDirectory(id)),
             ConfigEvent::OpenFolder => Task::done(AppEvent::OpenDirectory),
-            ConfigEvent::UpdateTheme(event) => self.theme.update(event).into(),
+            ConfigEvent::UpdateTheme(event) => {
+                self.theme.update(event);
+                Task::none()
+            }
             ConfigEvent::RequestExit => Task::done(AppEvent::ExitApp),
         }
     }
