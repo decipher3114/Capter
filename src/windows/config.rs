@@ -33,7 +33,7 @@ impl ConfigureWindow {
             ConfigEvent::OpenFolder => Task::done(AppEvent::OpenDirectory),
             ConfigEvent::UpdateTheme(event) => {
                 self.theme.update(event);
-                ().into()
+                Task::none()
             }
             ConfigEvent::RequestExit => Task::done(AppEvent::ExitApp),
         }
