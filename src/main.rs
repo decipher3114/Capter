@@ -6,8 +6,6 @@ mod theme;
 mod utils;
 mod windows;
 
-use std::collections::BTreeMap;
-
 use assets::{APPICON, APPNAME, FONT_BOLD, FONT_ICONS, FONT_MEDIUM, MEDIUM};
 use entities::{
     app::{App, AppEvent},
@@ -54,15 +52,15 @@ pub fn main() -> Result<(), iced::Error> {
         .theme(App::theme)
         .subscription(App::subscription)
         .antialiasing(true)
-        .run_with(App::new)
+        .run_with(App::run)
 }
 
 impl App {
-    pub fn new() -> (App, Task<AppEvent>) {
+    pub fn run() -> (App, Task<AppEvent>) {
         let (config, is_initial) = Config::new();
         let tray_icon = tray_icon();
         (
-            App::new_internal(tray_icon, config, BTreeMap::new()),
+            App::new(tray_icon, config),
             if is_initial {
                 Task::done(AppEvent::OpenConfigureWindow)
             } else {
