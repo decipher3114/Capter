@@ -4,7 +4,13 @@ use iced::{
     Background, Border, Color,
 };
 
-use crate::entities::{style::ButtonClass, theme::Theme};
+use super::Theme;
+
+pub enum ButtonClass {
+    Default,
+    Danger,
+    Selected,
+}
 
 impl Catalog for Theme {
     type Class<'a> = ButtonClass;

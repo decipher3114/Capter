@@ -9,7 +9,7 @@ use rdev::start_grab_listen;
 use rdev::grab;
 use tokio::sync::mpsc::channel;
 
-use crate::entities::app::AppEvent;
+use crate::app::AppEvent;
 
 pub fn global_key_listener() -> impl Stream<Item = AppEvent> {
     stream::channel(10, |mut output| async move {

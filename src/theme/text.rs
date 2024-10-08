@@ -1,6 +1,11 @@
-use iced::widget::text::{Catalog, Style};
+use iced::{widget::text::{Catalog, Style}, Color};
 
-use crate::entities::{style::TextClass, theme::Theme};
+use super::Theme;
+
+pub enum TextClass {
+    Default,
+    Custom(Color),
+}
 
 impl Catalog for Theme {
     type Class<'a> = TextClass;

@@ -20,11 +20,10 @@ use tray_icon::{
 };
 
 use crate::{
-    assets::{APPICON, APPNAME},
-    entities::app::AppEvent,
+    app::AppEvent, consts::{APPICON, APPNAME}
 };
 
-pub fn tray_icon() -> TrayIcon {
+pub fn create_tray_icon() -> TrayIcon {
     let icon_image = load_from_memory(APPICON).unwrap();
     let (width, height) = (icon_image.width(), icon_image.height());
 

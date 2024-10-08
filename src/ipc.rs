@@ -6,9 +6,9 @@ use interprocess::local_socket::{
     traits::tokio::Listener, GenericNamespaced, ListenerOptions, ToNsName,
 };
 
-use crate::{assets::APPNAME, entities::app::AppEvent};
+use crate::{app::AppEvent, consts::APPNAME};
 
-pub fn ipc() -> impl Stream<Item = AppEvent> {
+pub fn ipc_listener() -> impl Stream<Item = AppEvent> {
     stream::channel(10, |mut output| async move {
         let name = APPNAME.to_ns_name::<GenericNamespaced>().unwrap();
 

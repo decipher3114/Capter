@@ -6,27 +6,29 @@ use iced::{
     Length::Fill,
     Task,
 };
-use iced_anim::{Animation, Spring};
+use iced_anim::{Animation, Spring, SpringEvent};
 
 use crate::{
-    assets::{BOLD, FOLDER_ICON, ICON},
-    entities::{
-        config::{ConfigEvent, ConfigureWindow},
-        style::ButtonClass,
-        theme::Theme,
-    },
-    theme::Element,
-    AppEvent,
+    app::AppEvent, consts::{BOLD, FOLDER_ICON, ICON}, theme::{button::ButtonClass, Element, Theme}
 };
 
-impl ConfigureWindow {
-    pub fn new(path: String, theme: Theme) -> Self {
-        Self {
-            path,
-            theme: Spring::new(theme),
-        }
-    }
+pub mod config;
 
+#[derive(Debug)]
+pub struct ConfigureWindow {
+    pub theme: Spring<Theme>,
+    pub path: String,
+}
+
+#[derive(Debug, Clone)]
+pub enum ConfigEvent {
+    UpdateFolderPath,
+    OpenFolder,
+    UpdateTheme(SpringEvent<Theme>),
+    RequestExit,
+}
+
+impl ConfigureWindow {
     pub fn update(&mut self, id: Id, message: ConfigEvent) -> Task<AppEvent> {
         match message {
             ConfigEvent::UpdateFolderPath => Task::done(AppEvent::UpdateDirectory(id)),

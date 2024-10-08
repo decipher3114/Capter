@@ -1,31 +1,45 @@
 use iced::{
     widget::{
-        button, canvas, column, container, horizontal_space, image::Handle, row, stack, text,
+        button, canvas, canvas::Cache, column, container, horizontal_space, image::Handle, row, stack, text,
         vertical_space, Image,
-    },
-    window::Id,
-    Alignment::Center,
-    Length::Fill,
-    Point, Task,
+    }, window::Id, Alignment::Center, Length::Fill, Point, Task
 };
+use indexmap::IndexMap;
+use models::{CapturedWindow, CropMode, Endpoints, Mode, Shape, ShapeColor, ShapeStroke, ShapeType};
+use xcap::image::RgbaImage;
+
+use crate::{app::AppEvent, consts::{ELLIPSE_FILLED, ELLIPSE_STROKE, HIGHLIGHT, ICON, LINE, RECT_FILLED, RECT_STROKE, STROKE_BROAD, STROKE_MEDIUM, STROKE_THIN}, theme::{button::ButtonClass, text::TextClass, Element}};
 
 pub mod annotate;
+pub mod capture;
+pub mod models;
 
-use crate::{
-    assets::{
-        ELLIPSE_FILLED, ELLIPSE_STROKE, HIGHLIGHT, ICON, LINE, RECT_FILLED, RECT_STROKE,
-        STROKE_BROAD, STROKE_MEDIUM, STROKE_THIN,
-    },
-    entities::{
-        capture::{
-            shape::{ShapeColor, ShapeStroke, ShapeType},
-            CaptureEvent, CaptureWindow, CropMode, Endpoints, Mode,
-        },
-        style::{ButtonClass, TextClass},
-    },
-    theme::Element,
-    AppEvent,
-};
+pub struct CaptureWindow {
+    pub scale_factor: f32,
+    pub crop_mode: CropMode,
+    pub mode_desc: String,
+    pub image: RgbaImage,
+    pub windows: IndexMap<u32, CapturedWindow>,
+    pub cursor_position: Point,
+    pub mode: Mode,
+    pub endpoints: Endpoints,
+    pub shape: Shape,
+    pub shapes: Vec<Shape>,
+    pub cache: Cache,
+}
+
+#[derive(Debug, Clone)]
+pub enum CaptureEvent {
+    Undo,
+    Done,
+    Cancel,
+    ChooseShapeType(ShapeType, bool, bool),
+    ChangeStroke(ShapeStroke),
+    ChangeColor(ShapeColor),
+    SetInitialPoint,
+    UpdateCurrentPosition(Point),
+    SetFinalPoint,
+}
 
 impl CaptureWindow {
     pub fn update(&mut self, id: Id, message: CaptureEvent) -> Task<AppEvent> {
@@ -91,11 +105,10 @@ impl CaptureWindow {
                     CropMode::FullScreen | CropMode::SpecificWindow(_)
                 ) {
                     let window = self.windows.iter().find_map(|(id, window)| {
-                        let scale = self.scale_factor;
-                        let top_left = (window.x as f32 / scale, window.y as f32 / scale);
+                        let top_left = (window.x as f32, window.y as f32);
                         let bottom_right = (
-                            (window.x + window.width as i32) as f32 / scale,
-                            (window.y + window.height as i32) as f32 / scale,
+                            (window.x + window.width as i32) as f32,
+                            (window.y + window.height as i32) as f32,
                         );
                         if (top_left.0..bottom_right.0).contains(&(self.cursor_position.x))
                             && (top_left.1..bottom_right.1)
@@ -148,17 +161,17 @@ impl CaptureWindow {
 
     pub fn view(&self) -> Element<CaptureEvent> {
         let background = Image::new(Handle::from_rgba(
-            self.display.image.width(),
-            self.display.image.height(),
-            self.display.image.clone().into_raw(),
+            self.image.width(),
+            self.image.height(),
+            self.image.clone().into_raw(),
         ))
         .height(Fill)
         .width(Fill);
 
-        const CONTAINER: u16 = 8;
-        const ROW: u16 = 8;
-        const TEXT: u16 = 18;
-        const SQUARE: u16 = 36;
+        const CONTAINER: u16 = 10;
+        const ROW: u16 = 10;
+        const TEXT: u16 = 24;
+        const SQUARE: u16 = 44;
 
         let panel = |row| {
             container(row)
@@ -167,7 +180,7 @@ impl CaptureWindow {
                 .padding(CONTAINER)
         };
 
-        let mut toolbar = row![].spacing(10);
+        let mut toolbar = row![].spacing(12);
 
         toolbar = toolbar.push(horizontal_space().width(Fill));
 
@@ -191,15 +204,16 @@ impl CaptureWindow {
                 .class(button_class)
         };
 
-        let shapes = panel(
-            row![
+        let row = row![
                 shapes_icon(RECT_FILLED, ShapeType::Rectangle, true, true),
                 shapes_icon(RECT_STROKE, ShapeType::Rectangle, false, true),
                 shapes_icon(ELLIPSE_FILLED, ShapeType::Ellipse, true, true),
                 shapes_icon(ELLIPSE_STROKE, ShapeType::Ellipse, false, true),
                 shapes_icon(LINE, ShapeType::Line, false, true),
                 shapes_icon(HIGHLIGHT, ShapeType::Rectangle, true, false)
-            ]
+            ];
+        let shapes = panel(
+            row
             .spacing(ROW),
         );
 
@@ -242,7 +256,6 @@ impl CaptureWindow {
                         .font(ICON)
                         .size(TEXT)
                         .center()
-                        // .color(color!(0.0, 0.0, 0.0, 1.0))
                         .class(TextClass::Custom(color.into_iced_color(true))),
                 )
                 .on_press(CaptureEvent::ChangeColor(color))

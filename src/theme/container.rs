@@ -4,13 +4,17 @@ use iced::{
     Background, Border,
 };
 
-use crate::entities::{style::ContainerClass, theme::Theme};
+use super::Theme;
+
+pub enum ContainerClass {
+    Default
+}
 
 impl container::Catalog for Theme {
     type Class<'a> = ContainerClass;
 
     fn default<'a>() -> Self::Class<'a> {
-        ContainerClass
+        ContainerClass::Default
     }
 
     fn style(&self, _class: &Self::Class<'_>) -> Style {
