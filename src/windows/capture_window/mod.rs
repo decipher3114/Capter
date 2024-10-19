@@ -17,7 +17,7 @@ use xcap::image::RgbaImage;
 use crate::{
     app::AppEvent,
     consts::{
-        ELLIPSE_FILLED, ELLIPSE_STROKE, HIGHLIGHT, ICON, LINE, RECT_FILLED, RECT_STROKE,
+        ARROW, ELLIPSE_FILLED, ELLIPSE_STROKE, HIGHLIGHT, ICON, LINE, RECT_FILLED, RECT_STROKE,
         STROKE_BROAD, STROKE_MEDIUM, STROKE_THIN,
     },
     theme::{button::ButtonClass, text::TextClass, Element},
@@ -222,6 +222,7 @@ impl CaptureWindow {
             shapes_icon(ELLIPSE_FILLED, ShapeType::Ellipse, true, true),
             shapes_icon(ELLIPSE_STROKE, ShapeType::Ellipse, false, true),
             shapes_icon(LINE, ShapeType::Line, false, true),
+            shapes_icon(ARROW, ShapeType::Arrow, false, true),
             shapes_icon(HIGHLIGHT, ShapeType::Rectangle, true, false)
         ];
         let shapes = panel(row.spacing(ROW));

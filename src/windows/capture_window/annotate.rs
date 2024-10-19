@@ -1,9 +1,11 @@
+use std::f32::consts::PI;
+
 use iced::{
     event::Status,
     mouse::{Button, Cursor, Interaction},
     widget::canvas::{
         path::{arc::Elliptical, Builder},
-        Event, Fill, Frame, Geometry, LineCap, LineDash, LineJoin, Path, Program, Stroke, Style,
+        Event, Fill, Frame, Geometry, LineCap, LineDash, Path, Program, Stroke, Style,
     },
     Color, Point, Radians, Rectangle, Renderer, Size, Vector,
 };
@@ -180,6 +182,9 @@ fn draw_shape(frame: &mut Frame, shape: &Shape) {
     if let Some(endpoints) = shape.endpoints {
         let shape_type = shape.shape_type;
         let color = shape.color.into_iced_color(shape.is_solid);
+        let stroke = Stroke::default()
+            .with_width(shape.stroke_width.f32())
+            .with_color(color);
         match shape_type {
             ShapeType::Rectangle => {
                 let (top_left, bottom_right) = endpoints.normalize();
@@ -189,10 +194,6 @@ fn draw_shape(frame: &mut Frame, shape: &Shape) {
                     let fill = Fill::from(color);
                     frame.fill(&path, fill);
                 } else {
-                    let stroke = Stroke::default()
-                        .with_width(shape.stroke_width.f32())
-                        .with_color(color)
-                        .with_line_join(LineJoin::Round);
                     frame.stroke(&path, stroke);
                 }
             }
@@ -215,17 +216,32 @@ fn draw_shape(frame: &mut Frame, shape: &Shape) {
                     let fill = Fill::from(color);
                     frame.fill(&path, fill);
                 } else {
-                    let stroke = Stroke::default()
-                        .with_width(shape.stroke_width.f32())
-                        .with_color(color);
                     frame.stroke(&path, stroke);
                 };
             }
             ShapeType::Line => {
                 let path = Path::line(endpoints.initial_pt, endpoints.final_pt);
-                let stroke = Stroke::default()
-                    .with_width(shape.stroke_width.f32())
-                    .with_color(color);
+                frame.stroke(&path, stroke);
+            }
+            ShapeType::Arrow => {
+                let (i_pt, f_pt) = (endpoints.initial_pt, endpoints.final_pt);
+                let line = f_pt - i_pt;
+                let rad = line.y.atan2(line.x);
+                let mut path = Builder::new();
+                path.move_to(i_pt);
+                path.line_to(f_pt);
+                let right_pt = Point::new(
+                    f_pt.x - 30.0 * (rad - PI / 5.0).cos(),
+                    f_pt.y - 30.0 * (rad - PI / 5.0).sin(),
+                );
+                let left_pt = Point::new(
+                    f_pt.x - 30.0 * (rad + PI / 5.0).cos(),
+                    f_pt.y - 30.0 * (rad + PI / 5.0).sin(),
+                );
+                path.move_to(right_pt);
+                path.line_to(f_pt);
+                path.line_to(left_pt);
+                let path = path.build();
                 frame.stroke(&path, stroke);
             }
         }

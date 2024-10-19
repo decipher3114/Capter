@@ -38,7 +38,9 @@ pub const ELLIPSE_STROKE: char = '\u{F104}';
 
 pub const LINE: char = '\u{F105}';
 
-pub const HIGHLIGHT: char = '\u{F106}';
+pub const ARROW: char = '\u{F106}';
+
+pub const HIGHLIGHT: char = '\u{F107}';
 
 // pub const CANCEL: char = '\u{F201}';
 

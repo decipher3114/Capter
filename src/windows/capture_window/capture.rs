@@ -1,3 +1,5 @@
+use std::f32::consts::PI;
+
 use arboard::{Clipboard, ImageData};
 use iced::{widget::canvas::Cache, Point};
 use indexmap::IndexMap;
@@ -121,6 +123,27 @@ pub fn draw_shapes(image: &RgbaImage, shapes: Vec<Shape>) -> RgbaImage {
                 let mut builder = PathBuilder::new();
                 builder.move_to(endpoints.initial_pt.x, endpoints.initial_pt.y);
                 builder.line_to(endpoints.final_pt.x, endpoints.final_pt.y);
+                let path = builder.finish().unwrap();
+                pixmap.stroke_path(&path, &paint, &stroke, transform, None);
+            }
+            ShapeType::Arrow => {
+                let mut builder = PathBuilder::new();
+                let (initial_pt, final_pt) = (endpoints.initial_pt, endpoints.final_pt);
+                let line = final_pt - initial_pt;
+                let rad = line.y.atan2(line.x);
+                let (right_x, right_y) = (
+                    final_pt.x - 30.0 * (rad - PI / 5.0).cos(),
+                    final_pt.y - 30.0 * (rad - PI / 5.0).sin(),
+                );
+                let (left_x, left_y) = (
+                    final_pt.x - 30.0 * (rad + PI / 5.0).cos(),
+                    final_pt.y - 30.0 * (rad + PI / 5.0).sin(),
+                );
+                builder.move_to(initial_pt.x, initial_pt.y);
+                builder.line_to(final_pt.x, final_pt.y);
+                builder.move_to(right_x, right_y);
+                builder.line_to(final_pt.x, final_pt.y);
+                builder.line_to(left_x, left_y);
                 let path = builder.finish().unwrap();
                 pixmap.stroke_path(&path, &paint, &stroke, transform, None);
             }

@@ -64,6 +64,7 @@ pub enum ShapeType {
     Rectangle,
     Ellipse,
     Line,
+    Arrow,
 }
 
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
