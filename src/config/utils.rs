@@ -1,4 +1,8 @@
-use std::{env::var_os, fs::{DirBuilder, File}, path::Path};
+use std::{
+    env::var_os,
+    fs::{DirBuilder, File},
+    path::Path,
+};
 
 pub fn open_config() -> Result<File, std::io::Error> {
     #[cfg(target_os = "windows")]

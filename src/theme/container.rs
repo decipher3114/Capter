@@ -7,7 +7,7 @@ use iced::{
 use super::Theme;
 
 pub enum ContainerClass {
-    Default
+    Default,
 }
 
 impl container::Catalog for Theme {

@@ -2,9 +2,15 @@ use arboard::{Clipboard, ImageData};
 use iced::{widget::canvas::Cache, Point};
 use indexmap::IndexMap;
 use tiny_skia::{FillRule, Paint, PathBuilder, Pixmap, Rect, Stroke, Transform};
-use xcap::{image::{imageops::overlay, DynamicImage, ImageFormat, RgbaImage}, Monitor};
+use xcap::{
+    image::{imageops::overlay, DynamicImage, ImageFormat, RgbaImage},
+    Monitor,
+};
 
-use super::{models::{CapturedWindow, CropMode, Endpoints, Mode, Shape, ShapeType}, CaptureWindow};
+use super::{
+    models::{CapturedWindow, CropMode, Endpoints, Mode, Shape, ShapeType},
+    CaptureWindow,
+};
 
 impl CaptureWindow {
     pub fn new(monitor: Monitor) -> Self {
@@ -13,7 +19,7 @@ impl CaptureWindow {
         let windows = get_windows(id);
         let scale_factor = monitor.scale_factor();
         CaptureWindow {
-            scale_factor: scale_factor,
+            scale_factor,
             cursor_position: Point::ORIGIN,
             crop_mode: CropMode::FullScreen,
             mode_desc: String::from("Fullscreen"),
@@ -26,7 +32,7 @@ impl CaptureWindow {
             cache: Cache::new(),
         }
     }
-    
+
     pub fn take_screenshot(self, directory: String) {
         let (img_width, img_height) = self.image.dimensions();
         let top = draw_shapes(&self.image, self.shapes);
@@ -113,14 +119,8 @@ pub fn draw_shapes(image: &RgbaImage, shapes: Vec<Shape>) -> RgbaImage {
             }
             ShapeType::Line => {
                 let mut builder = PathBuilder::new();
-                builder.move_to(
-                    endpoints.initial_pt.x ,
-                    endpoints.initial_pt.y ,
-                );
-                builder.line_to(
-                    endpoints.final_pt.x ,
-                    endpoints.final_pt.y ,
-                );
+                builder.move_to(endpoints.initial_pt.x, endpoints.initial_pt.y);
+                builder.line_to(endpoints.final_pt.x, endpoints.final_pt.y);
                 let path = builder.finish().unwrap();
                 pixmap.stroke_path(&path, &paint, &stroke, transform, None);
             }

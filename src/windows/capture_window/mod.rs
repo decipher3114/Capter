@@ -1,14 +1,27 @@
 use iced::{
     widget::{
-        button, canvas, canvas::Cache, column, container, horizontal_space, image::Handle, row, stack, text,
-        vertical_space, Image,
-    }, window::Id, Alignment::Center, Length::Fill, Point, Task
+        button, canvas, canvas::Cache, column, container, horizontal_space, image::Handle, row,
+        stack, text, vertical_space, Image,
+    },
+    window::Id,
+    Alignment::Center,
+    Length::Fill,
+    Point, Task,
 };
 use indexmap::IndexMap;
-use models::{CapturedWindow, CropMode, Endpoints, Mode, Shape, ShapeColor, ShapeStroke, ShapeType};
+use models::{
+    CapturedWindow, CropMode, Endpoints, Mode, Shape, ShapeColor, ShapeStroke, ShapeType,
+};
 use xcap::image::RgbaImage;
 
-use crate::{app::AppEvent, consts::{ELLIPSE_FILLED, ELLIPSE_STROKE, HIGHLIGHT, ICON, LINE, RECT_FILLED, RECT_STROKE, STROKE_BROAD, STROKE_MEDIUM, STROKE_THIN}, theme::{button::ButtonClass, text::TextClass, Element}};
+use crate::{
+    app::AppEvent,
+    consts::{
+        ELLIPSE_FILLED, ELLIPSE_STROKE, HIGHLIGHT, ICON, LINE, RECT_FILLED, RECT_STROKE,
+        STROKE_BROAD, STROKE_MEDIUM, STROKE_THIN,
+    },
+    theme::{button::ButtonClass, text::TextClass, Element},
+};
 
 pub mod annotate;
 pub mod capture;
@@ -111,8 +124,7 @@ impl CaptureWindow {
                             (window.y + window.height as i32) as f32,
                         );
                         if (top_left.0..bottom_right.0).contains(&(self.cursor_position.x))
-                            && (top_left.1..bottom_right.1)
-                                .contains(&(self.cursor_position.y))
+                            && (top_left.1..bottom_right.1).contains(&(self.cursor_position.y))
                         {
                             Some((id, window.name.clone(), top_left, bottom_right))
                         } else {
@@ -205,17 +217,14 @@ impl CaptureWindow {
         };
 
         let row = row![
-                shapes_icon(RECT_FILLED, ShapeType::Rectangle, true, true),
-                shapes_icon(RECT_STROKE, ShapeType::Rectangle, false, true),
-                shapes_icon(ELLIPSE_FILLED, ShapeType::Ellipse, true, true),
-                shapes_icon(ELLIPSE_STROKE, ShapeType::Ellipse, false, true),
-                shapes_icon(LINE, ShapeType::Line, false, true),
-                shapes_icon(HIGHLIGHT, ShapeType::Rectangle, true, false)
-            ];
-        let shapes = panel(
-            row
-            .spacing(ROW),
-        );
+            shapes_icon(RECT_FILLED, ShapeType::Rectangle, true, true),
+            shapes_icon(RECT_STROKE, ShapeType::Rectangle, false, true),
+            shapes_icon(ELLIPSE_FILLED, ShapeType::Ellipse, true, true),
+            shapes_icon(ELLIPSE_STROKE, ShapeType::Ellipse, false, true),
+            shapes_icon(LINE, ShapeType::Line, false, true),
+            shapes_icon(HIGHLIGHT, ShapeType::Rectangle, true, false)
+        ];
+        let shapes = panel(row.spacing(ROW));
 
         toolbar = toolbar.push(shapes);
 

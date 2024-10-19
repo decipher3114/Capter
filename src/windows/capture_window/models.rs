@@ -1,7 +1,6 @@
 use iced::Point;
 use xcap::image::RgbaImage;
 
-
 #[derive(Debug, Default)]
 pub enum CropMode {
     #[default]
@@ -20,7 +19,6 @@ pub struct CapturedWindow {
     pub height: u32,
     pub image: RgbaImage,
 }
-
 
 #[derive(Debug, Default)]
 pub enum Mode {

@@ -1,12 +1,33 @@
 use std::{collections::BTreeMap, process::Command};
 
-use iced::{advanced::graphics::image::image_rs::ImageFormat, daemon::{Appearance, DefaultStyle}, keyboard::{key, on_key_press, Modifiers}, widget::horizontal_space, window::{self, change_mode, close, close_events, gain_focus, get_scale_factor, icon, settings::PlatformSpecific, Id, Mode, Position}, Point, Size, Subscription, Task};
+use iced::{
+    advanced::graphics::image::image_rs::ImageFormat,
+    daemon::{Appearance, DefaultStyle},
+    keyboard::{key, on_key_press, Modifiers},
+    widget::horizontal_space,
+    window::{
+        self, change_mode, close, close_events, gain_focus, get_scale_factor, icon,
+        settings::PlatformSpecific, Id, Mode, Position,
+    },
+    Point, Size, Subscription, Task,
+};
 use rfd::FileDialog;
 use tray_icon::TrayIcon;
 use xcap::Monitor;
 
-use crate::{consts::APPICON, config::{utils::shorten_path, Config}, ipc::ipc_listener, key_listener::global_key_listener, theme::{Element, Theme}, tray_icon::{create_tray_icon, tray_icon_listener, tray_menu_listener}, windows::{capture_window::{CaptureEvent, CaptureWindow}, config_window::{ConfigEvent, ConfigureWindow}, AppWindow}};
-
+use crate::{
+    config::{utils::shorten_path, Config},
+    consts::APPICON,
+    ipc::ipc_listener,
+    key_listener::global_key_listener,
+    theme::{Element, Theme},
+    tray_icon::{create_tray_icon, tray_icon_listener, tray_menu_listener},
+    windows::{
+        capture_window::{CaptureEvent, CaptureWindow},
+        config_window::{ConfigEvent, ConfigureWindow},
+        AppWindow,
+    },
+};
 
 pub struct App {
     #[expect(dead_code)]
@@ -103,13 +124,17 @@ impl App {
                 let cmd = "xdg-open";
                 #[cfg(target_os = "macos")]
                 let cmd = "open";
-                Command::new(cmd).arg(&self.config.directory).spawn().unwrap();
+                Command::new(cmd)
+                    .arg(&self.config.directory)
+                    .spawn()
+                    .unwrap();
                 Task::none()
             }
             AppEvent::UpdateDirectory(id) => {
                 if let Some(path) = FileDialog::new()
                     .set_directory(self.config.directory.clone())
-                    .pick_folder() {
+                    .pick_folder()
+                {
                     self.config.directory = path.into_os_string().into_string().unwrap();
                     if let Some(AppWindow::Configure(config_window)) = self.windows.get_mut(&id) {
                         config_window.path = shorten_path(self.config.directory.clone());
@@ -132,7 +157,10 @@ impl App {
                 {
                     let current_monitor = &self.monitors[0];
                     let (id, open_task) = window::open(window::Settings {
-                        position: Position::Specific(Point::new(current_monitor.x() as f32, current_monitor.y() as f32)),
+                        position: Position::Specific(Point::new(
+                            current_monitor.x() as f32,
+                            current_monitor.y() as f32,
+                        )),
                         transparent: true,
                         decorations: false,
                         #[cfg(target_os = "windows")]
@@ -233,7 +261,7 @@ impl App {
     pub fn scale_factor(&self, id: Id) -> f64 {
         match self.windows.get(&id) {
             Some(AppWindow::Capture(capture_window)) => (1.0 / capture_window.scale_factor) as f64,
-            _ => 1.0
+            _ => 1.0,
         }
     }
 

@@ -9,7 +9,9 @@ use iced::{
 use iced_anim::{Animation, Spring, SpringEvent};
 
 use crate::{
-    app::AppEvent, consts::{BOLD, FOLDER_ICON, ICON}, theme::{button::ButtonClass, Element, Theme}
+    app::AppEvent,
+    consts::{BOLD, FOLDER_ICON, ICON},
+    theme::{button::ButtonClass, Element, Theme},
 };
 
 pub mod config;

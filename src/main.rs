@@ -7,8 +7,8 @@ use interprocess::local_socket::{traits::Stream, GenericNamespaced, ToNsName};
 use xcap::Monitor;
 
 mod app;
-mod consts;
 mod config;
+mod consts;
 mod ipc;
 mod key_listener;
 mod theme;
@@ -36,4 +36,3 @@ pub fn main() -> Result<(), iced::Error> {
         .antialiasing(true)
         .run_with(move || App::new(monitors))
 }
-

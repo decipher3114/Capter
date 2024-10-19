@@ -20,7 +20,8 @@ use tray_icon::{
 };
 
 use crate::{
-    app::AppEvent, consts::{APPICON, APPNAME}
+    app::AppEvent,
+    consts::{APPICON, APPNAME},
 };
 
 pub fn create_tray_icon() -> TrayIcon {

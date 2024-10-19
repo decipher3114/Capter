@@ -2,11 +2,11 @@ use iced::{
     futures::{SinkExt, Stream},
     stream,
 };
-use rdev::{EventType, Key};
-#[cfg(target_os = "linux")]
-use rdev::start_grab_listen;
 #[cfg(not(target_os = "linux"))]
 use rdev::grab;
+#[cfg(target_os = "linux")]
+use rdev::start_grab_listen;
+use rdev::{EventType, Key};
 use tokio::sync::mpsc::channel;
 
 use crate::app::AppEvent;
