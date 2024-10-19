@@ -8,13 +8,9 @@ use iced::{
     Color, Point, Radians, Rectangle, Renderer, Size, Vector,
 };
 
-use crate::entities::{
-    capture::{
-        shape::{Shape, ShapeType},
-        CaptureEvent, CaptureWindow, CropMode, Mode,
-    },
-    theme::Theme,
-};
+use crate::{theme::Theme, windows::capture_window::models::{CropMode, Mode}};
+
+use super::{models::{Shape, ShapeType}, CaptureEvent, CaptureWindow};
 
 impl Program<CaptureEvent, Theme> for CaptureWindow {
     type State = ();
