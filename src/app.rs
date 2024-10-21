@@ -11,6 +11,7 @@ use iced::{
     },
     Point, Size, Subscription, Task,
 };
+use mouse_position::mouse_position::Mouse;
 use rfd::FileDialog;
 use tray_icon::TrayIcon;
 use xcap::Monitor;
@@ -33,7 +34,6 @@ pub struct App {
     #[expect(dead_code)]
     pub tray_icon: TrayIcon,
     pub config: Config,
-    pub monitors: Vec<Monitor>,
     pub windows: BTreeMap<Id, AppWindow>,
 }
 
@@ -55,14 +55,13 @@ pub enum AppEvent {
 }
 
 impl App {
-    pub fn new(monitors: Vec<Monitor>) -> (App, Task<AppEvent>) {
+    pub fn new() -> (App, Task<AppEvent>) {
         let (config, is_initial) = Config::new();
         let tray_icon = create_tray_icon();
         (
             App {
                 tray_icon,
                 config,
-                monitors,
                 windows: BTreeMap::new(),
             },
             if is_initial {
@@ -155,11 +154,15 @@ impl App {
                         AppWindow::Capture(_)
                     )
                 {
-                    let current_monitor = &self.monitors[0];
+                    let (x, y) = match Mouse::get_mouse_position() {
+                        Mouse::Position { x, y } => (x, y),
+                        Mouse::Error => (0, 0),
+                    };
+                    let monitor = Monitor::from_point(x, y).unwrap();
                     let (id, open_task) = window::open(window::Settings {
                         position: Position::Specific(Point::new(
-                            current_monitor.x() as f32,
-                            current_monitor.y() as f32,
+                            monitor.x() as f32,
+                            monitor.y() as f32,
                         )),
                         transparent: true,
                         decorations: false,
@@ -171,7 +174,7 @@ impl App {
                         },
                         ..Default::default()
                     });
-                    let capture_window = CaptureWindow::new(current_monitor.clone());
+                    let capture_window = CaptureWindow::new(monitor);
                     self.windows
                         .insert(id, AppWindow::Capture(Box::new(capture_window)));
                     return open_task
