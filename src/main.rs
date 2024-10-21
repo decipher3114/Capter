@@ -4,7 +4,6 @@ use app::App;
 use consts::{APPNAME, FONT_BOLD, FONT_ICONS, FONT_MEDIUM, MEDIUM};
 use iced::daemon;
 use interprocess::local_socket::{traits::Stream, GenericNamespaced, ToNsName};
-use xcap::Monitor;
 
 mod app;
 mod config;
@@ -22,8 +21,6 @@ pub fn main() -> Result<(), iced::Error> {
         return Ok(());
     };
 
-    let monitors = Monitor::all().unwrap();
-
     daemon(App::title, App::update, App::view)
         .font(FONT_MEDIUM)
         .font(FONT_BOLD)
@@ -34,5 +31,5 @@ pub fn main() -> Result<(), iced::Error> {
         .theme(App::theme)
         .subscription(App::subscription)
         .antialiasing(true)
-        .run_with(move || App::new(monitors))
+        .run_with(App::new)
 }
