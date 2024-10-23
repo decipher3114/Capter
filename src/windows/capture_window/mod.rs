@@ -26,6 +26,7 @@ use crate::{
 pub mod annotate;
 pub mod capture;
 pub mod models;
+pub mod utils;
 
 pub struct CaptureWindow {
     pub scale_factor: f32,

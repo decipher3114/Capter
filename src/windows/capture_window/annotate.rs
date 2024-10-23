@@ -1,5 +1,3 @@
-use std::f32::consts::PI;
-
 use iced::{
     event::Status,
     mouse::{Button, Cursor, Interaction},
@@ -16,8 +14,7 @@ use crate::{
 };
 
 use super::{
-    models::{Shape, ShapeType},
-    CaptureEvent, CaptureWindow,
+    models::{Shape, ShapeType}, utils::resolve_arrow_points, CaptureEvent, CaptureWindow
 };
 
 impl Program<CaptureEvent, Theme> for CaptureWindow {
@@ -224,24 +221,14 @@ fn draw_shape(frame: &mut Frame, shape: &Shape) {
                 frame.stroke(&path, stroke);
             }
             ShapeType::Arrow => {
-                let (i_pt, f_pt) = (endpoints.initial_pt, endpoints.final_pt);
-                let line = f_pt - i_pt;
-                let rad = line.y.atan2(line.x);
-                let mut path = Builder::new();
-                path.move_to(i_pt);
-                path.line_to(f_pt);
-                let right_pt = Point::new(
-                    f_pt.x - 30.0 * (rad - PI / 5.0).cos(),
-                    f_pt.y - 30.0 * (rad - PI / 5.0).sin(),
-                );
-                let left_pt = Point::new(
-                    f_pt.x - 30.0 * (rad + PI / 5.0).cos(),
-                    f_pt.y - 30.0 * (rad + PI / 5.0).sin(),
-                );
-                path.move_to(right_pt);
-                path.line_to(f_pt);
-                path.line_to(left_pt);
-                let path = path.build();
+                let (right_pt, left_pt) = resolve_arrow_points(endpoints.initial_pt, endpoints.final_pt);
+                let mut builder = Builder::new();
+                builder.move_to(endpoints.initial_pt);
+                builder.line_to(endpoints.final_pt);
+                builder.move_to(right_pt);
+                builder.line_to(endpoints.final_pt);
+                builder.line_to(left_pt);
+                let path = builder.build();
                 frame.stroke(&path, stroke);
             }
         }
