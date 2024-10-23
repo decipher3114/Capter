@@ -690,7 +690,7 @@ dependencies = [
 
 [[package]]
 name = "capter"
-version = "2.1.0"
+version = "2.2.0"
 dependencies = [
  "active-win-pos-rs",
  "arboard",
