@@ -75,6 +75,7 @@ jobs:
           path: |
             target/packages/*.deb
             target/packages/*.tar.gz
+            target/packages/PKGBUILD
 
       - name: Upload macos artifacts
         uses: actions/upload-artifact@v4
@@ -104,12 +105,39 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
-          name: ${{ github.event.head_commit.message }} 
+          name: ${{ github.event.head_commit.message }}
           body: |
             ${{ steps.changelog.outputs.changes }}
           files: |
             windows_packages/*
-            linux_packages/*
+            linux_packages/capter*
             macos_packages/*
           draft: false
           prerelease: false
+
+      - name: AUR SSH Keys
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.AUR_SSH_PRIVATE_KEY }}" > ~/.ssh/aur
+          chmod 600 ~/.ssh/aur
+          echo -e "Host aur.archlinux.org\n  IdentityFile ~/.ssh/aur\n  User aur\n  StrictHostKeyChecking=no" > ~/.ssh/config
+
+      - name: Generate .SRCINFO
+        uses: heyhusen/archlinux-package-action@v2
+        with:
+          path: linux_packages
+          flags: ''
+          namcap: false
+          srcinfo: true
+
+      - name: Update AUR
+        run: |
+          git clone ssh://aur@aur.archlinux.org/capter.git capter-aur
+          cp -fv linux_packages/PKGBUILD capter-aur/
+          cp -fv linux_packages/.SRCINFO capter-aur/
+          cd capter-aur
+          git add PKGBUILD .SRCINFO
+          git config --global user.name "${{ secrets.AUR_USERNAME }}"
+          git config --global user.email "${{ secrets.AUR_EMAIL }}"
+          git commit -m "Update: ${{ github.ref_name }}" || echo "No changes !!"
+          git push --force
