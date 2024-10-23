@@ -186,7 +186,11 @@ pub fn get_windows(monitor_id: u32) -> IndexMap<u32, CapturedWindow> {
 fn save_image(image: RgbaImage, directory: String) {
     let date = chrono::Local::now().format("%Y-%m-%d-%H-%M-%S");
 
+    #[cfg(target_os = "windows")]
     let image_path = format!("{}\\Capture_{}.png", directory, date);
+
+    #[cfg(not(target_os = "windows"))]
+    let image_path = format!("{}/Capture_{}.png", directory, date);
 
     Clipboard::new()
         .unwrap()

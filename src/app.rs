@@ -13,7 +13,6 @@ use iced::{
 };
 use mouse_position::mouse_position::Mouse;
 use rfd::FileDialog;
-use tray_icon::TrayIcon;
 use xcap::Monitor;
 
 use crate::{
@@ -22,7 +21,7 @@ use crate::{
     ipc::ipc_listener,
     key_listener::global_key_listener,
     theme::{Element, Theme},
-    tray_icon::{create_tray_icon, tray_icon_listener, tray_menu_listener},
+    tray_icon::{tray_icon_listener, tray_menu_listener},
     windows::{
         capture_window::{CaptureEvent, CaptureWindow},
         config_window::{ConfigEvent, ConfigureWindow},
@@ -31,8 +30,6 @@ use crate::{
 };
 
 pub struct App {
-    #[expect(dead_code)]
-    pub tray_icon: TrayIcon,
     pub config: Config,
     pub windows: BTreeMap<Id, AppWindow>,
 }
@@ -57,10 +54,8 @@ pub enum AppEvent {
 impl App {
     pub fn new() -> (App, Task<AppEvent>) {
         let (config, is_initial) = Config::new();
-        let tray_icon = create_tray_icon();
         (
             App {
-                tray_icon,
                 config,
                 windows: BTreeMap::new(),
             },

@@ -2,10 +2,7 @@ use iced::{
     futures::{SinkExt, Stream},
     stream,
 };
-#[cfg(not(target_os = "linux"))]
-use rdev::grab;
-#[cfg(target_os = "linux")]
-use rdev::start_grab_listen;
+use rdev::listen;
 use rdev::{EventType, Key};
 use tokio::sync::mpsc::channel;
 
@@ -16,16 +13,8 @@ pub fn global_key_listener() -> impl Stream<Item = AppEvent> {
         let (sender, mut receiver) = channel(10);
 
         std::thread::spawn(move || {
-            #[cfg(target_os = "linux")]
-            start_grab_listen(move |event| {
+            listen(move |event| {
                 sender.blocking_send(event.clone()).ok();
-                Some(event)
-            })
-            .unwrap();
-            #[cfg(not(target_os = "linux"))]
-            grab(move |event| {
-                sender.blocking_send(event.clone()).ok();
-                Some(event)
             })
             .unwrap();
         });

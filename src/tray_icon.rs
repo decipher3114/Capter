@@ -16,7 +16,7 @@ use tray_icon::{
     },
     Icon,
     MouseButton::Left,
-    TrayIcon, TrayIconAttributes, TrayIconEvent,
+    TrayIcon, TrayIconBuilder, TrayIconEvent,
 };
 
 use crate::{
@@ -29,9 +29,6 @@ pub fn create_tray_icon() -> TrayIcon {
     let (width, height) = (icon_image.width(), icon_image.height());
 
     let icon = Icon::from_rgba(icon_image.into_bytes(), width, height).unwrap();
-
-    #[cfg(target_os = "linux")]
-    gtk::init().unwrap();
 
     let menu = Menu::with_items(&[
         &MenuItem::with_id(
@@ -58,16 +55,12 @@ pub fn create_tray_icon() -> TrayIcon {
     ])
     .unwrap();
 
-    TrayIcon::new(TrayIconAttributes {
-        tooltip: Some(APPNAME.to_string()),
-        menu: Some(Box::new(menu)),
-        icon: Some(icon),
-        temp_dir_path: None,
-        icon_is_template: false,
-        menu_on_left_click: false,
-        title: Some(APPNAME.to_string()),
-    })
-    .unwrap()
+    TrayIconBuilder::new()
+        .with_icon(icon)
+        .with_menu(Box::new(menu))
+        .with_title(APPNAME)
+        .build()
+        .unwrap()
 }
 
 pub fn tray_icon_listener() -> impl Stream<Item = AppEvent> {
