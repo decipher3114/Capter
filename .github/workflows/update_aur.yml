@@ -1,6 +1,7 @@
 name: Update AUR
 
 on:
+  workflow_dispatch:
   workflow_run:
     workflows: ['Release']
     types:
@@ -9,8 +10,11 @@ on:
 jobs:
   run_on_release_success:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
       - name: Setup git auth
         run: |
           mkdir -p ~/.ssh
@@ -24,11 +28,18 @@ jobs:
         run: |
           git clone ssh://aur@aur.archlinux.org/capter.git
 
-      - name: Update AUR
+      - name: Update PKGBUILD
         uses: heyhusen/archlinux-package-action@v2
         with:
           path: capter
           flags: '--nodeps --nobuild'
+          namcap: false
+
+      - name: Generate .SRCINFO
+        uses: heyhusen/archlinux-package-action@v2
+        with:
+          path: capter
+          flags: ''
           namcap: false
           srcinfo: true
 
