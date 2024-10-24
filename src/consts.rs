@@ -6,7 +6,7 @@ pub const FONT_BOLD: &[u8] = include_bytes!("../assets/fonts/SpaceGrotesk-Bold.t
 
 pub const FONT_ICONS: &[u8] = include_bytes!("../assets/fonts/icons.ttf");
 
-pub const APPICON: &[u8] = include_bytes!("../assets/icons/icon.png");
+pub const APPICON: &[u8] = include_bytes!("../assets/resources/icon.png");
 
 use iced::Font;
 

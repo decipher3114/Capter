@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Capter
+Comment=A simple cross-platform screenshot tool
+Exec=capter 
+Icon=capter
+Terminal=false
+Type=Application
+Categories=Utility
