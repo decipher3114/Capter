@@ -10,27 +10,24 @@ A cross-platform screenshot tool made in Rust
 
 ## ✨ Features
 - Captures Cropped, FullScreen and Window
-- Keybindings support
-- Better usablity
+- Region Selection assist
+- Annotations support
 - Beautiful minimalistic UI
-
-> Shortcomings
-> - No Multi-monitor Support
-> - No Screen Recording support
 
 ## 📥 Installation
 - Fulfill these [Requirements](#requirements).
-- Cargo
-    Install Rust and Run the following command
-    ```
-    cargo install --git https://github.com/decipher3114/Capter
-    ```
 - Prebuilts
     - Download from [Releases](https://github.com/decipher3114/Capter/releases/latest)
         - **.msi** for Windows
         - **.dmg** for Mac OS
         - **.deb** for Debian
-        - **.tar.gz** for any Linux distro
+- Compile
+    - cargo
+        ```
+        cargo install --git https://github.com/decipher3114/Capter
+        ```
+    - AUR helper
+        Package: `capter`
 
 ## 📋 Requirements
 - **Linux**  
@@ -52,8 +49,8 @@ A cross-platform screenshot tool made in Rust
 - `Alt + Shift + S` to trigger Screenshot.
 - `Alt + Shift + O` to open App window.
 - Selection Mode
-    - Hover mouse over a Window to select it, else Fullscreen
-    - Click and Drag mouse to crop custom area.
+    - Hover mouse over a Window to select it, else Fullscreen will be selected
+    - Click and Drag mouse to crop custom area
     - `Esc` to Cancel
     - `Enter` to Capture
     - Choose any Shape to enter **Annotation Mode**
