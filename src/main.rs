@@ -3,7 +3,7 @@
 use app::App;
 use consts::{APPNAME, FONT_BOLD, FONT_ICONS, FONT_MEDIUM, MEDIUM};
 use iced::daemon;
-use interprocess::local_socket::{traits::Stream, GenericNamespaced, ToNsName};
+use interprocess::local_socket::{self, traits::Stream, GenericNamespaced, ToNsName};
 use tray_icon::create_tray_icon;
 
 mod app;
@@ -18,7 +18,7 @@ mod windows;
 fn main() -> Result<(), iced::Error> {
     let name = APPNAME.to_ns_name::<GenericNamespaced>().unwrap();
 
-    if interprocess::local_socket::Stream::connect(name).is_ok() {
+    if local_socket::Stream::connect(name).is_ok() {
         return Ok(());
     };
 

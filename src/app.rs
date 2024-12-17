@@ -6,8 +6,7 @@ use iced::{
     keyboard::{key, on_key_press, Modifiers},
     widget::horizontal_space,
     window::{
-        self, change_mode, close, close_events, gain_focus, get_scale_factor, icon,
-        settings::PlatformSpecific, Id, Mode, Position,
+        self, change_mode, close, close_events, gain_focus, get_scale_factor, icon, settings::PlatformSpecific, Id, Level, Mode, Position
     },
     Point, Size, Subscription, Task,
 };
@@ -86,6 +85,7 @@ impl App {
                         },
                         position: Position::Centered,
                         resizable: false,
+                        level: Level::AlwaysOnTop,
                         icon: Some(icon::from_file_data(APPICON, Some(ImageFormat::Png)).unwrap()),
                         #[cfg(target_os = "macos")]
                         platform_specific: PlatformSpecific {
