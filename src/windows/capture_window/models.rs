@@ -2,15 +2,14 @@ use iced::Point;
 use xcap::image::RgbaImage;
 
 #[derive(Debug, Default)]
-pub enum CropMode {
+pub enum SelectionMode {
     #[default]
     FullScreen,
-    SpecificWindow(u32),
-    SelectionInProgress,
-    ManualSelection,
+    Window(u32),
+    InProgress(Point),
+    Area(Endpoints)
 }
 
-#[derive(Debug)]
 pub struct CapturedWindow {
     pub name: String,
     pub x: i32,
@@ -31,21 +30,6 @@ pub enum Mode {
 pub struct Endpoints {
     pub initial_pt: Point,
     pub final_pt: Point,
-}
-
-impl Endpoints {
-    pub fn normalize(self) -> (Point, Point) {
-        let (initial_pt, final_pt) = (self.initial_pt, self.final_pt);
-        let (mut start, mut end) = (initial_pt, final_pt);
-        if initial_pt.x > final_pt.x {
-            (start.x, end.x) = (final_pt.x, initial_pt.x)
-        };
-        if initial_pt.y > final_pt.y {
-            (start.y, end.y) = (final_pt.y, initial_pt.y)
-        };
-
-        (start, end)
-    }
 }
 
 #[derive(Debug, Default, Clone, Copy)]

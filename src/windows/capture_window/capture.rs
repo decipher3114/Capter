@@ -8,7 +8,7 @@ use xcap::{
 };
 
 use super::{
-    models::{CapturedWindow, CropMode, Endpoints, Mode, Shape, ShapeType}, utils::resolve_arrow_points, CaptureWindow
+    models::{SelectionMode, CapturedWindow, Mode, Shape, ShapeType}, utils::{normalize, resolve_arrow_points}, CaptureWindow
 };
 
 impl CaptureWindow {
@@ -20,29 +20,26 @@ impl CaptureWindow {
         CaptureWindow {
             scale_factor,
             cursor_position: Point::ORIGIN,
-            crop_mode: CropMode::FullScreen,
-            mode_desc: String::from("Fullscreen"),
             image,
             windows,
+            selection_mode: SelectionMode::FullScreen,
             mode: Mode::default(),
             shape: Shape::default(),
-            endpoints: Endpoints::default(),
             shapes: Vec::new(),
             cache: Cache::new(),
         }
     }
 
     pub fn take_screenshot(self, directory: String) {
-        let (img_width, img_height) = self.image.dimensions();
         let top = draw_shapes(&self.image, self.shapes);
 
-        let final_image = match self.crop_mode {
-            CropMode::FullScreen => {
+        let final_image = match self.selection_mode {
+            SelectionMode::FullScreen | SelectionMode::InProgress(_) => {
                 let mut base = self.image;
                 overlay(&mut base, &top, 0, 0);
                 base
             }
-            CropMode::SpecificWindow(id) => {
+            SelectionMode::Window(id) => {
                 let window = self.windows.get(&id).unwrap();
 
                 let x = window.x;
@@ -50,7 +47,7 @@ impl CaptureWindow {
                 let width = window.width;
                 let height = window.height;
                 let window_img = &window.image;
-
+                let (img_width, img_height) = self.image.dimensions();
                 let mut base = RgbaImage::new(img_width, img_height);
                 overlay(&mut base, window_img, x as i64, y as i64);
                 overlay(&mut base, &top, 0, 0);
@@ -60,8 +57,8 @@ impl CaptureWindow {
                     .crop_imm(x, y, width, height)
                     .into_rgba8()
             }
-            CropMode::ManualSelection | CropMode::SelectionInProgress => {
-                let (top_left, bottom_right) = self.endpoints.normalize();
+            SelectionMode::Area(endpoints) => {
+                let (top_left, bottom_right) = (endpoints.initial_pt, endpoints.final_pt);
                 let x = top_left.x;
                 let y = top_left.y;
                 let size = bottom_right - top_left;
@@ -76,6 +73,30 @@ impl CaptureWindow {
         };
 
         save_image(final_image, directory);
+    }
+
+    pub fn auto_detect_area(&mut self) {
+        if let Some(id) = self.windows
+            .iter()
+            .find_map(|(id, window)| {
+                let top_left = Point::new(window.x as f32,window.y as f32);
+                let bottom_right = Point::new(
+                    (window.x + window.width as i32) as f32,
+                    (window.y + window.height as i32) as f32,
+                );
+                if (top_left.x..bottom_right.x).contains(&(self.cursor_position.x)) && 
+                    (top_left.y..bottom_right.y).contains(&(self.cursor_position.y))
+                {
+                    Some(id)
+                } else {
+                    None
+                }
+            }
+        ) {
+            self.selection_mode = SelectionMode::Window(*id);
+        } else {
+            self.selection_mode = SelectionMode::FullScreen;
+        }
     }
 }
 
@@ -94,7 +115,7 @@ pub fn draw_shapes(image: &RgbaImage, shapes: Vec<Shape>) -> RgbaImage {
         }
         match shape.shape_type {
             ShapeType::Rectangle | ShapeType::Ellipse => {
-                let (top_left, bottom_right) = endpoints.normalize();
+                let (top_left, bottom_right) = normalize(endpoints.initial_pt, endpoints.final_pt);
                 let (x, y) = (top_left.x, top_left.y);
                 let size = bottom_right - top_left;
                 let w = size.x;

@@ -10,8 +10,9 @@ use iced::{
 };
 use indexmap::IndexMap;
 use models::{
-    CapturedWindow, CropMode, Endpoints, Mode, Shape, ShapeColor, ShapeStroke, ShapeType,
+    SelectionMode, CapturedWindow, Endpoints, Mode, Shape, ShapeColor, ShapeStroke, ShapeType
 };
+use utils::normalize;
 use xcap::image::RgbaImage;
 
 use crate::{
@@ -30,16 +31,14 @@ pub mod utils;
 
 pub struct CaptureWindow {
     pub scale_factor: f32,
-    pub crop_mode: CropMode,
-    pub mode_desc: String,
-    pub image: RgbaImage,
-    pub windows: IndexMap<u32, CapturedWindow>,
-    pub cursor_position: Point,
-    pub mode: Mode,
-    pub endpoints: Endpoints,
-    pub shape: Shape,
-    pub shapes: Vec<Shape>,
-    pub cache: Cache,
+    image: RgbaImage,
+    windows: IndexMap<u32, CapturedWindow>,
+    cursor_position: Point,
+    selection_mode: SelectionMode,
+    mode: Mode,
+    shape: Shape,
+    shapes: Vec<Shape>,
+    cache: Cache,
 }
 
 #[derive(Debug, Clone)]
@@ -62,8 +61,6 @@ impl CaptureWindow {
                 if matches!(self.mode, Mode::Draw) {
                     self.shapes.pop();
                     self.cache.clear();
-                } else {
-                    self.crop_mode = CropMode::FullScreen;
                 }
             }
             CaptureEvent::Done => {
@@ -103,49 +100,25 @@ impl CaptureWindow {
                     })
                 }
                 Mode::Crop => {
-                    self.crop_mode = CropMode::SelectionInProgress;
-                    self.endpoints.initial_pt = self.cursor_position;
-                    self.endpoints.final_pt = self.cursor_position;
+                    self.selection_mode = SelectionMode::InProgress(self.cursor_position);
                 }
             },
             CaptureEvent::UpdateCurrentPosition(final_pt) => {
                 self.cursor_position = final_pt;
-                if matches!(self.mode, Mode::Draw) {
-                    if let Some(ref mut endpoints) = self.shape.endpoints {
-                        endpoints.final_pt = final_pt;
-                    }
-                } else if matches!(
-                    self.crop_mode,
-                    CropMode::FullScreen | CropMode::SpecificWindow(_)
-                ) {
-                    let window = self.windows.iter().find_map(|(id, window)| {
-                        let top_left = (window.x as f32, window.y as f32);
-                        let bottom_right = (
-                            (window.x + window.width as i32) as f32,
-                            (window.y + window.height as i32) as f32,
-                        );
-                        if (top_left.0..bottom_right.0).contains(&(self.cursor_position.x))
-                            && (top_left.1..bottom_right.1).contains(&(self.cursor_position.y))
-                        {
-                            Some((id, window.name.clone(), top_left, bottom_right))
-                        } else {
-                            None
+                match self.mode {
+                    Mode::Draw => {
+                        if let Some(ref mut endpoints) = self.shape.endpoints {
+                            endpoints.final_pt = final_pt;
                         }
-                    });
-                    if let Some((id, name, top_left, bottom_right)) = window {
-                        self.endpoints.initial_pt = Point::new(top_left.0, top_left.1);
-                        self.endpoints.final_pt = Point::new(bottom_right.0, bottom_right.1);
-                        self.crop_mode = CropMode::SpecificWindow(*id);
-                        self.mode_desc = name;
-                    } else {
-                        self.crop_mode = CropMode::FullScreen;
-                        self.mode_desc = String::from("FullScreen");
                     }
-                } else if matches!(self.crop_mode, CropMode::SelectionInProgress) {
-                    self.endpoints.final_pt = final_pt;
-                    let (initial_pt, final_pt) = self.endpoints.normalize();
-                    let size = final_pt - initial_pt;
-                    self.mode_desc = format!("{} x {}", size.x as u32, size.y as u32);
+                    Mode::Crop => {
+                        match self.selection_mode {
+                            SelectionMode::FullScreen | SelectionMode::Window(_) => {
+                                self.auto_detect_area();
+                            }
+                            _ => ()
+                        }
+                    }
                 }
             }
             CaptureEvent::SetFinalPoint => {
@@ -158,11 +131,18 @@ impl CaptureWindow {
                         self.shape.endpoints = None
                     }
                     Mode::Crop => {
-                        if self.endpoints.initial_pt != self.cursor_position {
-                            self.endpoints.final_pt = self.cursor_position;
-                            self.crop_mode = CropMode::ManualSelection
-                        } else {
-                            self.crop_mode = CropMode::FullScreen;
+                        if let SelectionMode::InProgress(initial_pt) = self.selection_mode {
+                            if self.cursor_position != initial_pt {
+                                let (top_left, bottom_right) = normalize(initial_pt, self.cursor_position);
+                                self.selection_mode = SelectionMode::Area(
+                                    Endpoints {
+                                        initial_pt: top_left,
+                                        final_pt: bottom_right,
+                                    }
+                                )
+                            } else {
+                                self.auto_detect_area();
+                            }
                         }
                     }
                 }
@@ -292,16 +272,30 @@ impl CaptureWindow {
 
         let mut overlay = column![vertical_space().height(5)];
 
-        if matches!(self.crop_mode, CropMode::SelectionInProgress) || self.shape.endpoints.is_none()
+        if self.shape.endpoints.is_none()
         {
             overlay = overlay.push(toolbar);
+        };
+
+        let mode_description = match self.selection_mode {
+            SelectionMode::FullScreen => String::from("Fullscreen"),
+            SelectionMode::Window(id) => self.windows.get(&id).unwrap().name.clone(),
+            SelectionMode::InProgress(initial_pt) => {
+                let (top_left, bottom_right) = normalize(initial_pt, self.cursor_position);
+                let area = bottom_right - top_left;
+                format!("Area: {} x {}", area.x as u32, area.y as u32)
+            },
+            SelectionMode::Area(endpoints) => {
+                let area = endpoints.final_pt - endpoints.initial_pt;
+                format!("Area: {} x {}", area.x as u32, area.y as u32)
+            },
         };
 
         overlay = overlay.push(vertical_space().height(Fill));
         if matches!(self.mode, Mode::Crop) {
             overlay = overlay.push(row![
                 horizontal_space().width(Fill),
-                container(text(self.mode_desc.clone()).size(TEXT).center())
+                container(text(mode_description).size(TEXT).center())
                     .align_x(Center)
                     .align_y(Center)
                     .padding(CONTAINER),

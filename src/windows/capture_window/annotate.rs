@@ -10,11 +10,11 @@ use iced::{
 
 use crate::{
     theme::Theme,
-    windows::capture_window::models::{CropMode, Mode},
+    windows::capture_window::models::{SelectionMode, Mode},
 };
 
 use super::{
-    models::{Shape, ShapeType}, utils::resolve_arrow_points, CaptureEvent, CaptureWindow
+    models::{Shape, ShapeType}, utils::{normalize, resolve_arrow_points}, CaptureEvent, CaptureWindow
 };
 
 impl Program<CaptureEvent, Theme> for CaptureWindow {
@@ -41,87 +41,108 @@ impl Program<CaptureEvent, Theme> for CaptureWindow {
                 draw_shape(&mut frame, &self.shape);
             }
             Mode::Crop => {
-                if !matches!(self.crop_mode, CropMode::FullScreen) {
-                    let overlay = Fill::from(Color::from_rgba(0.0, 0.0, 0.0, 0.8));
-                    let (top_left, bottom_right) = self.endpoints.normalize();
+                let overlay = Fill::from(Color::from_rgba(0.0, 0.0, 0.0, 0.8));
+                let (top_left, bottom_right) = match self.selection_mode {
+                    SelectionMode::FullScreen => {
+                        let (x, y) = self.image.dimensions();
+                        (Point::ORIGIN, Point::new(x as f32, y as f32))
+                    },
+                    SelectionMode::Window(id) => {
+                        let window = self.windows.get(&id).unwrap();
+                        let x = if window.x < 0 { 0u32 } else { window.x as u32 };
+                        let y = if window.y < 0 { 0u32 } else { window.y as u32 };
+                        (
+                            Point::new(x as f32, y as f32),
+                            Point::new(
+                                (window.x + window.width as i32) as f32,
+                                (window.y + window.height as i32) as f32
+                            )
+                        )
+                    },
+                    SelectionMode::InProgress(initial_pt) => {
+                        normalize(initial_pt, self.cursor_position)
+                    },
+                    SelectionMode::Area(endpoints) => {
+                        (endpoints.initial_pt, endpoints.final_pt)
+                    },
+                };
 
-                    let selection = Path::rectangle(top_left, (bottom_right - top_left).into());
-                    let stroke = Stroke {
-                        style: Style::Solid(Color::from_rgba8(255, 255, 255, 0.2)),
-                        width: 1.0,
-                        ..Default::default()
-                    };
-                    frame.fill_rectangle(
-                        Point::new(0.0, 0.0),
-                        Size {
-                            height: top_left.y,
-                            width: bounds.width,
-                        },
-                        overlay,
-                    );
-                    frame.fill_rectangle(
-                        Point::new(0.0, bottom_right.y),
-                        Size {
-                            height: bounds.height - bottom_right.y,
-                            width: bounds.width,
-                        },
-                        overlay,
-                    );
-                    frame.fill_rectangle(
-                        Point::new(0.0, top_left.y),
-                        Size {
-                            height: bottom_right.y - top_left.y,
-                            width: top_left.x,
-                        },
-                        overlay,
-                    );
-                    frame.fill_rectangle(
-                        Point::new(bottom_right.x, top_left.y),
-                        Size {
-                            height: bottom_right.y - top_left.y,
-                            width: bounds.width - bottom_right.x,
-                        },
-                        overlay,
-                    );
+                let selection = Path::rectangle(top_left, (bottom_right - top_left).into());
+                let stroke = Stroke {
+                    style: Style::Solid(Color::from_rgba8(255, 255, 255, 0.2)),
+                    width: 1.0,
+                    ..Default::default()
+                };
+                frame.fill_rectangle(
+                    Point::new(0.0, 0.0),
+                    Size {
+                        height: top_left.y,
+                        width: bounds.width,
+                    },
+                    overlay,
+                );
+                frame.fill_rectangle(
+                    Point::new(0.0, bottom_right.y),
+                    Size {
+                        height: bounds.height - bottom_right.y,
+                        width: bounds.width,
+                    },
+                    overlay,
+                );
+                frame.fill_rectangle(
+                    Point::new(0.0, top_left.y),
+                    Size {
+                        height: bottom_right.y - top_left.y,
+                        width: top_left.x,
+                    },
+                    overlay,
+                );
+                frame.fill_rectangle(
+                    Point::new(bottom_right.x, top_left.y),
+                    Size {
+                        height: bottom_right.y - top_left.y,
+                        width: bounds.width - bottom_right.x,
+                    },
+                    overlay,
+                );
 
-                    frame.stroke(&selection, stroke);
+                frame.stroke(&selection, stroke);
 
-                    let (width, height) =
-                        (bottom_right.x - top_left.x, bottom_right.y - top_left.y);
+                let (width, height) =
+                    (bottom_right.x - top_left.x, bottom_right.y - top_left.y);
 
-                    let horizontal_segment_len = if width > 80.0 { 20.0 } else { width / 4.0 };
+                let horizontal_segment_len = if width > 80.0 { 20.0 } else { width / 4.0 };
 
-                    let vertical_segment_len = if height > 80.0 { 20.0 } else { height / 4.0 };
+                let vertical_segment_len = if height > 80.0 { 20.0 } else { height / 4.0 };
 
-                    let dashed_stroke = Stroke {
-                        style: Style::Solid(Color::WHITE),
-                        width: 4.0,
-                        line_cap: LineCap::Square,
-                        line_dash: LineDash {
-                            segments: &[
-                                horizontal_segment_len,
-                                width - (2.0 * horizontal_segment_len),
-                                horizontal_segment_len,
-                                0.0,
-                                vertical_segment_len,
-                                height - (2.0 * vertical_segment_len),
-                                vertical_segment_len,
-                                0.0,
-                                horizontal_segment_len,
-                                width - (2.0 * horizontal_segment_len),
-                                horizontal_segment_len,
-                                0.0,
-                                vertical_segment_len,
-                                height - (2.0 * vertical_segment_len),
-                                vertical_segment_len,
-                            ],
-                            offset: 0,
-                        },
-                        ..Default::default()
-                    };
+                let dashed_stroke = Stroke {
+                    style: Style::Solid(Color::WHITE),
+                    width: 4.0,
+                    line_cap: LineCap::Square,
+                    line_dash: LineDash {
+                        segments: &[
+                            horizontal_segment_len,
+                            width - (2.0 * horizontal_segment_len),
+                            horizontal_segment_len,
+                            0.0,
+                            vertical_segment_len,
+                            height - (2.0 * vertical_segment_len),
+                            vertical_segment_len,
+                            0.0,
+                            horizontal_segment_len,
+                            width - (2.0 * horizontal_segment_len),
+                            horizontal_segment_len,
+                            0.0,
+                            vertical_segment_len,
+                            height - (2.0 * vertical_segment_len),
+                            vertical_segment_len,
+                        ],
+                        offset: 0,
+                    },
+                    ..Default::default()
+                };
 
-                    frame.stroke(&selection, dashed_stroke);
-                }
+                frame.stroke(&selection, dashed_stroke);
             }
         }
 
@@ -184,7 +205,7 @@ fn draw_shape(frame: &mut Frame, shape: &Shape) {
             .with_color(color);
         match shape_type {
             ShapeType::Rectangle => {
-                let (top_left, bottom_right) = endpoints.normalize();
+                let (top_left, bottom_right) = normalize(endpoints.initial_pt, endpoints.final_pt);
                 let size = (bottom_right - top_left).into();
                 let path = Path::rectangle(top_left, size);
                 if shape.is_filled {
@@ -195,7 +216,7 @@ fn draw_shape(frame: &mut Frame, shape: &Shape) {
                 }
             }
             ShapeType::Ellipse => {
-                let (top_left, bottom_right) = endpoints.normalize();
+                let (top_left, bottom_right) = normalize(endpoints.initial_pt, endpoints.final_pt);
                 let size = bottom_right - top_left;
                 let radii = Vector::new(size.x / 2.0, size.y / 2.0);
                 let center = Point::new(top_left.x + radii.x, top_left.y + radii.y);
