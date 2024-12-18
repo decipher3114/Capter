@@ -139,7 +139,7 @@ jobs:
 
       - name: Update PKGBUILD and .SRCINFO
         run: |
-          pacman -Syyu --noconfirm git
+          pacman -Syyu --noconfirm openssh git
           mkdir -p ~/.ssh
           echo "${{ secrets.AUR_SSH_PRIVATE_KEY }}" > ~/.ssh/aur
           chmod 600 ~/.ssh/aur
