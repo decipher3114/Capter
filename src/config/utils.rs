@@ -24,12 +24,12 @@ pub fn open_config() -> Result<File, std::io::Error> {
             .create(Path::new(&path).parent().unwrap())
             .unwrap();
     }
-    return File::options()
+    File::options()
         .read(true)
         .create(true)
         .truncate(false)
         .write(true)
-        .open(path);
+        .open(path)
 }
 
 pub fn default_path() -> String {

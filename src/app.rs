@@ -6,7 +6,8 @@ use iced::{
     keyboard::{key, on_key_press, Modifiers},
     widget::horizontal_space,
     window::{
-        self, change_mode, close, close_events, gain_focus, get_scale_factor, icon, settings::PlatformSpecific, Id, Level, Mode, Position
+        self, change_mode, close, close_events, gain_focus, get_scale_factor, icon,
+        settings::PlatformSpecific, Id, Level, Mode, Position,
     },
     Point, Size, Subscription, Task,
 };

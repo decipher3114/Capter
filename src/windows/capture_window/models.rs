@@ -7,7 +7,7 @@ pub enum SelectionMode {
     FullScreen,
     Window(u32),
     InProgress(Point),
-    Area(Endpoints)
+    Area(Endpoints),
 }
 
 pub struct CapturedWindow {

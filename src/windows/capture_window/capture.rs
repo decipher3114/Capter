@@ -8,7 +8,9 @@ use xcap::{
 };
 
 use super::{
-    models::{SelectionMode, CapturedWindow, Mode, Shape, ShapeType}, utils::{normalize, resolve_arrow_points}, CaptureWindow
+    models::{CapturedWindow, Mode, SelectionMode, Shape, ShapeType},
+    utils::{normalize, resolve_arrow_points},
+    CaptureWindow,
 };
 
 impl CaptureWindow {
@@ -76,23 +78,20 @@ impl CaptureWindow {
     }
 
     pub fn auto_detect_area(&mut self) {
-        if let Some(id) = self.windows
-            .iter()
-            .find_map(|(id, window)| {
-                let top_left = Point::new(window.x as f32,window.y as f32);
-                let bottom_right = Point::new(
-                    (window.x + window.width as i32) as f32,
-                    (window.y + window.height as i32) as f32,
-                );
-                if (top_left.x..bottom_right.x).contains(&(self.cursor_position.x)) && 
-                    (top_left.y..bottom_right.y).contains(&(self.cursor_position.y))
-                {
-                    Some(id)
-                } else {
-                    None
-                }
+        if let Some(id) = self.windows.iter().find_map(|(id, window)| {
+            let top_left = Point::new(window.x as f32, window.y as f32);
+            let bottom_right = Point::new(
+                (window.x + window.width as i32) as f32,
+                (window.y + window.height as i32) as f32,
+            );
+            if (top_left.x..bottom_right.x).contains(&(self.cursor_position.x))
+                && (top_left.y..bottom_right.y).contains(&(self.cursor_position.y))
+            {
+                Some(id)
+            } else {
+                None
             }
-        ) {
+        }) {
             self.selection_mode = SelectionMode::Window(*id);
         } else {
             self.selection_mode = SelectionMode::FullScreen;
@@ -145,7 +144,8 @@ pub fn draw_shapes(image: &RgbaImage, shapes: Vec<Shape>) -> RgbaImage {
                 pixmap.stroke_path(&path, &paint, &stroke, transform, None);
             }
             ShapeType::Arrow => {
-                let (right_pt, left_pt) = resolve_arrow_points(endpoints.initial_pt, endpoints.final_pt);
+                let (right_pt, left_pt) =
+                    resolve_arrow_points(endpoints.initial_pt, endpoints.final_pt);
                 let mut builder = PathBuilder::new();
                 builder.move_to(endpoints.initial_pt.x, endpoints.initial_pt.y);
                 builder.line_to(endpoints.final_pt.x, endpoints.final_pt.y);

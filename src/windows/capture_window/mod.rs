@@ -10,7 +10,7 @@ use iced::{
 };
 use indexmap::IndexMap;
 use models::{
-    SelectionMode, CapturedWindow, Endpoints, Mode, Shape, ShapeColor, ShapeStroke, ShapeType
+    CapturedWindow, Endpoints, Mode, SelectionMode, Shape, ShapeColor, ShapeStroke, ShapeType,
 };
 use utils::normalize;
 use xcap::image::RgbaImage;
@@ -111,14 +111,12 @@ impl CaptureWindow {
                             endpoints.final_pt = final_pt;
                         }
                     }
-                    Mode::Crop => {
-                        match self.selection_mode {
-                            SelectionMode::FullScreen | SelectionMode::Window(_) => {
-                                self.auto_detect_area();
-                            }
-                            _ => ()
+                    Mode::Crop => match self.selection_mode {
+                        SelectionMode::FullScreen | SelectionMode::Window(_) => {
+                            self.auto_detect_area();
                         }
-                    }
+                        _ => (),
+                    },
                 }
             }
             CaptureEvent::SetFinalPoint => {
@@ -133,13 +131,12 @@ impl CaptureWindow {
                     Mode::Crop => {
                         if let SelectionMode::InProgress(initial_pt) = self.selection_mode {
                             if self.cursor_position != initial_pt {
-                                let (top_left, bottom_right) = normalize(initial_pt, self.cursor_position);
-                                self.selection_mode = SelectionMode::Area(
-                                    Endpoints {
-                                        initial_pt: top_left,
-                                        final_pt: bottom_right,
-                                    }
-                                )
+                                let (top_left, bottom_right) =
+                                    normalize(initial_pt, self.cursor_position);
+                                self.selection_mode = SelectionMode::Area(Endpoints {
+                                    initial_pt: top_left,
+                                    final_pt: bottom_right,
+                                })
                             } else {
                                 self.auto_detect_area();
                             }
@@ -272,8 +269,7 @@ impl CaptureWindow {
 
         let mut overlay = column![vertical_space().height(5)];
 
-        if self.shape.endpoints.is_none()
-        {
+        if self.shape.endpoints.is_none() {
             overlay = overlay.push(toolbar);
         };
 
@@ -284,11 +280,11 @@ impl CaptureWindow {
                 let (top_left, bottom_right) = normalize(initial_pt, self.cursor_position);
                 let area = bottom_right - top_left;
                 format!("Area: {} x {}", area.x as u32, area.y as u32)
-            },
+            }
             SelectionMode::Area(endpoints) => {
                 let area = endpoints.final_pt - endpoints.initial_pt;
                 format!("Area: {} x {}", area.x as u32, area.y as u32)
-            },
+            }
         };
 
         overlay = overlay.push(vertical_space().height(Fill));

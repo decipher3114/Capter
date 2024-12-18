@@ -10,11 +10,13 @@ use iced::{
 
 use crate::{
     theme::Theme,
-    windows::capture_window::models::{SelectionMode, Mode},
+    windows::capture_window::models::{Mode, SelectionMode},
 };
 
 use super::{
-    models::{Shape, ShapeType}, utils::{normalize, resolve_arrow_points}, CaptureEvent, CaptureWindow
+    models::{Shape, ShapeType},
+    utils::{normalize, resolve_arrow_points},
+    CaptureEvent, CaptureWindow,
 };
 
 impl Program<CaptureEvent, Theme> for CaptureWindow {
@@ -46,7 +48,7 @@ impl Program<CaptureEvent, Theme> for CaptureWindow {
                     SelectionMode::FullScreen => {
                         let (x, y) = self.image.dimensions();
                         (Point::ORIGIN, Point::new(x as f32, y as f32))
-                    },
+                    }
                     SelectionMode::Window(id) => {
                         let window = self.windows.get(&id).unwrap();
                         let x = if window.x < 0 { 0u32 } else { window.x as u32 };
@@ -55,16 +57,14 @@ impl Program<CaptureEvent, Theme> for CaptureWindow {
                             Point::new(x as f32, y as f32),
                             Point::new(
                                 (window.x + window.width as i32) as f32,
-                                (window.y + window.height as i32) as f32
-                            )
+                                (window.y + window.height as i32) as f32,
+                            ),
                         )
-                    },
+                    }
                     SelectionMode::InProgress(initial_pt) => {
                         normalize(initial_pt, self.cursor_position)
-                    },
-                    SelectionMode::Area(endpoints) => {
-                        (endpoints.initial_pt, endpoints.final_pt)
-                    },
+                    }
+                    SelectionMode::Area(endpoints) => (endpoints.initial_pt, endpoints.final_pt),
                 };
 
                 let selection = Path::rectangle(top_left, (bottom_right - top_left).into());
@@ -108,8 +108,7 @@ impl Program<CaptureEvent, Theme> for CaptureWindow {
 
                 frame.stroke(&selection, stroke);
 
-                let (width, height) =
-                    (bottom_right.x - top_left.x, bottom_right.y - top_left.y);
+                let (width, height) = (bottom_right.x - top_left.x, bottom_right.y - top_left.y);
 
                 let horizontal_segment_len = if width > 80.0 { 20.0 } else { width / 4.0 };
 
@@ -242,7 +241,8 @@ fn draw_shape(frame: &mut Frame, shape: &Shape) {
                 frame.stroke(&path, stroke);
             }
             ShapeType::Arrow => {
-                let (right_pt, left_pt) = resolve_arrow_points(endpoints.initial_pt, endpoints.final_pt);
+                let (right_pt, left_pt) =
+                    resolve_arrow_points(endpoints.initial_pt, endpoints.final_pt);
                 let mut builder = Builder::new();
                 builder.move_to(endpoints.initial_pt);
                 builder.line_to(endpoints.final_pt);

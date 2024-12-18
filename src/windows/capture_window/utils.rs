@@ -14,7 +14,7 @@ pub fn normalize(initial_pt: Point, final_pt: Point) -> (Point, Point) {
 
     (start, end)
 }
-    
+
 pub fn resolve_arrow_points(initial_pt: Point, final_pt: Point) -> (Point, Point) {
     let line = final_pt - initial_pt;
     let length = f32::sqrt(line.x.powf(2.0) + line.y.powf(2.0));
@@ -28,5 +28,5 @@ pub fn resolve_arrow_points(initial_pt: Point, final_pt: Point) -> (Point, Point
         final_pt.x - size * (rad + PI / 5.0).cos(),
         final_pt.y - size * (rad + PI / 5.0).sin(),
     );
-    (right_pt , left_pt)
+    (right_pt, left_pt)
 }
