@@ -15,21 +15,35 @@ jobs:
         include:
           - target: x86_64-unknown-linux-gnu
             os: ubuntu-latest
+            container: 'archlinux'
+            format: pacman
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+            container: ''
+            format: deb
           - target: x86_64-apple-darwin
             os: macos-latest
+            format: dmg
           - target: x86_64-pc-windows-msvc
             os: windows-latest
+            format: wix
     runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Linux
-        if: matrix.os == 'ubuntu-latest'
+      - name: Setup apt Packages
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.container == '' }}
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
           packages: libgtk-3-dev libxdo-dev libayatana-appindicator3-dev libxcb1 libxrandr2 libdbus-1-3
           version: 1.0
+      
+      - name: Setup pacman Packages
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.container == 'archlinux' }}
+        run: |
+          pacman -Syyu --noconfirm base-devel gtk3 xdotool libayatana-appindicator libxcb libxrandr dbus
 
       - name: Setup Windows
         if: matrix.os == 'windows-latest'
@@ -56,36 +70,45 @@ jobs:
       
       - name: Package binary
         run: |
-          cargo packager --release -v
+          cargo packager --release --formats ${{ matrix.format }} -v
 
-      - name: Upload windows artifacts
+      - name: Upload .msi to artifacts
         uses: actions/upload-artifact@v4
         if: matrix.os == 'windows-latest'
         with:
-          name: windows_packages
+          name: msi
           path: |
             target/packages/*.msi
-            target/packages/*.exe
 
-      - name: Upload linux artifacts
+      - name: Upload .deb to artifacts
         uses: actions/upload-artifact@v4
-        if: matrix.os == 'ubuntu-latest'
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.container == '' }}
         with:
-          name: linux_packages
+          name: deb
           path: |
             target/packages/*.deb
 
-      - name: Upload macos artifacts
+      - name: Upload .tar.gz to artifacts
+        uses: actions/upload-artifact@v4
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.container == 'archlinux' }}
+        with:
+          name: tar
+          path: |
+            target/packages/*.tar.gz
+            target/packages/PKGBUILD
+
+      - name: Upload .dmg to artifacts
         uses: actions/upload-artifact@v4
         if: matrix.os == 'macos-latest'
         with:
-          name: macos_packages
+          name: dmg
           path: |
             target/packages/*.dmg
 
-  upload-assets:
+  after-build-job:
     needs: build-assets
     runs-on: 'ubuntu-latest'
+    container: 'archlinux'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -107,8 +130,28 @@ jobs:
           body: |
             ${{ steps.changelog.outputs.changes }}
           files: |
-            windows_packages/*
-            linux_packages/*
-            macos_packages/*
+            msi/*
+            deb/*
+            tar/*.tar.gz
+            dmg/*
           draft: false
           prerelease: false
+
+      - name: Update PKGBUILD and .SRCINFO
+        run: |
+          pacman -Syyu --noconfirm git
+          mkdir -p ~/.ssh
+          echo "${{ secrets.AUR_SSH_PRIVATE_KEY }}" > ~/.ssh/aur
+          chmod 600 ~/.ssh/aur
+          echo -e "Host aur.archlinux.org\n  IdentityFile ~/.ssh/aur\n  User aur\n  StrictHostKeyChecking=no" > ~/.ssh/config
+          git config --global user.name "${{ secrets.AUR_USERNAME }}"
+          git config --global user.email "${{ secrets.AUR_EMAIL }}"
+          git clone ssh://aur@aur.archlinux.org/capter.git
+          cp -rf tar/PKGBUILD capter/PKGBUILD
+          cd capter
+          rm .SRCINFO
+          makepkg --nodeps --nobuild --printsrcinfo > .SRCINFO
+          git add PKGBUILD .SRCINFO
+          git commit -m "update: ${{ github.ref_name }}" || echo "No changes !!"
+          git push --force
+          echo "AUR Updated !!"
