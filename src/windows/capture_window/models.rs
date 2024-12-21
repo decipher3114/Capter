@@ -7,7 +7,7 @@ pub enum SelectionMode {
     FullScreen,
     Window(u32),
     InProgress(Point),
-    Area(Endpoints),
+    Area([Point; 2]),
 }
 
 pub struct CapturedWindow {
@@ -26,16 +26,10 @@ pub enum Mode {
     Crop,
 }
 
-#[derive(Debug, Default, Clone, Copy)]
-pub struct Endpoints {
-    pub initial_pt: Point,
-    pub final_pt: Point,
-}
-
-#[derive(Debug, Default, Clone, Copy)]
+#[derive(Debug, Default, Clone)]
 pub struct Shape {
     pub shape_type: ShapeType,
-    pub endpoints: Option<Endpoints>,
+    pub endpoints: Vec<Point>,
     pub color: ShapeColor,
     pub is_filled: bool,
     pub is_solid: bool,

@@ -10,7 +10,7 @@ use iced::{
 };
 use indexmap::IndexMap;
 use models::{
-    CapturedWindow, Endpoints, Mode, SelectionMode, Shape, ShapeColor, ShapeStroke, ShapeType,
+    CapturedWindow, Mode, SelectionMode, Shape, ShapeColor, ShapeStroke, ShapeType,
 };
 use utils::normalize;
 use xcap::image::RgbaImage;
@@ -80,7 +80,7 @@ impl CaptureWindow {
                 }
             }
             CaptureEvent::ChooseShapeType(shape_type, is_filled, is_solid) => {
-                self.shape.endpoints = None;
+                self.shape.endpoints = Vec::new();
                 self.mode = Mode::Draw;
                 self.shape.shape_type = shape_type;
                 self.shape.is_filled = is_filled;
@@ -94,10 +94,8 @@ impl CaptureWindow {
             }
             CaptureEvent::SetInitialPoint => match self.mode {
                 Mode::Draw => {
-                    self.shape.endpoints = Some(Endpoints {
-                        initial_pt: self.cursor_position,
-                        final_pt: self.cursor_position,
-                    })
+                    self.shape.endpoints.push(self.cursor_position);
+                    self.shape.endpoints.push(self.cursor_position);
                 }
                 Mode::Crop => {
                     self.selection_mode = SelectionMode::InProgress(self.cursor_position);
@@ -106,37 +104,34 @@ impl CaptureWindow {
             CaptureEvent::UpdateCurrentPosition(final_pt) => {
                 self.cursor_position = final_pt;
                 match self.mode {
-                    Mode::Draw => {
-                        if let Some(ref mut endpoints) = self.shape.endpoints {
-                            endpoints.final_pt = final_pt;
-                        }
-                    }
                     Mode::Crop => match self.selection_mode {
                         SelectionMode::FullScreen | SelectionMode::Window(_) => {
                             self.auto_detect_area();
                         }
                         _ => (),
                     },
+                    Mode::Draw => {
+                        if self.shape.endpoints.len() >= 2 {
+                            self.shape.endpoints[1] = self.cursor_position;
+                        }
+                    }
                 }
             }
             CaptureEvent::SetFinalPoint => {
                 match self.mode {
                     Mode::Draw => {
-                        if self.shape.endpoints.is_some() {
-                            self.shapes.push(self.shape);
+                        if ! self.shape.endpoints.is_empty() {
+                            self.shapes.push(self.shape.clone());
                             self.cache.clear();
                         }
-                        self.shape.endpoints = None
+                        self.shape.endpoints.clear();
                     }
                     Mode::Crop => {
                         if let SelectionMode::InProgress(initial_pt) = self.selection_mode {
                             if self.cursor_position != initial_pt {
                                 let (top_left, bottom_right) =
                                     normalize(initial_pt, self.cursor_position);
-                                self.selection_mode = SelectionMode::Area(Endpoints {
-                                    initial_pt: top_left,
-                                    final_pt: bottom_right,
-                                })
+                                self.selection_mode = SelectionMode::Area([top_left, bottom_right])
                             } else {
                                 self.auto_detect_area();
                             }
@@ -269,7 +264,7 @@ impl CaptureWindow {
 
         let mut overlay = column![vertical_space().height(5)];
 
-        if self.shape.endpoints.is_none() {
+        if self.shape.endpoints.is_empty() {
             overlay = overlay.push(toolbar);
         };
 
@@ -282,7 +277,7 @@ impl CaptureWindow {
                 format!("Area: {} x {}", area.x as u32, area.y as u32)
             }
             SelectionMode::Area(endpoints) => {
-                let area = endpoints.final_pt - endpoints.initial_pt;
+                let area = endpoints[1] - endpoints[0];
                 format!("Area: {} x {}", area.x as u32, area.y as u32)
             }
         };

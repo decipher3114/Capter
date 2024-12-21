@@ -60,7 +60,7 @@ impl CaptureWindow {
                     .into_rgba8()
             }
             SelectionMode::Area(endpoints) => {
-                let (top_left, bottom_right) = (endpoints.initial_pt, endpoints.final_pt);
+                let (top_left, bottom_right) = (endpoints[0], endpoints[1]);
                 let x = top_left.x;
                 let y = top_left.y;
                 let size = bottom_right - top_left;
@@ -104,7 +104,7 @@ pub fn draw_shapes(image: &RgbaImage, shapes: Vec<Shape>) -> RgbaImage {
     let mut pixmap = Pixmap::new(width, height).unwrap();
     let transform = Transform::identity();
     for shape in shapes.iter() {
-        let endpoints = shape.endpoints.unwrap();
+        let (initial_pt, final_pt) = (shape.endpoints[0], shape.endpoints[1]);
         let mut paint = Paint::default();
         let color = shape.color.into_paint(shape.is_solid);
         paint.set_color(color);
@@ -114,7 +114,7 @@ pub fn draw_shapes(image: &RgbaImage, shapes: Vec<Shape>) -> RgbaImage {
         }
         match shape.shape_type {
             ShapeType::Rectangle | ShapeType::Ellipse => {
-                let (top_left, bottom_right) = normalize(endpoints.initial_pt, endpoints.final_pt);
+                let (top_left, bottom_right) = normalize(initial_pt, final_pt);
                 let (x, y) = (top_left.x, top_left.y);
                 let size = bottom_right - top_left;
                 let w = size.x;
@@ -137,20 +137,21 @@ pub fn draw_shapes(image: &RgbaImage, shapes: Vec<Shape>) -> RgbaImage {
                 }
             }
             ShapeType::Line => {
+                let (initial_pt, final_pt) = (shape.endpoints[0], shape.endpoints[1]);
                 let mut builder = PathBuilder::new();
-                builder.move_to(endpoints.initial_pt.x, endpoints.initial_pt.y);
-                builder.line_to(endpoints.final_pt.x, endpoints.final_pt.y);
+                builder.move_to(initial_pt.x, initial_pt.y);
+                builder.line_to(final_pt.x, final_pt.y);
                 let path = builder.finish().unwrap();
                 pixmap.stroke_path(&path, &paint, &stroke, transform, None);
             }
             ShapeType::Arrow => {
                 let (right_pt, left_pt) =
-                    resolve_arrow_points(endpoints.initial_pt, endpoints.final_pt);
+                    resolve_arrow_points(initial_pt, final_pt);
                 let mut builder = PathBuilder::new();
-                builder.move_to(endpoints.initial_pt.x, endpoints.initial_pt.y);
-                builder.line_to(endpoints.final_pt.x, endpoints.final_pt.y);
+                builder.move_to(initial_pt.x, initial_pt.y);
+                builder.line_to(final_pt.x, final_pt.y);
                 builder.move_to(right_pt.x, right_pt.y);
-                builder.line_to(endpoints.final_pt.x, endpoints.final_pt.y);
+                builder.line_to(final_pt.x, final_pt.y);
                 builder.line_to(left_pt.x, left_pt.y);
                 let path = builder.finish().unwrap();
                 pixmap.stroke_path(&path, &paint, &stroke, transform, None);
