@@ -6,7 +6,7 @@ use iced::{
     keyboard::{key, on_key_press, Modifiers},
     widget::horizontal_space,
     window::{
-        self, change_mode, close, close_events, gain_focus, get_scale_factor, icon,
+        self, change_mode, close, close_events, gain_focus, icon,
         settings::PlatformSpecific, Id, Level, Mode, Position,
     },
     Point, Size, Subscription, Task,
@@ -39,7 +39,6 @@ pub enum AppEvent {
     OpenConfigureWindow,
     OpenDirectory,
     UpdateDirectory(Id),
-    GetScaleFactor(Id, f32),
     OpenCaptureWindow,
     Undo,
     Done,
@@ -137,12 +136,6 @@ impl App {
                 }
                 Task::none()
             }
-            AppEvent::GetScaleFactor(id, scale_factor) => {
-                if let Some(AppWindow::Capture(capture_window)) = self.windows.get_mut(&id) {
-                    capture_window.scale_factor = scale_factor;
-                }
-                Task::none()
-            }
             AppEvent::OpenCaptureWindow => {
                 if self.windows.is_empty()
                     || !matches!(
@@ -176,12 +169,7 @@ impl App {
                     return open_task
                         .discard()
                         .chain(gain_focus(id))
-                        .chain(change_mode(id, Mode::Fullscreen))
-                        .chain(
-                            get_scale_factor(id).map(move |scale_factor| {
-                                AppEvent::GetScaleFactor(id, scale_factor)
-                            }),
-                        );
+                        .chain(change_mode(id, Mode::Fullscreen));
                 }
                 Task::none()
             }
