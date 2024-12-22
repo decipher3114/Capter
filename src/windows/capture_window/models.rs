@@ -28,25 +28,26 @@ pub enum Mode {
 
 #[derive(Debug, Default, Clone)]
 pub struct Shape {
-    pub shape_type: ShapeType,
-    pub endpoints: Vec<Point>,
-    pub color: ShapeColor,
+    pub tool: DrawingTool,
+    pub points: Vec<Point>,
+    pub color: ToolColor,
     pub is_filled: bool,
     pub is_solid: bool,
-    pub stroke_width: ShapeStroke,
+    pub stroke_width: StrokeWidth,
 }
 
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
-pub enum ShapeType {
+pub enum DrawingTool {
     #[default]
     Rectangle,
     Ellipse,
+    FreeHand,
     Line,
     Arrow,
 }
 
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
-pub enum ShapeColor {
+pub enum ToolColor {
     #[default]
     Red,
     Green,
@@ -57,40 +58,40 @@ pub enum ShapeColor {
 }
 
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
-pub enum ShapeStroke {
+pub enum StrokeWidth {
     Thin,
     #[default]
     Medium,
     Broad,
 }
 
-impl ShapeColor {
+impl ToolColor {
     pub fn into_iced_color(self, solid: bool) -> iced::Color {
         let opacity = if solid { 1.0 } else { 0.3 };
         match self {
-            ShapeColor::Red => iced::Color::from_rgba8(255, 0, 0, opacity),
-            ShapeColor::Green => iced::Color::from_rgba8(0, 255, 0, opacity),
-            ShapeColor::Blue => iced::Color::from_rgba8(0, 0, 255, opacity),
-            ShapeColor::Yellow => iced::Color::from_rgba8(255, 255, 0, opacity),
-            ShapeColor::Black => iced::Color::from_rgba8(0, 0, 0, opacity),
-            ShapeColor::White => iced::Color::from_rgba8(255, 255, 255, opacity),
+            ToolColor::Red => iced::Color::from_rgba8(255, 0, 0, opacity),
+            ToolColor::Green => iced::Color::from_rgba8(0, 255, 0, opacity),
+            ToolColor::Blue => iced::Color::from_rgba8(0, 0, 255, opacity),
+            ToolColor::Yellow => iced::Color::from_rgba8(255, 255, 0, opacity),
+            ToolColor::Black => iced::Color::from_rgba8(0, 0, 0, opacity),
+            ToolColor::White => iced::Color::from_rgba8(255, 255, 255, opacity),
         }
     }
 
     pub fn into_paint(self, solid: bool) -> tiny_skia::Color {
         let opacity = if solid { 255 } else { 77 };
         match self {
-            ShapeColor::Red => tiny_skia::Color::from_rgba8(255, 0, 0, opacity),
-            ShapeColor::Green => tiny_skia::Color::from_rgba8(0, 255, 0, opacity),
-            ShapeColor::Blue => tiny_skia::Color::from_rgba8(0, 0, 255, opacity),
-            ShapeColor::Yellow => tiny_skia::Color::from_rgba8(255, 255, 0, opacity),
-            ShapeColor::Black => tiny_skia::Color::from_rgba8(0, 0, 0, opacity),
-            ShapeColor::White => tiny_skia::Color::from_rgba8(255, 255, 255, opacity),
+            ToolColor::Red => tiny_skia::Color::from_rgba8(255, 0, 0, opacity),
+            ToolColor::Green => tiny_skia::Color::from_rgba8(0, 255, 0, opacity),
+            ToolColor::Blue => tiny_skia::Color::from_rgba8(0, 0, 255, opacity),
+            ToolColor::Yellow => tiny_skia::Color::from_rgba8(255, 255, 0, opacity),
+            ToolColor::Black => tiny_skia::Color::from_rgba8(0, 0, 0, opacity),
+            ToolColor::White => tiny_skia::Color::from_rgba8(255, 255, 255, opacity),
         }
     }
 }
 
-impl ShapeStroke {
+impl StrokeWidth {
     pub fn f32(&self) -> f32 {
         match self {
             Self::Thin => 2.0,

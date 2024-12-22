@@ -14,7 +14,7 @@ use crate::{
 };
 
 use super::{
-    models::{Shape, ShapeType},
+    models::{Shape, DrawingTool},
     utils::{normalize, resolve_arrow_points},
     CaptureEvent, CaptureWindow,
 };
@@ -31,11 +31,9 @@ impl Program<CaptureEvent, Theme> for CaptureWindow {
         _cursor: Cursor,
     ) -> Vec<Geometry<Renderer>> {
         let shapes_frame = self.cache.draw(renderer, bounds.size(), |frame| {
-            self.shapes.iter().for_each(
-                |shape| {
-                    draw_shape(frame, shape)
-                }
-            )
+            self.shapes
+                .iter()
+                .for_each(|shape| draw_shape(frame, shape))
         });
 
         let mut frame = Frame::new(renderer, bounds.size());
@@ -66,7 +64,7 @@ impl Program<CaptureEvent, Theme> for CaptureWindow {
                     SelectionMode::InProgress(initial_pt) => {
                         normalize(initial_pt, self.cursor_position)
                     }
-                    SelectionMode::Area(endpoints) => (endpoints[0], endpoints[1]),
+                    SelectionMode::Area(points) => (points[0], points[1]),
                 };
 
                 let selection = Path::rectangle(top_left, (bottom_right - top_left).into());
@@ -198,16 +196,16 @@ impl Program<CaptureEvent, Theme> for CaptureWindow {
 }
 
 fn draw_shape(frame: &mut Frame, shape: &Shape) {
-    if shape.endpoints.len() > 0 {
-        let endpoints = shape.endpoints.as_slice();
-        let shape_type = shape.shape_type;
+    if !shape.points.is_empty() {
+        let points = shape.points.as_slice();
+        let shape_type = shape.tool;
         let color = shape.color.into_iced_color(shape.is_solid);
         let stroke = Stroke::default()
             .with_width(shape.stroke_width.f32())
             .with_color(color);
         match shape_type {
-            ShapeType::Rectangle => {
-                let (top_left, bottom_right) = normalize(endpoints[0], endpoints[1]);
+            DrawingTool::Rectangle => {
+                let (top_left, bottom_right) = normalize(points[0], points[1]);
                 let size = (bottom_right - top_left).into();
                 let path = Path::rectangle(top_left, size);
                 if shape.is_filled {
@@ -217,8 +215,8 @@ fn draw_shape(frame: &mut Frame, shape: &Shape) {
                     frame.stroke(&path, stroke);
                 }
             }
-            ShapeType::Ellipse => {
-                let (top_left, bottom_right) = normalize(endpoints[0], endpoints[1]);
+            DrawingTool::Ellipse => {
+                let (top_left, bottom_right) = normalize(points[0], points[1]);
                 let size = bottom_right - top_left;
                 let radii = Vector::new(size.x / 2.0, size.y / 2.0);
                 let center = Point::new(top_left.x + radii.x, top_left.y + radii.y);
@@ -239,18 +237,26 @@ fn draw_shape(frame: &mut Frame, shape: &Shape) {
                     frame.stroke(&path, stroke);
                 };
             }
-            ShapeType::Line => {
-                let path = Path::line(endpoints[0], endpoints[1]);
+            DrawingTool::FreeHand => {
+                let mut builder = Builder::new();
+                builder.move_to(points[0]);
+                for point in points.iter().skip(1) {
+                    builder.line_to(*point);
+                }
+                let path = builder.build();
                 frame.stroke(&path, stroke);
             }
-            ShapeType::Arrow => {
-                let (right_pt, left_pt) =
-                    resolve_arrow_points(endpoints[0], endpoints[1]);
+            DrawingTool::Line => {
+                let path = Path::line(points[0], points[1]);
+                frame.stroke(&path, stroke);
+            }
+            DrawingTool::Arrow => {
+                let (right_pt, left_pt) = resolve_arrow_points(points[0], points[1]);
                 let mut builder = Builder::new();
-                builder.move_to(endpoints[0]);
-                builder.line_to(endpoints[1]);
+                builder.move_to(points[0]);
+                builder.line_to(points[1]);
                 builder.move_to(right_pt);
-                builder.line_to(endpoints[1]);
+                builder.line_to(points[1]);
                 builder.line_to(left_pt);
                 let path = builder.build();
                 frame.stroke(&path, stroke);

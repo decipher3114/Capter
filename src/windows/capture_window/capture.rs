@@ -8,7 +8,7 @@ use xcap::{
 };
 
 use super::{
-    models::{CapturedWindow, Mode, SelectionMode, Shape, ShapeType},
+    models::{CapturedWindow, Mode, SelectionMode, Shape, DrawingTool},
     utils::{normalize, resolve_arrow_points},
     CaptureWindow,
 };
@@ -59,8 +59,8 @@ impl CaptureWindow {
                     .crop_imm(x, y, width, height)
                     .into_rgba8()
             }
-            SelectionMode::Area(endpoints) => {
-                let (top_left, bottom_right) = (endpoints[0], endpoints[1]);
+            SelectionMode::Area(points) => {
+                let (top_left, bottom_right) = (points[0], points[1]);
                 let x = top_left.x;
                 let y = top_left.y;
                 let size = bottom_right - top_left;
@@ -104,7 +104,7 @@ pub fn draw_shapes(image: &RgbaImage, shapes: Vec<Shape>) -> RgbaImage {
     let mut pixmap = Pixmap::new(width, height).unwrap();
     let transform = Transform::identity();
     for shape in shapes.iter() {
-        let (initial_pt, final_pt) = (shape.endpoints[0], shape.endpoints[1]);
+        let points = shape.points.as_slice();
         let mut paint = Paint::default();
         let color = shape.color.into_paint(shape.is_solid);
         paint.set_color(color);
@@ -112,15 +112,15 @@ pub fn draw_shapes(image: &RgbaImage, shapes: Vec<Shape>) -> RgbaImage {
         if !shape.is_filled {
             stroke.width = shape.stroke_width.f32()
         }
-        match shape.shape_type {
-            ShapeType::Rectangle | ShapeType::Ellipse => {
-                let (top_left, bottom_right) = normalize(initial_pt, final_pt);
+        match shape.tool {
+            DrawingTool::Rectangle | DrawingTool::Ellipse => {
+                let (top_left, bottom_right) = normalize(points[0], points[1]);
                 let (x, y) = (top_left.x, top_left.y);
                 let size = bottom_right - top_left;
                 let w = size.x;
                 let h = size.y;
                 let rect = Rect::from_xywh(x, y, w, h).unwrap();
-                if matches!(shape.shape_type, ShapeType::Rectangle) {
+                if matches!(shape.tool, DrawingTool::Rectangle) {
                     let path = PathBuilder::from_rect(rect);
                     if shape.is_filled {
                         pixmap.fill_path(&path, &paint, FillRule::EvenOdd, transform, None);
@@ -136,17 +136,26 @@ pub fn draw_shapes(image: &RgbaImage, shapes: Vec<Shape>) -> RgbaImage {
                     }
                 }
             }
-            ShapeType::Line => {
-                let (initial_pt, final_pt) = (shape.endpoints[0], shape.endpoints[1]);
+            DrawingTool::FreeHand => {
+                let mut builder = PathBuilder::new();
+                builder.move_to(points[0].x, points[0].y);
+                shape.points.iter().for_each(|point| {
+                    builder.line_to(point.x, point.y);
+                });
+                let path = builder.finish().unwrap();
+                pixmap.stroke_path(&path, &paint, &stroke, transform, None);
+            }
+            DrawingTool::Line => {
+                let (initial_pt, final_pt) = (points[0], points[1]);
                 let mut builder = PathBuilder::new();
                 builder.move_to(initial_pt.x, initial_pt.y);
                 builder.line_to(final_pt.x, final_pt.y);
                 let path = builder.finish().unwrap();
                 pixmap.stroke_path(&path, &paint, &stroke, transform, None);
             }
-            ShapeType::Arrow => {
-                let (right_pt, left_pt) =
-                    resolve_arrow_points(initial_pt, final_pt);
+            DrawingTool::Arrow => {
+                let (initial_pt, final_pt) = (points[0], points[1]);
+                let (right_pt, left_pt) = resolve_arrow_points(initial_pt, final_pt);
                 let mut builder = PathBuilder::new();
                 builder.move_to(initial_pt.x, initial_pt.y);
                 builder.line_to(final_pt.x, final_pt.y);

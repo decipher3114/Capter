@@ -36,11 +36,13 @@ pub const ELLIPSE_FILLED: char = '\u{F103}';
 
 pub const ELLIPSE_STROKE: char = '\u{F104}';
 
-pub const LINE: char = '\u{F105}';
+pub const FREE_HAND: char = '\u{F105}';
 
-pub const ARROW: char = '\u{F106}';
+pub const LINE: char = '\u{F106}';
 
-pub const HIGHLIGHT: char = '\u{F107}';
+pub const ARROW: char = '\u{F107}';
+
+pub const HIGHLIGHT: char = '\u{F108}';
 
 // pub const CANCEL: char = '\u{F201}';
 
