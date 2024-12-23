@@ -59,6 +59,7 @@ pub fn create_tray_icon() -> TrayIcon {
         .with_icon(icon)
         .with_menu(Box::new(menu))
         .with_title(APPNAME)
+        .with_tooltip(format!("{} {}", APPNAME, env!("CARGO_PKG_VERSION")))
         .build()
         .unwrap()
 }
@@ -76,9 +77,6 @@ pub fn tray_icon_listener() -> impl Stream<Item = AppEvent> {
         loop {
             if let Some(event) = reciever.recv().await {
                 match event {
-                    TrayIconEvent::Click { button: Left, .. } => {
-                        output.send(AppEvent::OpenConfigureWindow).await.unwrap()
-                    }
                     TrayIconEvent::DoubleClick { button: Left, .. } => {
                         output.send(AppEvent::OpenCaptureWindow).await.unwrap()
                     }

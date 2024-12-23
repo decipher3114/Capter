@@ -4624,9 +4624,9 @@ dependencies = [
 
 [[package]]
 name = "tray-icon"
-version = "0.18.0"
+version = "0.19.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f1730884cee088bb1dc1570c0a8b70a59e740ee780563407fd249e3e11ef26ff"
+checksum = "d48a05076dd272615d03033bf04f480199f7d1b66a8ac64d75c625fc4a70c06b"
 dependencies = [
  "core-graphics 0.24.0",
  "crossbeam-channel",
@@ -5540,9 +5540,9 @@ checksum = "589f6da84c646204747d1270a2a5661ea66ed1cced2631d546fdfb155959f9ec"
 
 [[package]]
 name = "winit"
-version = "0.30.6"
+version = "0.30.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7c3d72dfa0f47e429290cd0d236884ca02f22dbd5dd33a43ad2b8bf4d79b6c18"
+checksum = "dba50bc8ef4b6f1a75c9274fb95aa9a8f63fbc66c56f391bd85cf68d51e7b1a3"
 dependencies = [
  "ahash 0.8.11",
  "android-activity",
@@ -5703,9 +5703,9 @@ checksum = "ec107c4503ea0b4a98ef47356329af139c0a4f7750e621cf2973cd3385ebcb3d"
 
 [[package]]
 name = "xcap"
-version = "0.1.1"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ad1d3c813dd4d886c7cc3b80015bf775f812866066a5e6201d0410b367c0290d"
+checksum = "8022d36d08fb7ebfefedcb4be098cf165d442280994449d0becd11ac476e0fc6"
 dependencies = [
  "core-foundation 0.10.0",
  "core-graphics 0.24.0",
