@@ -58,7 +58,6 @@ pub fn create_tray_icon() -> TrayIcon {
     TrayIconBuilder::new()
         .with_icon(icon)
         .with_menu(Box::new(menu))
-        .with_title(APPNAME)
         .with_tooltip(format!("{} {}", APPNAME, env!("CARGO_PKG_VERSION")))
         .build()
         .unwrap()
