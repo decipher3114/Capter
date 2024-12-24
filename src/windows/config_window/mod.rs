@@ -10,7 +10,7 @@ use iced_anim::{Animation, Spring, SpringEvent};
 
 use crate::{
     app::AppEvent,
-    consts::{BOLD, FOLDER_ICON, ICON},
+    consts::{FOLDER_ICON, FONT_BOLD, ICON},
     theme::{button::ButtonClass, Element, Theme},
 };
 
@@ -45,7 +45,7 @@ impl ConfigureWindow {
 
     pub fn view(&self) -> Element<ConfigEvent> {
         let header = row![
-            text("Capter").size(60).font(BOLD),
+            text("Capter").size(60).font(FONT_BOLD),
             horizontal_space(),
             button(text("Exit").align_x(Center).align_y(Center).size(20))
                 .on_press(ConfigEvent::RequestExit)
@@ -61,7 +61,7 @@ impl ConfigureWindow {
                     text("Screenshots Directory")
                         .align_x(Left)
                         .size(22)
-                        .font(BOLD),
+                        .font(FONT_BOLD),
                     horizontal_space().width(Fill),
                     button(text(FOLDER_ICON).font(ICON).size(20).center())
                         .height(40)
@@ -81,7 +81,7 @@ impl ConfigureWindow {
             .height(80),
             container(
                 row![
-                    text("App Theme").align_x(Left).size(22).font(BOLD),
+                    text("App Theme").align_x(Left).size(22).font(FONT_BOLD),
                     horizontal_space().width(Fill),
                     button(text(self.theme.target().to_string()).size(20).center())
                         .height(40)

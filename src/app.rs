@@ -6,8 +6,8 @@ use iced::{
     keyboard::{key, on_key_press, Modifiers},
     widget::horizontal_space,
     window::{
-        self, change_mode, close, close_events, gain_focus, icon,
-        settings::PlatformSpecific, Id, Level, Mode, Position,
+        self, change_mode, close, close_events, gain_focus, icon, settings::PlatformSpecific, Id,
+        Level, Mode, Position,
     },
     Point, Size, Subscription, Task,
 };
@@ -23,7 +23,7 @@ use crate::{
     theme::{Element, Theme},
     tray_icon::{tray_icon_listener, tray_menu_listener},
     windows::{
-        capture_window::{CaptureEvent, CaptureWindow},
+        capture_window::{models::KeyType, CaptureEvent, CaptureWindow},
         config_window::{ConfigEvent, ConfigureWindow},
         AppWindow,
     },
@@ -40,6 +40,7 @@ pub enum AppEvent {
     OpenDirectory,
     UpdateDirectory(Id),
     OpenCaptureWindow,
+    KeyPressed(KeyType),
     Undo,
     Done,
     Cancel,
@@ -121,6 +122,8 @@ impl App {
                 Command::new(cmd)
                     .arg(&self.config.directory)
                     .spawn()
+                    .unwrap()
+                    .wait()
                     .unwrap();
                 Task::none()
             }
@@ -163,13 +166,21 @@ impl App {
                         },
                         ..Default::default()
                     });
-                    let capture_window = CaptureWindow::new(monitor);
+                    let (image, windows, scale_factor) = CaptureWindow::get_content(monitor);
+                    let capture_window = CaptureWindow::new(image, windows, scale_factor);
                     self.windows
                         .insert(id, AppWindow::Capture(Box::new(capture_window)));
                     return open_task
                         .discard()
                         .chain(gain_focus(id))
                         .chain(change_mode(id, Mode::Fullscreen));
+                }
+                Task::none()
+            }
+
+            AppEvent::KeyPressed(key) => {
+                if let Some((id, AppWindow::Capture(_))) = self.windows.last_key_value() {
+                    return Task::done(AppEvent::Capture(*id, CaptureEvent::KeyPressed(key)));
                 }
                 Task::none()
             }
@@ -259,20 +270,25 @@ impl App {
     pub fn subscription(&self) -> Subscription<AppEvent> {
         let window_events = close_events().map(AppEvent::WindowClosed);
 
-        let app_key_listener = on_key_press(|key, modifiers| match (key, modifiers) {
-            (key::Key::Named(key::Named::Escape), _) => Some(AppEvent::Cancel),
-            (key::Key::Named(key::Named::Enter), _) => Some(AppEvent::Done),
-            (key::Key::Character(char), m)
-                if m.contains(Modifiers::SHIFT) && m.contains(Modifiers::ALT) =>
-            {
-                match char.as_str() {
-                    "s" => Some(AppEvent::OpenCaptureWindow),
-                    _ => None,
-                }
-            }
-            (key::Key::Character(char), Modifiers::CTRL) => match char.as_str() {
-                "z" => Some(AppEvent::Undo),
+        let app_key_listener = on_key_press(|key, modifiers| match key {
+            key::Key::Named(named) => match named {
+                key::Named::Escape => Some(AppEvent::Cancel),
+                key::Named::Enter => Some(AppEvent::Done),
+                key::Named::Backspace => Some(AppEvent::KeyPressed(KeyType::Backspace)),
+                key::Named::Space => Some(AppEvent::KeyPressed(KeyType::Space)),
                 _ => None,
+            },
+            key::Key::Character(char) => match char.as_str() {
+                "s" if modifiers.contains(Modifiers::SHIFT)
+                    && modifiers.contains(Modifiers::ALT) =>
+                {
+                    Some(AppEvent::OpenCaptureWindow)
+                }
+                "z" if modifiers == Modifiers::CTRL => Some(AppEvent::Undo),
+                char if modifiers == Modifiers::SHIFT => Some(AppEvent::KeyPressed(KeyType::Char(
+                    char.to_ascii_uppercase(),
+                ))),
+                char => Some(AppEvent::KeyPressed(KeyType::Char(char.to_string()))),
             },
             _ => None,
         });

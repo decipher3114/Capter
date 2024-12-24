@@ -50,7 +50,7 @@ impl Config {
                 let contents = toml::to_string(self).unwrap();
                 file.write_all(contents.as_bytes()).unwrap();
             }
-            Err(_) => println!("Config can't be updated"),
+            Err(_) => (),
         }
     }
 }

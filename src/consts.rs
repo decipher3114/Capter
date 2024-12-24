@@ -1,8 +1,10 @@
 pub const APPNAME: &str = "Capter";
 
-pub const FONT_MEDIUM: &[u8] = include_bytes!("../assets/fonts/SpaceGrotesk-Medium.ttf");
+pub const FONT_NAME: &str = "Space Grotesk";
 
-pub const FONT_BOLD: &[u8] = include_bytes!("../assets/fonts/SpaceGrotesk-Bold.ttf");
+pub const FONT_MEDIUM_TTF: &[u8] = include_bytes!("../assets/fonts/SpaceGrotesk-Medium.ttf");
+
+pub const FONT_BOLD_TTF: &[u8] = include_bytes!("../assets/fonts/SpaceGrotesk-Bold.ttf");
 
 pub const FONT_ICONS: &[u8] = include_bytes!("../assets/fonts/icons.ttf");
 
@@ -10,15 +12,15 @@ pub const APPICON: &[u8] = include_bytes!("../assets/resources/icon.png");
 
 use iced::Font;
 
-pub const MEDIUM: Font = Font {
-    family: iced::font::Family::Name("Space Grotesk"),
+pub const FONT_MEDIUM: Font = Font {
+    family: iced::font::Family::Name(FONT_NAME),
     weight: iced::font::Weight::Medium,
     stretch: iced::font::Stretch::Normal,
     style: iced::font::Style::Normal,
 };
 
-pub const BOLD: Font = Font {
-    family: iced::font::Family::Name("Space Grotesk"),
+pub const FONT_BOLD: Font = Font {
+    family: iced::font::Family::Name(FONT_NAME),
     weight: iced::font::Weight::Bold,
     stretch: iced::font::Stretch::Normal,
     style: iced::font::Style::Normal,
@@ -43,6 +45,8 @@ pub const LINE: char = '\u{F106}';
 pub const ARROW: char = '\u{F107}';
 
 pub const HIGHLIGHT: char = '\u{F108}';
+
+pub const TEXT_ICON: char = '\u{F109}';
 
 // pub const CANCEL: char = '\u{F201}';
 

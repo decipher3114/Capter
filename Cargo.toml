@@ -9,15 +9,16 @@ build = "build.rs"
 [dependencies]
 arboard = { version = "3.4", features = ["wayland-data-control", "wl-clipboard-rs"] }
 chrono = "0.4"
+edit-xml = "0.1.0"
 iced = { version = "0.13", features = ["advanced", "canvas", "multi-window", "image", "tokio"] }
 iced_anim = { version = "0.1", features = ["derive", "serde"] }
 indexmap = "2.6"
 interprocess = { version = "2.2", features = ["tokio"] }
 mouse_position = "0.1"
 rdev = { git = "https://github.com/rustdesk-org/rdev", branch = "master"}
+resvg = "0.44.0"
 rfd = "0.15"
 serde = { version = "1.0", features = ["derive"] }
-tiny-skia = "0.11"
 tokio = "1.40"
 toml = "0.8"
 tray-icon = "0.19"

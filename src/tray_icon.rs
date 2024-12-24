@@ -75,13 +75,8 @@ pub fn tray_icon_listener() -> impl Stream<Item = AppEvent> {
         });
 
         loop {
-            if let Some(event) = reciever.recv().await {
-                match event {
-                    TrayIconEvent::DoubleClick { button: Left, .. } => {
-                        output.send(AppEvent::OpenCaptureWindow).await.unwrap()
-                    }
-                    _ => (),
-                }
+            if let Some(TrayIconEvent::DoubleClick { button: Left, .. }) = reciever.recv().await {
+                output.send(AppEvent::OpenCaptureWindow).await.unwrap()
             }
         }
     })

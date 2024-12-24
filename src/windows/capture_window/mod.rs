@@ -9,7 +9,9 @@ use iced::{
     Point, Task,
 };
 use indexmap::IndexMap;
-use models::{CapturedWindow, Mode, SelectionMode, Shape, ToolColor, StrokeWidth, DrawingTool};
+use models::{
+    CapturedWindow, DrawingTool, KeyType, Mode, SelectionMode, Shape, ToolColor, ToolSize,
+};
 use utils::normalize;
 use xcap::image::RgbaImage;
 
@@ -17,13 +19,12 @@ use crate::{
     app::AppEvent,
     consts::{
         ARROW, ELLIPSE_FILLED, ELLIPSE_STROKE, FREE_HAND, HIGHLIGHT, ICON, LINE, RECT_FILLED,
-        RECT_STROKE, STROKE_BROAD, STROKE_MEDIUM, STROKE_THIN,
+        RECT_STROKE, STROKE_BROAD, STROKE_MEDIUM, STROKE_THIN, TEXT_ICON,
     },
     theme::{button::ButtonClass, text::TextClass, Element},
 };
 
 pub mod annotate;
-pub mod capture;
 pub mod models;
 pub mod utils;
 
@@ -41,11 +42,12 @@ pub struct CaptureWindow {
 
 #[derive(Debug, Clone)]
 pub enum CaptureEvent {
+    KeyPressed(KeyType),
     Undo,
     Done,
     Cancel,
     ChooseShapeType(DrawingTool, bool, bool),
-    ChangeStroke(StrokeWidth),
+    ChangeStroke(ToolSize),
     ChangeColor(ToolColor),
     SetInitialPoint,
     UpdateCurrentPosition(Point),
@@ -53,30 +55,73 @@ pub enum CaptureEvent {
 }
 
 impl CaptureWindow {
+    pub fn new(
+        image: RgbaImage,
+        windows: IndexMap<u32, CapturedWindow>,
+        scale_factor: f32,
+    ) -> Self {
+        CaptureWindow {
+            scale_factor,
+            cursor_position: Point::ORIGIN,
+            image,
+            windows,
+            selection_mode: SelectionMode::FullScreen,
+            mode: Mode::default(),
+            shape: Shape::default(),
+            shapes: Vec::new(),
+            cache: Cache::new(),
+        }
+    }
+
     pub fn update(&mut self, id: Id, message: CaptureEvent) -> Task<AppEvent> {
         match message {
+            CaptureEvent::KeyPressed(key) => {
+                if matches!(self.mode, Mode::Draw) && matches!(self.shape.tool, DrawingTool::Text) {
+                    match key {
+                        KeyType::Backspace => {
+                            self.shape.text.pop();
+                        }
+                        KeyType::Space => {
+                            self.shape.text.push(' ');
+                        }
+                        KeyType::Char(key) => {
+                            self.shape.text += &key;
+                        }
+                    }
+                }
+            }
             CaptureEvent::Undo => {
                 if matches!(self.mode, Mode::Draw) {
                     self.shapes.pop();
                     self.cache.clear();
                 }
             }
-            CaptureEvent::Done => {
-                if matches!(self.mode, Mode::Draw) {
-                    self.mode = Mode::Crop;
-                } else {
-                    return Task::done(AppEvent::RequestClose(id));
+            CaptureEvent::Done => match self.mode {
+                Mode::Draw => {
+                    if matches!(self.shape.tool, DrawingTool::Text) && !self.shape.text.is_empty() {
+                        self.shapes.push(self.shape.clone());
+                        self.cache.clear();
+                        self.shape.points.clear();
+                        self.shape.text.clear();
+                    } else {
+                        self.mode = Mode::Crop;
+                    }
                 }
-            }
-            CaptureEvent::Cancel => {
-                if matches!(self.mode, Mode::Draw) {
-                    self.shapes.clear();
-                    self.cache.clear();
-                    self.mode = Mode::Crop;
-                } else {
-                    return Task::done(AppEvent::RequestClose(id));
+                Mode::Crop => return Task::done(AppEvent::RequestClose(id)),
+            },
+            CaptureEvent::Cancel => match self.mode {
+                Mode::Draw => {
+                    if matches!(self.shape.tool, DrawingTool::Text) && !self.shape.text.is_empty() {
+                        self.shape.text.clear();
+                        self.shape.points.clear();
+                    } else {
+                        self.shapes.clear();
+                        self.cache.clear();
+                        self.mode = Mode::Crop;
+                    }
                 }
-            }
+                Mode::Crop => return Task::done(AppEvent::RequestClose(id)),
+            },
             CaptureEvent::ChooseShapeType(shape_type, is_filled, is_solid) => {
                 self.shape.points = Vec::new();
                 self.mode = Mode::Draw;
@@ -85,7 +130,7 @@ impl CaptureWindow {
                 self.shape.is_solid = is_solid;
             }
             CaptureEvent::ChangeStroke(stroke_width) => {
-                self.shape.stroke_width = stroke_width;
+                self.shape.size = stroke_width;
             }
             CaptureEvent::ChangeColor(color) => {
                 self.shape.color = color;
@@ -125,11 +170,13 @@ impl CaptureWindow {
             CaptureEvent::SetFinalPoint => {
                 match self.mode {
                     Mode::Draw => {
-                        if !self.shape.points.is_empty() {
-                            self.shapes.push(self.shape.clone());
-                            self.cache.clear();
+                        if !matches!(self.shape.tool, DrawingTool::Text) {
+                            if !self.shape.points.is_empty() {
+                                self.shapes.push(self.shape.clone());
+                                self.cache.clear();
+                            }
+                            self.shape.points.clear();
                         }
-                        self.shape.points.clear();
                     }
                     Mode::Crop => {
                         if let SelectionMode::InProgress(initial_pt) = self.selection_mode {
@@ -202,16 +249,17 @@ impl CaptureWindow {
             shapes_icon(FREE_HAND, DrawingTool::FreeHand, false, true),
             shapes_icon(LINE, DrawingTool::Line, false, true),
             shapes_icon(ARROW, DrawingTool::Arrow, false, true),
-            shapes_icon(HIGHLIGHT, DrawingTool::Rectangle, true, false)
+            shapes_icon(HIGHLIGHT, DrawingTool::Rectangle, true, false),
+            shapes_icon(TEXT_ICON, DrawingTool::Text, true, true),
         ];
         let shapes = panel(row.spacing(ROW));
 
         toolbar = toolbar.push(shapes);
 
         if matches!(self.mode, Mode::Draw) {
-            if !self.shape.is_filled {
+            if !self.shape.is_filled || self.shape.tool == DrawingTool::Text {
                 let stroke_icon = |utf, stroke| {
-                    let button_class = if self.shape.stroke_width == stroke {
+                    let button_class = if self.shape.size == stroke {
                         ButtonClass::Selected
                     } else {
                         ButtonClass::Default
@@ -225,9 +273,9 @@ impl CaptureWindow {
                 };
                 toolbar = toolbar.push(panel(
                     row![
-                        stroke_icon(STROKE_THIN, StrokeWidth::Thin),
-                        stroke_icon(STROKE_MEDIUM, StrokeWidth::Medium),
-                        stroke_icon(STROKE_BROAD, StrokeWidth::Broad)
+                        stroke_icon(STROKE_THIN, ToolSize::Min),
+                        stroke_icon(STROKE_MEDIUM, ToolSize::Regular),
+                        stroke_icon(STROKE_BROAD, ToolSize::Max)
                     ]
                     .spacing(ROW),
                 ))

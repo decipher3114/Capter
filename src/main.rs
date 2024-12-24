@@ -1,7 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use app::App;
-use consts::{APPNAME, FONT_BOLD, FONT_ICONS, FONT_MEDIUM, MEDIUM};
+use consts::{APPNAME, FONT_BOLD_TTF, FONT_ICONS, FONT_MEDIUM, FONT_MEDIUM_TTF};
 use iced::daemon;
 use interprocess::local_socket::{self, traits::Stream, GenericNamespaced, ToNsName};
 use tray_icon::create_tray_icon;
@@ -33,10 +33,10 @@ fn main() -> Result<(), iced::Error> {
     });
 
     daemon(App::title, App::update, App::view)
-        .font(FONT_MEDIUM)
-        .font(FONT_BOLD)
+        .font(FONT_MEDIUM_TTF)
+        .font(FONT_BOLD_TTF)
         .font(FONT_ICONS)
-        .default_font(MEDIUM)
+        .default_font(FONT_MEDIUM)
         .scale_factor(App::scale_factor)
         .style(App::style)
         .theme(App::theme)

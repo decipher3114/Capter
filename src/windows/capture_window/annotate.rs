@@ -1,20 +1,22 @@
 use iced::{
+    alignment::{Horizontal, Vertical},
     event::Status,
     mouse::{Button, Cursor, Interaction},
     widget::canvas::{
         path::{arc::Elliptical, Builder},
-        Event, Fill, Frame, Geometry, LineCap, LineDash, Path, Program, Stroke, Style,
+        Event, Fill, Frame, Geometry, LineCap, LineDash, Path, Program, Stroke, Style, Text,
     },
-    Color, Point, Radians, Rectangle, Renderer, Size, Vector,
+    Color, Pixels, Point, Radians, Rectangle, Renderer, Size, Vector,
 };
 
 use crate::{
+    consts::FONT_MEDIUM,
     theme::Theme,
     windows::capture_window::models::{Mode, SelectionMode},
 };
 
 use super::{
-    models::{Shape, DrawingTool},
+    models::{DrawingTool, Shape},
     utils::{normalize, resolve_arrow_points},
     CaptureEvent, CaptureWindow,
 };
@@ -201,7 +203,7 @@ fn draw_shape(frame: &mut Frame, shape: &Shape) {
         let shape_type = shape.tool;
         let color = shape.color.into_iced_color(shape.is_solid);
         let stroke = Stroke::default()
-            .with_width(shape.stroke_width.f32())
+            .with_width(shape.size.to_stroke_f32())
             .with_color(color);
         match shape_type {
             DrawingTool::Rectangle => {
@@ -260,6 +262,19 @@ fn draw_shape(frame: &mut Frame, shape: &Shape) {
                 builder.line_to(left_pt);
                 let path = builder.build();
                 frame.stroke(&path, stroke);
+            }
+            DrawingTool::Text => {
+                let text = Text {
+                    content: shape.text.clone(),
+                    position: points[0],
+                    size: Pixels(shape.size.to_text_size_f32()),
+                    color,
+                    font: FONT_MEDIUM,
+                    horizontal_alignment: Horizontal::Left,
+                    vertical_alignment: Vertical::Top,
+                    ..Default::default()
+                };
+                frame.fill_text(text);
             }
         }
     }
