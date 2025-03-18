@@ -29,21 +29,21 @@ impl CaptureWindow {
             .unwrap()
             .into_iter()
             .filter_map(|window| {
-                if window.current_monitor().id() == monitor.id()
-                    && !window.is_minimized()
-                    && window.width() != 0
-                    && window.height() != 0
-                    && window.title() != ""
+                if window.current_monitor().ok()?.id().ok()? == monitor.id().ok()?
+                    && !window.is_minimized().ok()?
+                    && window.width().ok()? != 0
+                    && window.height().ok()? != 0
+                    && window.title().ok()? != ""
                 {
                     Some((
-                        window.id(),
+                        window.id().ok()?,
                         CapturedWindow {
-                            name: window.app_name().to_string(),
-                            x: window.x(),
-                            y: window.y(),
-                            width: window.width(),
-                            height: window.height(),
-                            image: window.capture_image().unwrap(),
+                            name: window.app_name().ok()?.to_string(),
+                            x: window.x().ok()?,
+                            y: window.y().ok()?,
+                            width: window.width().ok()?,
+                            height: window.height().ok()?,
+                            image: window.capture_image().ok()?,
                         },
                     ))
                 } else {
@@ -51,7 +51,9 @@ impl CaptureWindow {
                 }
             })
             .collect();
-        let scale_factor = monitor.scale_factor();
+        let scale_factor = monitor
+            .scale_factor()
+            .expect("Scale factor must be present for existing monitor");
         (image, valid_windows, scale_factor)
     }
 

@@ -111,14 +111,11 @@ impl CaptureWindow {
             },
             CaptureEvent::Cancel => match self.mode {
                 Mode::Draw => {
-                    if matches!(self.shape.tool, DrawingTool::Text) && !self.shape.text.is_empty() {
-                        self.shape.text.clear();
-                        self.shape.points.clear();
-                    } else {
-                        self.shapes.clear();
-                        self.cache.clear();
-                        self.mode = Mode::Crop;
-                    }
+                    self.shape.text.clear();
+                    self.shape.points.clear();
+                    self.shapes.clear();
+                    self.cache.clear();
+                    self.mode = Mode::Crop;
                 }
                 Mode::Crop => return Task::done(AppEvent::RequestClose(id)),
             },

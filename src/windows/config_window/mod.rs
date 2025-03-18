@@ -6,7 +6,7 @@ use iced::{
     Length::Fill,
     Task,
 };
-use iced_anim::{Animation, Spring, SpringEvent};
+use iced_anim::{Animated, Animation, Event};
 
 use crate::{
     app::AppEvent,
@@ -18,7 +18,7 @@ pub mod config;
 
 #[derive(Debug)]
 pub struct ConfigureWindow {
-    pub theme: Spring<Theme>,
+    pub theme: Animated<Theme>,
     pub path: String,
 }
 
@@ -26,7 +26,7 @@ pub struct ConfigureWindow {
 pub enum ConfigEvent {
     UpdateFolderPath,
     OpenFolder,
-    UpdateTheme(SpringEvent<Theme>),
+    UpdateTheme(Event<Theme>),
     RequestExit,
 }
 

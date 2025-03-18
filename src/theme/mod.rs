@@ -110,4 +110,12 @@ impl Animate for Theme {
     fn distance_to(&self, end: &Self) -> Vec<f32> {
         self.palette().distance_to(&end.palette())
     }
+
+    fn lerp(&mut self, start: &Self, end: &Self, progress: f32) {
+        let start = start.palette();
+        let end = end.palette();
+        let mut palette = start;
+        palette.lerp(&start, &end, progress);
+        *self = Theme::Custom(palette);
+    }
 }

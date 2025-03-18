@@ -1,4 +1,4 @@
-use iced_anim::Spring;
+use iced_anim::{Animated, Easing};
 
 use crate::theme::Theme;
 
@@ -8,7 +8,7 @@ impl ConfigureWindow {
     pub fn new(path: String, theme: Theme) -> Self {
         Self {
             path,
-            theme: Spring::new(theme),
+            theme: Animated::new(theme, Easing::default()),
         }
     }
 }

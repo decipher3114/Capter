@@ -153,8 +153,8 @@ impl App {
                     let monitor = Monitor::from_point(x, y).unwrap();
                     let (id, open_task) = window::open(window::Settings {
                         position: Position::Specific(Point::new(
-                            monitor.x() as f32,
-                            monitor.y() as f32,
+                            monitor.x().unwrap() as f32,
+                            monitor.y().unwrap() as f32,
                         )),
                         transparent: true,
                         decorations: false,
