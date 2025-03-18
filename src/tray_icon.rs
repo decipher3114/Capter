@@ -7,13 +7,13 @@ use iced::{
 };
 use tokio::{sync::mpsc, time::sleep};
 use tray_icon::{
-    menu::{
-        accelerator::{Accelerator, Code, Modifiers},
-        Menu, MenuEvent, MenuId, MenuItem, PredefinedMenuItem,
-    },
     Icon,
     MouseButton::Left,
     TrayIcon, TrayIconBuilder, TrayIconEvent,
+    menu::{
+        Menu, MenuEvent, MenuId, MenuItem, PredefinedMenuItem,
+        accelerator::{Accelerator, Code, Modifiers},
+    },
 };
 
 use crate::{
@@ -64,9 +64,11 @@ pub fn tray_icon_listener() -> impl Stream<Item = AppEvent> {
     stream::channel(1, |mut output| async move {
         let (sender, mut reciever) = mpsc::channel(1);
 
-        std::thread::spawn(move || loop {
-            if let Ok(event) = TrayIconEvent::receiver().recv() {
-                sender.blocking_send(event).unwrap()
+        std::thread::spawn(move || {
+            loop {
+                if let Ok(event) = TrayIconEvent::receiver().recv() {
+                    sender.blocking_send(event).unwrap()
+                }
             }
         });
 
@@ -82,9 +84,11 @@ pub fn tray_menu_listener() -> impl Stream<Item = AppEvent> {
     stream::channel(1, |mut output| async move {
         let (sender, mut reciever) = mpsc::channel(1);
 
-        std::thread::spawn(move || loop {
-            if let Ok(event) = MenuEvent::receiver().recv() {
-                sender.blocking_send(event).unwrap()
+        std::thread::spawn(move || {
+            loop {
+                if let Ok(event) = MenuEvent::receiver().recv() {
+                    sender.blocking_send(event).unwrap()
+                }
             }
         });
 

@@ -1,31 +1,31 @@
 use std::{collections::BTreeMap, process::Command};
 
 use iced::{
+    Point, Size, Subscription, Task,
     advanced::graphics::image::image_rs::ImageFormat,
     daemon::{Appearance, DefaultStyle},
-    keyboard::{key, on_key_press, Modifiers},
+    keyboard::{Modifiers, key, on_key_press},
     widget::horizontal_space,
     window::{
-        self, change_mode, close, close_events, gain_focus, icon, settings::PlatformSpecific, Id,
-        Level, Mode, Position,
+        self, Id, Level, Mode, Position, change_mode, close, close_events, gain_focus, icon,
+        settings::PlatformSpecific,
     },
-    Point, Size, Subscription, Task,
 };
 use mouse_position::mouse_position::Mouse;
 use rfd::FileDialog;
 use xcap::Monitor;
 
 use crate::{
-    config::{utils::shorten_path, Config},
+    config::{Config, utils::shorten_path},
     consts::APPICON,
     ipc::ipc_listener,
     key_listener::global_key_listener,
     theme::{Element, Theme},
     tray_icon::{tray_icon_listener, tray_menu_listener},
     windows::{
-        capture_window::{models::KeyType, CaptureEvent, CaptureWindow},
-        config_window::{ConfigEvent, ConfigureWindow},
         AppWindow,
+        capture_window::{CaptureEvent, CaptureWindow, models::KeyType},
+        config_window::{ConfigEvent, ConfigureWindow},
     },
 };
 

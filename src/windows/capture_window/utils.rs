@@ -10,15 +10,15 @@ use resvg::{
     usvg::{Options, Transform, Tree},
 };
 use xcap::{
-    image::{imageops::overlay, DynamicImage, ImageFormat, RgbaImage},
     Monitor,
+    image::{DynamicImage, ImageFormat, RgbaImage, imageops::overlay},
 };
 
 use crate::consts::{FONT_MEDIUM_TTF, FONT_NAME};
 
 use super::{
-    models::{CapturedWindow, DrawingTool, SelectionMode, Shape},
     CaptureWindow,
+    models::{CapturedWindow, DrawingTool, SelectionMode, Shape},
 };
 
 impl CaptureWindow {
@@ -33,7 +33,7 @@ impl CaptureWindow {
                     && !window.is_minimized().ok()?
                     && window.width().ok()? != 0
                     && window.height().ok()? != 0
-                    && window.title().ok()? != ""
+                    && window.title().ok()?.is_empty()
                 {
                     Some((
                         window.id().ok()?,

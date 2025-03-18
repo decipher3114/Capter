@@ -3,7 +3,7 @@ use iced::{
     stream,
 };
 use interprocess::local_socket::{
-    traits::tokio::Listener, GenericNamespaced, ListenerOptions, ToNsName,
+    GenericNamespaced, ListenerOptions, ToNsName, traits::tokio::Listener,
 };
 
 use crate::{app::AppEvent, consts::APPNAME};

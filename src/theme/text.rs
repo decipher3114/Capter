@@ -1,6 +1,6 @@
 use iced::{
-    widget::text::{Catalog, Style},
     Color,
+    widget::text::{Catalog, Style},
 };
 
 use super::Theme;

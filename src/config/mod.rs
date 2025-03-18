@@ -44,13 +44,10 @@ impl Config {
     }
 
     pub fn update_config(&self) {
-        match open_config() {
-            Ok(mut file) => {
-                file.set_len(0).unwrap();
-                let contents = toml::to_string(self).unwrap();
-                file.write_all(contents.as_bytes()).unwrap();
-            }
-            Err(_) => (),
+        if let Ok(mut file) = open_config() {
+            file.set_len(0).unwrap();
+            let contents = toml::to_string(self).unwrap();
+            file.write_all(contents.as_bytes()).unwrap();
         }
     }
 }

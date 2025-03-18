@@ -3,7 +3,7 @@
 use app::App;
 use consts::{APPNAME, FONT_BOLD_TTF, FONT_ICONS, FONT_MEDIUM, FONT_MEDIUM_TTF};
 use iced::daemon;
-use interprocess::local_socket::{self, traits::Stream, GenericNamespaced, ToNsName};
+use interprocess::local_socket::{self, GenericNamespaced, ToNsName, traits::Stream};
 use tray_icon::create_tray_icon;
 
 mod app;

@@ -1,17 +1,17 @@
 use iced::{
-    alignment::Horizontal::Left,
-    widget::{button, column, container, horizontal_space, row, text},
-    window::Id,
     Alignment::{self, Center},
     Length::Fill,
     Task,
+    alignment::Horizontal::Left,
+    widget::{button, column, container, horizontal_space, row, text},
+    window::Id,
 };
 use iced_anim::{Animated, Animation, Event};
 
 use crate::{
     app::AppEvent,
     consts::{FOLDER_ICON, FONT_BOLD, ICON},
-    theme::{button::ButtonClass, Element, Theme},
+    theme::{Element, Theme, button::ButtonClass},
 };
 
 pub mod config;

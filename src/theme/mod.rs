@@ -1,9 +1,8 @@
 use std::fmt::Display;
 
 use iced::{
-    color,
+    Color, color,
     daemon::{Appearance, DefaultStyle},
-    Color,
 };
 use iced_anim::Animate;
 use serde::{Deserialize, Serialize};

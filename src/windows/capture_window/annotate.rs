@@ -1,12 +1,12 @@
 use iced::{
+    Color, Pixels, Point, Radians, Rectangle, Renderer, Size, Vector,
     alignment::{Horizontal, Vertical},
     event::Status,
     mouse::{Button, Cursor, Interaction},
     widget::canvas::{
-        path::{arc::Elliptical, Builder},
         Event, Fill, Frame, Geometry, LineCap, LineDash, Path, Program, Stroke, Style, Text,
+        path::{Builder, arc::Elliptical},
     },
-    Color, Pixels, Point, Radians, Rectangle, Renderer, Size, Vector,
 };
 
 use crate::{
@@ -16,9 +16,9 @@ use crate::{
 };
 
 use super::{
+    CaptureEvent, CaptureWindow,
     models::{DrawingTool, Shape},
     utils::{normalize, resolve_arrow_points},
-    CaptureEvent, CaptureWindow,
 };
 
 impl Program<CaptureEvent, Theme> for CaptureWindow {

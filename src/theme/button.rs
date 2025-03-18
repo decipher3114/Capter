@@ -1,7 +1,7 @@
 use iced::{
+    Background, Border, Color,
     border::Radius,
     widget::button::{Catalog, Status, Style},
-    Background, Border, Color,
 };
 
 use super::Theme;

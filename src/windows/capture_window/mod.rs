@@ -1,12 +1,12 @@
 use iced::{
-    widget::{
-        button, canvas, canvas::Cache, column, container, horizontal_space, image::Handle, row,
-        stack, text, vertical_space, Image,
-    },
-    window::Id,
     Alignment::Center,
     Length::Fill,
     Point, Task,
+    widget::{
+        Image, button, canvas, canvas::Cache, column, container, horizontal_space, image::Handle,
+        row, stack, text, vertical_space,
+    },
+    window::Id,
 };
 use indexmap::IndexMap;
 use models::{
@@ -21,7 +21,7 @@ use crate::{
         ARROW, ELLIPSE_FILLED, ELLIPSE_STROKE, FREE_HAND, HIGHLIGHT, ICON, LINE, RECT_FILLED,
         RECT_STROKE, STROKE_BROAD, STROKE_MEDIUM, STROKE_THIN, TEXT_ICON,
     },
-    theme::{button::ButtonClass, text::TextClass, Element},
+    theme::{Element, button::ButtonClass, text::TextClass},
 };
 
 pub mod annotate;
