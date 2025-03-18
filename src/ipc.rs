@@ -9,7 +9,7 @@ use interprocess::local_socket::{
 use crate::{app::AppEvent, consts::APPNAME};
 
 pub fn ipc_listener() -> impl Stream<Item = AppEvent> {
-    stream::channel(10, |mut output| async move {
+    stream::channel(1, |mut output| async move {
         let name = APPNAME.to_ns_name::<GenericNamespaced>().unwrap();
 
         let listner_opts = ListenerOptions::new().name(name);

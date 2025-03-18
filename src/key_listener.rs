@@ -9,8 +9,8 @@ use tokio::sync::mpsc::channel;
 use crate::app::AppEvent;
 
 pub fn global_key_listener() -> impl Stream<Item = AppEvent> {
-    stream::channel(10, |mut output| async move {
-        let (sender, mut receiver) = channel(10);
+    stream::channel(1, |mut output| async move {
+        let (sender, mut receiver) = channel(1);
 
         std::thread::spawn(move || {
             listen(move |event| {

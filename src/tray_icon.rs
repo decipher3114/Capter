@@ -64,8 +64,8 @@ pub fn create_tray_icon() -> TrayIcon {
 }
 
 pub fn tray_icon_listener() -> impl Stream<Item = AppEvent> {
-    stream::channel(16, |mut output| async move {
-        let (sender, mut reciever) = mpsc::channel(16);
+    stream::channel(1, |mut output| async move {
+        let (sender, mut reciever) = mpsc::channel(1);
 
         spawn(move || loop {
             if let Ok(event) = TrayIconEvent::receiver().recv() {
@@ -82,8 +82,8 @@ pub fn tray_icon_listener() -> impl Stream<Item = AppEvent> {
 }
 
 pub fn tray_menu_listener() -> impl Stream<Item = AppEvent> {
-    stream::channel(16, |mut output| async move {
-        let (sender, mut reciever) = mpsc::channel(16);
+    stream::channel(1, |mut output| async move {
+        let (sender, mut reciever) = mpsc::channel(1);
 
         spawn(move || loop {
             if let Ok(event) = MenuEvent::receiver().recv() {
