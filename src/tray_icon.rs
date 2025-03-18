@@ -1,14 +1,11 @@
-use std::{
-    thread::{sleep, spawn},
-    time::Duration,
-};
+use std::time::Duration;
 
 use iced::{
     advanced::graphics::image::image_rs::load_from_memory,
     futures::{SinkExt, Stream},
     stream,
 };
-use tokio::sync::mpsc;
+use tokio::{sync::mpsc, time::sleep};
 use tray_icon::{
     menu::{
         accelerator::{Accelerator, Code, Modifiers},
@@ -67,7 +64,7 @@ pub fn tray_icon_listener() -> impl Stream<Item = AppEvent> {
     stream::channel(1, |mut output| async move {
         let (sender, mut reciever) = mpsc::channel(1);
 
-        spawn(move || loop {
+        std::thread::spawn(move || loop {
             if let Ok(event) = TrayIconEvent::receiver().recv() {
                 sender.blocking_send(event).unwrap()
             }
@@ -85,7 +82,7 @@ pub fn tray_menu_listener() -> impl Stream<Item = AppEvent> {
     stream::channel(1, |mut output| async move {
         let (sender, mut reciever) = mpsc::channel(1);
 
-        spawn(move || loop {
+        std::thread::spawn(move || loop {
             if let Ok(event) = MenuEvent::receiver().recv() {
                 sender.blocking_send(event).unwrap()
             }
@@ -96,7 +93,7 @@ pub fn tray_menu_listener() -> impl Stream<Item = AppEvent> {
                 match id.as_str() {
                     "open" => output.send(AppEvent::OpenConfigureWindow).await.unwrap(),
                     "capture" => {
-                        sleep(Duration::from_secs(1));
+                        sleep(Duration::from_secs(1)).await;
                         output.send(AppEvent::OpenCaptureWindow).await.unwrap()
                     }
                     "exit" => output.send(AppEvent::ExitApp).await.unwrap(),
