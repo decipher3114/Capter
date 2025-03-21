@@ -7,37 +7,50 @@ authors = ["decipher3114 <decipher3114@gmail.com>"]
 build = "build.rs"
 
 [dependencies]
+anyhow = "*"
 arboard = { version = "3.4", features = [
     "wayland-data-control",
     "wl-clipboard-rs",
 ] }
-chrono = "0.4"
-edit-xml = "0.1"
-iced = { version = "0.13", features = [
+chrono = { version = "*", default-features = false, features = ["clock"] }
+dirs = "*"
+edit-xml = "*"
+iced = { git = "https://github.com/iced-rs/iced.git", branch = "master", default-features = false, features = [
     "advanced",
     "canvas",
-    "multi-window",
     "image",
+    "lazy",
     "tokio",
 ] }
-iced_anim = { version = "0.2", features = ["derive"] }
-indexmap = "2.8"
-interprocess = { version = "2.2", features = ["tokio"] }
-mouse_position = "0.1"
+iced_anim = { git = "https://github.com/Brady-Simon/iced_anim.git", branch = "iced/master", features = [
+    "derive",
+] }
+interprocess = { version = "*", features = ["tokio"] }
+mouse_position = "*"
+opener = "*"
 rdev = { git = "https://github.com/rustdesk-org/rdev", branch = "master" }
-resvg = "0.45"
-rfd = "0.15"
-serde = { version = "1.0", features = ["derive"] }
-tokio = "1.44"
-toml = "0.8"
-tray-icon = "0.20"
-xcap = "0.4"
+resvg = { version = "*", default-features = false, features = ["text"] }
+rfd = "*"
+serde = { version = "*", features = ["derive"] }
+tokio = { version = "*", default-features = false, features = ["time"] }
+toml = { version = "*" }
+tray-icon = "*"
+xcap = { version = "*", default-features = false }
+
+[target.'cfg( target_os = "windows" )'.dependencies]
+win32_notif = "*"
 
 [target.'cfg( target_os = "linux" )'.dependencies]
 gtk = "0.18"
+notify-rust = { version = "*", features = ["images"] }
+
+[target.'cfg( target_os = "macos")'.dependencies]
+notify-rust = { version = "*", features = ["images"] }
+
 
 [target.'cfg( target_os = "windows" )'.build-dependencies]
 winresource = "0.1"
+
 
 [package.metadata.winresource]
 ProductName = "Capter"
@@ -49,7 +62,7 @@ identifier = "app.decipher.capter"
 authors = ["decipher3114 <decipher3114@gmail.com>"]
 publisher = "decipher3114"
 category = "Utility"
-copyright = "Copyright © 2024"
+copyright = "Copyright © 2025"
 before-packaging-command = "cargo build --release"
 icons = [
     "assets/resources/windows/icon.ico",

@@ -1,38 +1,36 @@
 use iced::{
-    futures::{SinkExt, Stream},
+    futures::{SinkExt, Stream, StreamExt, channel::mpsc},
     stream,
 };
 use rdev::listen;
 use rdev::{EventType, Key};
-use tokio::sync::mpsc::channel;
 
-use crate::app::AppEvent;
+use crate::Message;
 
-pub fn global_key_listener() -> impl Stream<Item = AppEvent> {
-    stream::channel(1, |mut output| async move {
-        let (sender, mut receiver) = channel(1);
+pub fn global_key_listener() -> impl Stream<Item = Message> {
+    stream::channel(1, async |mut output| {
+        let (mut sender, mut receiver) = mpsc::channel(1);
 
         std::thread::spawn(move || {
-            listen(move |event| {
-                sender.blocking_send(event.clone()).ok();
-            })
-            .unwrap();
+            let _ = listen(move |event| {
+                let _ = sender.try_send(event);
+            });
         });
 
         let mut alt_pressed = false;
         let mut shift_pressed = false;
 
         loop {
-            let event = receiver.recv().await.unwrap();
+            let event = receiver.select_next_some().await;
             match event.event_type {
                 EventType::KeyPress(key) => match key {
                     Key::Alt => alt_pressed = true,
                     Key::ShiftLeft | Key::ShiftRight => shift_pressed = true,
                     Key::KeyS if alt_pressed && shift_pressed => {
-                        output.send(AppEvent::OpenCaptureWindow).await.unwrap();
+                        let _ = output.send(Message::OpenCaptureWindow).await;
                     }
                     Key::KeyO if alt_pressed && shift_pressed => {
-                        output.send(AppEvent::OpenConfigureWindow).await.unwrap()
+                        let _ = output.send(Message::OpenSettingsWindow).await;
                     }
                     _ => (),
                 },

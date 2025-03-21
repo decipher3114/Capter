@@ -1,10 +1,9 @@
 use iced::{
-    Background, Border, Color,
-    border::Radius,
+    Background, Color,
     widget::button::{Catalog, Status, Style},
 };
 
-use super::Theme;
+use super::{Theme, border};
 
 pub enum ButtonClass {
     Default,
@@ -34,13 +33,13 @@ impl Catalog for Theme {
                         ButtonClass::Danger => Some(Background::Color(palette.danger_secondary)),
                         ButtonClass::Selected => Some(Background::Color(palette.active_secondary)),
                     },
-                    _ => Some(Background::Color(Color::default())),
+                    Status::Disabled => Some(Background::Color(Color::default())),
                 }
             },
-            border: Border {
-                color: palette.secondary,
-                width: 0.5,
-                radius: Radius::new(8),
+            border: border(palette),
+            text_color: match status {
+                Status::Disabled => palette.secondary,
+                _ => palette.text,
             },
             ..Default::default()
         }

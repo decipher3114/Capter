@@ -1,15 +1,20 @@
 use std::fmt::Display;
 
 use iced::{
-    Color, color,
-    daemon::{Appearance, DefaultStyle},
+    Border, Color,
+    border::Radius,
+    color,
+    theme::{Base, Style},
 };
 use iced_anim::Animate;
 use serde::{Deserialize, Serialize};
 
 pub mod button;
 pub mod container;
+pub mod slider;
 pub mod text;
+pub mod text_input;
+pub mod toggler;
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub enum Theme {
@@ -48,7 +53,7 @@ pub const LIGHT: Palette = Palette {
 };
 
 pub const DARK: Palette = Palette {
-    background: color!(0x282828),
+    background: color!(0x3c3c3c),
     surface: color!(0x323232),
     text: color!(0xd2d2d2),
     primary: color!(0x464646),
@@ -86,9 +91,9 @@ impl Display for Theme {
     }
 }
 
-impl DefaultStyle for Theme {
-    fn default_style(&self) -> Appearance {
-        Appearance {
+impl Base for Theme {
+    fn base(&self) -> Style {
+        Style {
             background_color: self.palette().background,
             text_color: Color::default(),
         }
@@ -116,5 +121,13 @@ impl Animate for Theme {
         let mut palette = start;
         palette.lerp(&start, &end, progress);
         *self = Theme::Custom(palette);
+    }
+}
+
+pub fn border(palette: Palette) -> Border {
+    Border {
+        color: palette.secondary,
+        width: 0.5,
+        radius: Radius::new(8),
     }
 }

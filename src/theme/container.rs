@@ -1,13 +1,13 @@
 use iced::{
-    Background, Border,
-    border::Radius,
+    Background, Color,
     widget::container::{self, Style},
 };
 
-use super::Theme;
+use super::{Theme, border};
 
 pub enum ContainerClass {
     Default,
+    Transparent,
 }
 
 impl container::Catalog for Theme {
@@ -17,16 +17,18 @@ impl container::Catalog for Theme {
         ContainerClass::Default
     }
 
-    fn style(&self, _class: &Self::Class<'_>) -> Style {
+    fn style(&self, class: &Self::Class<'_>) -> Style {
         let palette = self.palette();
-        Style {
-            background: Some(Background::Color(palette.surface)),
-            border: Border {
-                color: palette.secondary,
-                width: 0.5,
-                radius: Radius::new(8),
+        match class {
+            ContainerClass::Default => Style {
+                background: Some(Background::Color(palette.surface)),
+                border: border(palette),
+                ..Default::default()
             },
-            ..Default::default()
+            ContainerClass::Transparent => Style {
+                background: Some(Background::Color(Color::TRANSPARENT)),
+                ..Default::default()
+            },
         }
     }
 }

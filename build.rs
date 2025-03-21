@@ -5,6 +5,6 @@ fn main() {
     {
         let mut res = winresource::WindowsResource::new();
         res.set_icon("assets/resources/windows/icon.ico");
-        res.compile().unwrap();
+        res.compile().expect("Resource must compile");
     }
 }
