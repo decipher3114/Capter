@@ -3,6 +3,34 @@
 version = 4
 
 [[package]]
+name = "Capter"
+version = "3.0.0"
+dependencies = [
+ "anyhow",
+ "arboard",
+ "chrono",
+ "dirs",
+ "edit-xml",
+ "gtk",
+ "iced",
+ "iced_anim",
+ "interprocess",
+ "mouse_position",
+ "notify-rust",
+ "opener",
+ "rdev",
+ "resvg",
+ "rfd",
+ "serde",
+ "tokio",
+ "toml",
+ "tray-icon",
+ "win32_notif",
+ "winresource",
+ "xcap",
+]
+
+[[package]]
 name = "ab_glyph"
 version = "0.2.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -689,34 +717,6 @@ dependencies = [
  "rustix 0.38.44",
  "wayland-backend",
  "wayland-client",
-]
-
-[[package]]
-name = "capter"
-version = "3.0.0"
-dependencies = [
- "anyhow",
- "arboard",
- "chrono",
- "dirs",
- "edit-xml",
- "gtk",
- "iced",
- "iced_anim",
- "interprocess",
- "mouse_position",
- "notify-rust",
- "opener",
- "rdev",
- "resvg",
- "rfd",
- "serde",
- "tokio",
- "toml",
- "tray-icon",
- "win32_notif",
- "winresource",
- "xcap",
 ]
 
 [[package]]

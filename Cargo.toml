@@ -1,14 +1,14 @@
 [package]
-name = "capter"
+name = "Capter"
 version = "3.0.0"
-description = "A simple cross-platform screenshot tool"
+description = "Cross-Platform Screen Capture and Annotation Tool"
 edition = "2024"
-authors = ["decipher3114 <decipher3114@gmail.com>"]
+authors = ["decipher"]
 build = "build.rs"
 
 [dependencies]
 anyhow = "*"
-arboard = { version = "3.4", features = [
+arboard = { version = "*", features = [
     "wayland-data-control",
     "wl-clipboard-rs",
 ] }
@@ -49,7 +49,7 @@ notify-rust = { version = "*", features = ["images"] }
 
 
 [target.'cfg( target_os = "windows" )'.build-dependencies]
-winresource = "0.1"
+winresource = "*"
 
 
 [package.metadata.winresource]
@@ -58,11 +58,11 @@ FileDescription = "Capter"
 
 [package.metadata.packager]
 product-name = "Capter"
-identifier = "app.decipher.capter"
-authors = ["decipher3114 <decipher3114@gmail.com>"]
-publisher = "decipher3114"
+identifier = "io.github.decipher.capter"
+authors = ["decipher"]
+publisher = "decipher"
 category = "Utility"
-copyright = "Copyright © 2025"
+copyright = "Copyright © decipher"
 before-packaging-command = "cargo build --release"
 icons = [
     "assets/resources/windows/icon.ico",

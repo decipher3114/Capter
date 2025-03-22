@@ -5,61 +5,37 @@
       <img src="https://raw.githubusercontent.com/decipher3114/Capter/master/assets/images/banner_dark.png">
     </picture>
 </p>
-
-A cross-platform screenshot tool made in Rust
+<h3 align="center">Cross-Platform Screen Capture Tool</h3>
 
 ## ✨ Features
-- Captures Cropped, FullScreen and Window
-- Region Selection assist
-- Annotations support
-- Beautiful minimalistic UI
+- Capture fullscreen, window, or cropped area with ease
+- Window selection assistance for precise captures
+- Powerful annotation tools: Rectangle, Circle, Line, Arrow, Freehand, Highlighter, and Text
+- Fast and efficient with a minimalistic, user-friendly UI
+- Built-in copy-to-clipboard support for quick sharing
 
 ## 📥 Installation
-- Fulfill these [Requirements](#requirements).
-- Prebuilts
-    - Download from [Releases](https://github.com/decipher3114/Capter/releases/latest)
-        - **.msi** for Windows
-        - **.dmg** for Mac OS
-        - **.deb** for Debian
-- Compile from Source
-    - cargo
-        ```
-        cargo install --git https://github.com/decipher3114/Capter
-        ```
-    - AUR helper
-        Package: `capter`
+- ### Windows
+    Download from (Releases)[https://github.com/decipher3114/Capter/releases/latest]
 
-## 📋 Requirements
-- **Linux**  
-    - Install the following packages:
-        - **Debian**
-        ```
-        sudo apt install libgtk-3-dev libxdo-dev libayatana-appindicator3-dev libxcb1 libxrandr2 libdbus-1-3
-        ```
-        - **Arch**
-        ```
-        sudo pacman -S gtk3 xdotool libayatana-appindicator libxcb libxrandr dbus
-        ```
-    - Add `$USER` to these groups: `input`, `evdev`(if present)
+- ### Arch
+    ```
+    paru -S capter
+    ```
+    OR
+    ```
+    yay -S capter
+    ```
+- ### Debian
+    Download from (Releases)[https://github.com/decipher3114/Capter/releases/latest]
 
-- **Mac OS**  
-    - Grant Access to Accesiblity API: Add `Capter.exe` to **System Preferences > Security & Privacy > Privacy > Accessibility**
+- ### Mac OS
+    Download from (Releases)[https://github.com/decipher3114/Capter/releases/latest]
 
-## 📖 Usage
-- `Alt + Shift + S` to trigger Screenshot.
-- `Alt + Shift + O` to open App window.
-- Selection Mode
-    - Hover mouse over a Window to select it, else Fullscreen will be selected
-    - Click and Drag mouse to crop custom area
-    - `Esc` to Cancel
-    - `Enter` to Capture
-    - Choose any Shape to enter **Annotation Mode**
-    
-- Annotation Mode
-    - Click and Drag to Draw
-    - `Ctrl + Z` to Undo
-    - `Esc` to cancel annotations
-    - `Enter` to switch back to **Selection mode**
+- ### Cargo
+    ```
+    cargo install --git https://github.com/decipher3114/Capter
+    ```
 
 ## 🎬 Video
 
@@ -68,5 +44,5 @@ A cross-platform screenshot tool made in Rust
 
 ### 🙌 Thanks to
 - [iced](https://github.com/iced-rs) community for their help
-- [XelXen](https://github.com/xelxen) for UI
+- [XelXen](https://github.com/xelxen) for UI idea
 - Other crate maintainers
