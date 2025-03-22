@@ -40,19 +40,17 @@ impl App {
             .show();
     }
 
-    #[cfg(not(target_os = "windows"))]
+    #[cfg(target_os = "linux")]
     pub fn notify(&self, body: &str, image_path: Option<String>) {
         use notify_rust::Notification;
 
-        use crate::consts::{APPID, APPNAME};
+        use crate::consts::APPNAME;
 
         if !self.config.notifications {
             return;
         };
 
         let mut notification = Notification::new();
-
-        notification.app_id(APPID);
 
         notification.appname(APPNAME);
 
@@ -63,6 +61,27 @@ impl App {
         if let Some(image_path) = image_path {
             notification.image_path(&image_path);
         };
+
+        let _ = notification.show();
+    }
+
+    #[cfg(target_os = "macos")]
+    pub fn notify(&self, body: &str, _image_path: Option<String>) {
+        use notify_rust::Notification;
+
+        use crate::consts::APPNAME;
+
+        if !self.config.notifications {
+            return;
+        };
+
+        let mut notification = Notification::new();
+
+        notification.appname(APPNAME);
+
+        notification.summary(body);
+
+        notification.auto_icon();
 
         let _ = notification.show();
     }

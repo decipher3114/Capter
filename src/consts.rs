@@ -1,5 +1,6 @@
 pub const APPNAME: &str = "Capter";
 
+#[cfg(target_os = "windows")]
 pub const APPID: &str = "app.decipher.capter";
 
 pub const FONT_NAME: &str = "Space Grotesk";
