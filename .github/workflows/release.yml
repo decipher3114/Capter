@@ -155,6 +155,6 @@ jobs:
           rm .SRCINFO
           makepkg --nodeps --nobuild --printsrcinfo > .SRCINFO
           git add PKGBUILD .SRCINFO
-          git commit -m "update: ${{ github.ref_name }}" || echo "No changes !!"
+          git commit -m "update: ${{ github.ref_name }}"
           git push --force
           echo "AUR Updated !!"
