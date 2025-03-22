@@ -25,7 +25,7 @@ impl Capture {
                             && !window.app_name().ok()?.is_empty()
                         {
                             Some(Rc::new(CapturedWindow {
-                                name: window.app_name().ok()?.to_string(),
+                                name: window.title().ok()?.to_string(),
                                 x: window.x().ok()? as f32,
                                 y: window.y().ok()? as f32,
                                 width: window.width().ok()? as f32,
