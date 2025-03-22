@@ -21,7 +21,7 @@ A cross-platform screenshot tool made in Rust
         - **.msi** for Windows
         - **.dmg** for Mac OS
         - **.deb** for Debian
-- Compile
+- Compile from Source
     - cargo
         ```
         cargo install --git https://github.com/decipher3114/Capter
@@ -60,6 +60,11 @@ A cross-platform screenshot tool made in Rust
     - `Ctrl + Z` to Undo
     - `Esc` to cancel annotations
     - `Enter` to switch back to **Selection mode**
+
+## 🎬 Video
+
+[![YouTube](http://i.ytimg.com/vi/1RSB8945yJA/0.jpg)](https://www.youtube.com/watch?v=1RSB8945yJA)
+
 
 ### 🙌 Thanks to
 - [iced](https://github.com/iced-rs) community for their help
