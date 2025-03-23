@@ -16,7 +16,7 @@
 
 ## 📥 Installation
 - ### Windows
-    Download from (Releases)[https://github.com/decipher3114/Capter/releases/latest]
+    Download from [Releases](https://github.com/decipher3114/Capter/releases/latest)
 
 - ### Arch
     ```
@@ -27,10 +27,10 @@
     yay -S capter
     ```
 - ### Debian
-    Download from (Releases)[https://github.com/decipher3114/Capter/releases/latest]
+    Download from [Releases](https://github.com/decipher3114/Capter/releases/latest)
 
 - ### Mac OS
-    Download from (Releases)[https://github.com/decipher3114/Capter/releases/latest]
+    Download from [Releases](https://github.com/decipher3114/Capter/releases/latest)
 
 - ### Cargo
     ```
