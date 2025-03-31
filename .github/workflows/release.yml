@@ -109,7 +109,6 @@ jobs:
   after-build-job:
     needs: build-assets
     runs-on: 'ubuntu-latest'
-    container: 'archlinux'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -138,23 +137,14 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Update PKGBUILD and .SRCINFO
-        run: |
-          pacman -Syyu --noconfirm openssh git
-          mkdir -p ~/.ssh
-          echo "${{ secrets.AUR_SSH_PRIVATE_KEY }}" > ~/.ssh/aur
-          chmod 700 ~/.ssh
-          chmod 600 ~/.ssh/aur
-          echo -e "Host aur.archlinux.org\n  IdentityFile ~/.ssh/aur\n  User aur" > ~/.ssh/config
-          ssh-keyscan -H aur.archlinux.org >> ~/.ssh/known_hosts
-          git config --global user.name "${{ secrets.AUR_USERNAME }}"
-          git config --global user.email "${{ secrets.AUR_EMAIL }}"
-          git clone ssh://aur@aur.archlinux.org/capter.git
-          cp -rf tar/PKGBUILD capter/PKGBUILD
-          cd capter
-          rm .SRCINFO
-          makepkg --nodeps --nobuild --printsrcinfo > .SRCINFO
-          git add PKGBUILD .SRCINFO
-          git commit -m "update: ${{ github.ref_name }}"
-          git push --force
-          echo "AUR Updated !!"
+      - name: Publish AUR package
+        uses: KSXGitHub/github-actions-deploy-aur@v3
+        with:
+          pkgname: capter
+          pkgbuild: ./tar/PKGBUILD
+          commit_username: ${{ secrets.AUR_USERNAME }}
+          commit_email: ${{ secrets.AUR_EMAIL }}
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: "update: ${{ github.ref_name}}"
+          force_push: true
+
