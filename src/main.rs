@@ -3,7 +3,7 @@
 use std::collections::BTreeMap;
 
 use config::Config;
-use consts::{APPID, APPNAME, BOLD_FONT_TTF, ICON_FONT_TTF, MEDIUM_FONT, MEDIUM_FONT_TTF};
+use consts::{APPNAME, BOLD_FONT_TTF, ICON_FONT_TTF, MEDIUM_FONT, MEDIUM_FONT_TTF};
 use iced::{Task, daemon, window::Id};
 use interprocess::local_socket::{self, GenericNamespaced, ToNsName, traits::Stream};
 use tray_icon::create_tray_icon;
@@ -96,7 +96,7 @@ impl App {
         (
             App {
                 #[cfg(target_os = "windows")]
-                notifier: win32_notif::ToastsNotifier::new(APPID)
+                notifier: win32_notif::ToastsNotifier::new(consts::APPID)
                     .expect("Notifier must be created"),
 
                 config,
