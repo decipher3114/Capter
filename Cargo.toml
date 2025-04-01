@@ -7,15 +7,15 @@ authors = ["decipher"]
 build = "build.rs"
 
 [dependencies]
-anyhow = "*"
-arboard = { version = "*", features = [
+anyhow = "1.0"
+arboard = { version = "3.4", features = [
     "wayland-data-control",
     "wl-clipboard-rs",
 ] }
-chrono = { version = "*", default-features = false, features = ["clock"] }
-dark-light = "*"
-dirs = "*"
-edit-xml = "*"
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+dark-light = "2.0"
+dirs = "6.0"
+edit-xml = "0.1"
 iced = { git = "https://github.com/iced-rs/iced.git", branch = "master", default-features = false, features = [
     "advanced",
     "canvas",
@@ -23,32 +23,30 @@ iced = { git = "https://github.com/iced-rs/iced.git", branch = "master", default
     "lazy",
     "tokio",
 ] }
-interprocess = { version = "*", features = ["tokio"] }
-mouse_position = "*"
-opener = "*"
+interprocess = { version = "2.2", features = ["tokio"] }
+mouse_position = "0.1"
+opener = "0.7"
 rdev = { git = "https://github.com/rustdesk-org/rdev", branch = "master" }
-resvg = { version = "*", default-features = false, features = ["text"] }
-rfd = "*"
-serde = { version = "*", features = ["derive"] }
-tokio = { version = "*", default-features = false, features = ["time"] }
-toml = { version = "*" }
-tray-icon = "*"
-xcap = { version = "*", default-features = false }
+resvg = { version = "0.45", default-features = false, features = ["text"] }
+rfd = "0.15"
+serde = { version = "1.0", features = ["derive"] }
+tokio = { version = "1.44", default-features = false, features = ["time"] }
+toml = { version = "0.8" }
+tray-icon = "0.20"
+xcap = { version = "0.4", default-features = false }
 
 [target.'cfg( target_os = "windows" )'.dependencies]
-win32_notif = "*"
+win32_notif = "0.4"
 
 [target.'cfg( target_os = "linux" )'.dependencies]
 gtk = "0.18"
-notify-rust = { version = "*", features = ["images"] }
+notify-rust = { version = "4.11", features = ["images"] }
 
 [target.'cfg( target_os = "macos")'.dependencies]
-notify-rust = { version = "*", features = ["images"] }
-
+notify-rust = { version = "4.11", features = ["images"] }
 
 [target.'cfg( target_os = "windows" )'.build-dependencies]
-winresource = "*"
-
+winresource = "0.1"
 
 [package.metadata.winresource]
 ProductName = "Capter"
