@@ -13,6 +13,7 @@ arboard = { version = "*", features = [
     "wl-clipboard-rs",
 ] }
 chrono = { version = "*", default-features = false, features = ["clock"] }
+dark-light = "*"
 dirs = "*"
 edit-xml = "*"
 iced = { git = "https://github.com/iced-rs/iced.git", branch = "master", default-features = false, features = [
@@ -21,9 +22,6 @@ iced = { git = "https://github.com/iced-rs/iced.git", branch = "master", default
     "image",
     "lazy",
     "tokio",
-] }
-iced_anim = { git = "https://github.com/Brady-Simon/iced_anim.git", branch = "iced/master", features = [
-    "derive",
 ] }
 interprocess = { version = "*", features = ["tokio"] }
 mouse_position = "*"

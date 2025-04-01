@@ -1,4 +1,3 @@
-use iced::Task;
 use rfd::FileDialog;
 
 use crate::{action::Action, config::Config};
@@ -21,12 +20,9 @@ impl Settings {
             Message::OpenFolder => {
                 config.open_screenshot_folder();
             }
-            Message::AnimateTheme(event) => {
-                self.theme.update(event);
-            }
             Message::ToggleTheme => {
-                config.theme = config.theme.toggle();
-                return Task::done(Message::AnimateTheme(config.theme.clone().into())).into();
+                self.theme.toggle();
+                config.theme = self.theme.clone();
             }
             Message::UpdateNotifications(notifications) => {
                 self.notifications = notifications;

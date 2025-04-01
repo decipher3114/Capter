@@ -22,7 +22,7 @@ impl App {
 
     pub fn theme(&self, id: Id) -> Theme {
         match self.windows.get(&id) {
-            Some(AppWindow::Settings(config_window)) => config_window.theme.value().clone(),
+            Some(AppWindow::Settings(config_window)) => config_window.theme.clone(),
             _ => self.config.theme.clone(),
         }
     }

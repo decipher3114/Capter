@@ -1,7 +1,6 @@
 use std::time::Duration;
 
 use iced::{
-    advanced::graphics::image::image_rs::load_from_memory,
     futures::{SinkExt, Stream, StreamExt, channel::mpsc},
     stream,
 };
@@ -15,6 +14,7 @@ use tray_icon::{
         accelerator::{Accelerator, Code, Modifiers},
     },
 };
+use xcap::image::load_from_memory;
 
 use crate::{
     Message,

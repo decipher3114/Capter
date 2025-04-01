@@ -1,4 +1,4 @@
-use std::fmt::Display;
+use std::{fmt::Display, sync::LazyLock};
 
 use iced::{
     Border, Color,
@@ -6,7 +6,6 @@ use iced::{
     color,
     theme::{Base, Palette, Style, palette::Extended},
 };
-use iced_anim::Animate;
 use serde::{Deserialize, Serialize};
 
 pub mod button;
@@ -16,13 +15,12 @@ pub mod text;
 pub mod text_input;
 pub mod toggler;
 
-#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub enum Theme {
     #[default]
+    System,
     Light,
     Dark,
-    #[serde(skip)]
-    Custom(Palette),
 }
 
 pub const LIGHT_PALETTE: Palette = Palette {
@@ -34,6 +32,9 @@ pub const LIGHT_PALETTE: Palette = Palette {
     danger: color!(0xff6464),
 };
 
+pub static EXTENDED_LIGHT_PALETTE: LazyLock<Extended> =
+    LazyLock::new(|| Extended::generate(LIGHT_PALETTE));
+
 pub const DARK_PALETTE: Palette = Palette {
     background: color!(0x3c3c3c),
     text: color!(0xd2d2d2),
@@ -43,29 +44,43 @@ pub const DARK_PALETTE: Palette = Palette {
     danger: color!(0xe44343),
 };
 
+pub static EXTENDED_DARK_PALETTE: LazyLock<Extended> =
+    LazyLock::new(|| Extended::generate(DARK_PALETTE));
+
 pub type Element<'a, Message> = iced::Element<'a, Message, Theme>;
 
 impl Theme {
     pub fn palette(&self) -> Palette {
         match self {
-            Theme::Light => LIGHT_PALETTE,
-            Theme::Dark => DARK_PALETTE,
-            Theme::Custom(palette) => *palette,
+            Self::System => dark_light::detect().map_or(LIGHT_PALETTE, |theme| match theme {
+                dark_light::Mode::Dark => DARK_PALETTE,
+                dark_light::Mode::Light => LIGHT_PALETTE,
+                dark_light::Mode::Unspecified => LIGHT_PALETTE,
+            }),
+            Self::Light => LIGHT_PALETTE,
+            Self::Dark => DARK_PALETTE,
         }
     }
 
     pub fn extended_palette(&self) -> Extended {
         match self {
-            Theme::Light => Extended::generate(LIGHT_PALETTE),
-            Theme::Dark => Extended::generate(DARK_PALETTE),
-            Theme::Custom(palette) => Extended::generate(*palette),
+            Self::System => {
+                dark_light::detect().map_or(EXTENDED_LIGHT_PALETTE.clone(), |theme| match theme {
+                    dark_light::Mode::Dark => EXTENDED_DARK_PALETTE.clone(),
+                    dark_light::Mode::Light => EXTENDED_LIGHT_PALETTE.clone(),
+                    dark_light::Mode::Unspecified => EXTENDED_LIGHT_PALETTE.clone(),
+                })
+            }
+            Self::Light => EXTENDED_LIGHT_PALETTE.clone(),
+            Self::Dark => EXTENDED_DARK_PALETTE.clone(),
         }
     }
 
-    pub fn toggle(&self) -> Self {
+    pub fn toggle(&mut self) {
         match self {
-            Theme::Light => Theme::Dark,
-            _ => Theme::Light,
+            Self::System => *self = Self::Light,
+            Self::Light => *self = Self::Dark,
+            Self::Dark => *self = Self::System,
         }
     }
 }
@@ -73,9 +88,9 @@ impl Theme {
 impl Display for Theme {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
+            Self::System => write!(f, "System"),
             Self::Light => write!(f, "Light"),
             Self::Dark => write!(f, "Dark"),
-            Self::Custom(_) => write!(f, "Custom"),
         }
     }
 }
@@ -86,30 +101,6 @@ impl Base for Theme {
             background_color: self.extended_palette().background.weakest.color,
             text_color: Color::default(),
         }
-    }
-}
-
-impl Animate for Theme {
-    fn components() -> usize {
-        Palette::components()
-    }
-
-    fn update(&mut self, components: &mut impl Iterator<Item = f32>) {
-        let mut palette = self.palette();
-        palette.update(components);
-        *self = Theme::Custom(palette);
-    }
-
-    fn distance_to(&self, end: &Self) -> Vec<f32> {
-        self.palette().distance_to(&end.palette())
-    }
-
-    fn lerp(&mut self, start: &Self, end: &Self, progress: f32) {
-        let start = start.palette();
-        let end = end.palette();
-        let mut palette = start;
-        palette.lerp(&start, &end, progress);
-        *self = Theme::Custom(palette);
     }
 }
 

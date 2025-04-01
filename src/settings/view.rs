@@ -3,7 +3,6 @@ use iced::{
     Length,
     widget::{Button, Column, Container, Row, Space, Text, Toggler},
 };
-use iced_anim::Animation;
 
 use crate::{
     consts::{BOLD_FONT, FOLDER_ICON_ICON, ICON_FONT},
@@ -63,12 +62,10 @@ impl Settings {
                         .push(Text::new("App Theme").size(22).font(BOLD_FONT))
                         .push(Space::with_width(Length::Fill))
                         .push(
-                            Button::new(
-                                Text::new(self.theme.target().to_string()).size(20).center(),
-                            )
-                            .height(40)
-                            .width(160)
-                            .on_press(Message::ToggleTheme),
+                            Button::new(Text::new(self.theme.to_string()).size(20).center())
+                                .height(40)
+                                .width(160)
+                                .on_press(Message::ToggleTheme),
                         )
                         .align_y(Center)
                         .width(Length::Fill)
@@ -96,14 +93,11 @@ impl Settings {
             )
             .spacing(10);
 
-        let content = Column::new()
+        Column::new()
             .push(header)
             .push(body)
             .spacing(10)
-            .padding(15);
-
-        Animation::new(&self.theme, content)
-            .on_update(Message::AnimateTheme)
+            .padding(15)
             .into()
     }
 }

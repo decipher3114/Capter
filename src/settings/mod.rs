@@ -1,5 +1,3 @@
-use iced_anim::{Animated, Event};
-
 use crate::theme::Theme;
 
 mod init;
@@ -8,7 +6,7 @@ mod view;
 
 #[derive(Debug)]
 pub struct Settings {
-    pub theme: Animated<Theme>,
+    pub theme: Theme,
     notifications: bool,
     screenshot_dir: String,
 }
@@ -17,7 +15,6 @@ pub struct Settings {
 pub enum Message {
     UpdateFolderPath,
     OpenFolder,
-    AnimateTheme(Event<Theme>),
     ToggleTheme,
     UpdateNotifications(bool),
     RequestExit,
