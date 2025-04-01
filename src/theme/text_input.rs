@@ -1,5 +1,5 @@
 use iced::{
-    Border,
+    Background, Border,
     border::Radius,
     widget::text_input::{Catalog, Status, Style},
 };
@@ -19,21 +19,22 @@ impl Catalog for Theme {
 
     fn style(&self, _class: &Self::Class<'_>, status: Status) -> Style {
         let palette = self.palette();
+        let extended_palette = self.extended_palette();
 
         Style {
-            background: palette.primary.into(),
+            background: Background::Color(extended_palette.background.strong.color),
             border: Border {
                 color: match status {
-                    Status::Hovered | Status::Focused { .. } => palette.active_primary,
-                    Status::Active | Status::Disabled => palette.secondary,
+                    Status::Hovered | Status::Focused { .. } => extended_palette.primary.base.color,
+                    Status::Active | Status::Disabled => extended_palette.background.weak.color,
                 },
                 width: 0.5,
                 radius: Radius::new(8),
             },
             icon: palette.text,
-            placeholder: palette.secondary,
+            placeholder: extended_palette.background.weakest.text,
             value: palette.text,
-            selection: palette.active_secondary,
+            selection: extended_palette.primary.weak.color,
         }
     }
 }

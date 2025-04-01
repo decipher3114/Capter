@@ -14,25 +14,25 @@ impl Catalog for Theme {
     }
 
     fn style(&self, _class: &Self::Class<'_>, status: Status) -> Style {
-        let palette = self.palette();
+        let extended_palette = self.extended_palette();
 
         Style {
-            background: palette.background,
+            background: extended_palette.background.base.color,
             background_border_width: 0.5,
-            background_border_color: palette.secondary,
+            background_border_color: extended_palette.background.strongest.color,
             foreground: match status {
                 Status::Active { is_toggled } => match is_toggled {
-                    true => palette.active_primary,
-                    false => palette.background,
+                    true => extended_palette.primary.base.color,
+                    false => extended_palette.secondary.base.color,
                 },
                 Status::Hovered { is_toggled } => match is_toggled {
-                    true => palette.active_secondary,
-                    false => palette.background,
+                    true => extended_palette.primary.strong.color,
+                    false => extended_palette.secondary.strong.color,
                 },
-                Status::Disabled => palette.surface,
+                Status::Disabled => extended_palette.background.strongest.color,
             },
             foreground_border_width: 0.5,
-            foreground_border_color: palette.secondary,
+            foreground_border_color: extended_palette.background.weakest.color,
         }
     }
 }

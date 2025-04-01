@@ -1,4 +1,7 @@
-use iced::widget::slider::{Catalog, Handle, HandleShape, Rail, Status, Style};
+use iced::{
+    Background,
+    widget::slider::{Catalog, Handle, HandleShape, Rail, Status, Style},
+};
 
 use super::{Theme, border};
 
@@ -14,24 +17,26 @@ impl Catalog for Theme {
     }
 
     fn style(&self, _class: &Self::Class<'_>, status: Status) -> Style {
-        let palette = self.palette();
+        let extended_palette = self.extended_palette();
 
         Style {
             rail: Rail {
-                backgrounds: (palette.primary.into(), palette.primary.into()),
+                backgrounds: (
+                    Background::Color(extended_palette.background.base.color),
+                    Background::Color(extended_palette.background.base.color),
+                ),
                 width: 10.0,
-                border: border(palette),
+                border: border(extended_palette),
             },
             handle: Handle {
                 shape: HandleShape::Circle { radius: 10.0 },
                 background: match status {
-                    Status::Active => palette.active_secondary,
-                    Status::Hovered => palette.active_primary,
-                    Status::Dragged => palette.active_primary,
+                    Status::Active => extended_palette.primary.base.color,
+                    Status::Hovered | Status::Dragged => extended_palette.primary.strong.color,
                 }
                 .into(),
                 border_width: 0.5,
-                border_color: palette.secondary,
+                border_color: extended_palette.background.strongest.color,
             },
         }
     }

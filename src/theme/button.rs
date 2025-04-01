@@ -20,27 +20,38 @@ impl Catalog for Theme {
 
     fn style(&self, class: &Self::Class<'_>, status: Status) -> Style {
         let palette = self.palette();
+        let extended_palette = self.extended_palette();
+
         Style {
             background: {
                 match status {
                     Status::Active => match class {
-                        ButtonClass::Default => Some(Background::Color(palette.primary)),
-                        ButtonClass::Danger => Some(Background::Color(palette.danger_primary)),
-                        ButtonClass::Selected => Some(Background::Color(palette.active_primary)),
+                        ButtonClass::Default => {
+                            Some(Background::Color(extended_palette.background.strong.color))
+                        }
+                        ButtonClass::Danger => {
+                            Some(Background::Color(extended_palette.danger.base.color))
+                        }
+                        ButtonClass::Selected => {
+                            Some(Background::Color(extended_palette.primary.base.color))
+                        }
                     },
                     Status::Hovered | Status::Pressed => match class {
-                        ButtonClass::Default => Some(Background::Color(palette.secondary)),
-                        ButtonClass::Danger => Some(Background::Color(palette.danger_secondary)),
-                        ButtonClass::Selected => Some(Background::Color(palette.active_secondary)),
+                        ButtonClass::Default => {
+                            Some(Background::Color(extended_palette.background.strong.color))
+                        }
+                        ButtonClass::Danger => {
+                            Some(Background::Color(extended_palette.danger.strong.color))
+                        }
+                        ButtonClass::Selected => {
+                            Some(Background::Color(extended_palette.primary.strong.color))
+                        }
                     },
                     Status::Disabled => Some(Background::Color(Color::default())),
                 }
             },
-            border: border(palette),
-            text_color: match status {
-                Status::Disabled => palette.secondary,
-                _ => palette.text,
-            },
+            border: border(extended_palette),
+            text_color: palette.text,
             ..Default::default()
         }
     }

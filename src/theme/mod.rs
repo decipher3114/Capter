@@ -4,7 +4,7 @@ use iced::{
     Border, Color,
     border::Radius,
     color,
-    theme::{Base, Style},
+    theme::{Base, Palette, Style, palette::Extended},
 };
 use iced_anim::Animate;
 use serde::{Deserialize, Serialize};
@@ -25,51 +25,40 @@ pub enum Theme {
     Custom(Palette),
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Animate)]
-pub struct Palette {
-    pub background: Color,
-    pub surface: Color,
-    pub text: Color,
-    pub primary: Color,
-    pub secondary: Color,
-    pub active_primary: Color,
-    pub active_secondary: Color,
-    pub danger_primary: Color,
-    pub danger_secondary: Color,
-}
+pub const LIGHT_PALETTE: Palette = Palette {
+    background: color!(0xdcdcdc),
+    text: color!(0x323232),
+    primary: color!(0x6464ff),
+    success: color!(0x4caf50),
+    warning: color!(0xffa500),
+    danger: color!(0xff6464),
+};
+
+pub const DARK_PALETTE: Palette = Palette {
+    background: color!(0x3c3c3c),
+    text: color!(0xd2d2d2),
+    primary: color!(0x4343e4),
+    success: color!(0x5da65d),
+    warning: color!(0xe4a343),
+    danger: color!(0xe44343),
+};
 
 pub type Element<'a, Message> = iced::Element<'a, Message, Theme>;
-
-pub const LIGHT: Palette = Palette {
-    background: color!(0xdcdcdc),
-    surface: color!(0xd2d2d2),
-    text: color!(0x323232),
-    primary: color!(0xbebebe),
-    secondary: color!(0xaaaaaa),
-    active_primary: color!(0x6464ff),
-    active_secondary: color!(0x5a5af5),
-    danger_primary: color!(0xff6464),
-    danger_secondary: color!(0xf55a5a),
-};
-
-pub const DARK: Palette = Palette {
-    background: color!(0x3c3c3c),
-    surface: color!(0x323232),
-    text: color!(0xd2d2d2),
-    primary: color!(0x464646),
-    secondary: color!(0x5a5a5a),
-    active_primary: color!(0x4343e4),
-    active_secondary: color!(0x4d4dee),
-    danger_primary: color!(0xe44343),
-    danger_secondary: color!(0xee4d4d),
-};
 
 impl Theme {
     pub fn palette(&self) -> Palette {
         match self {
-            Theme::Light => LIGHT,
-            Theme::Dark => DARK,
+            Theme::Light => LIGHT_PALETTE,
+            Theme::Dark => DARK_PALETTE,
             Theme::Custom(palette) => *palette,
+        }
+    }
+
+    pub fn extended_palette(&self) -> Extended {
+        match self {
+            Theme::Light => Extended::generate(LIGHT_PALETTE),
+            Theme::Dark => Extended::generate(DARK_PALETTE),
+            Theme::Custom(palette) => Extended::generate(*palette),
         }
     }
 
@@ -94,7 +83,7 @@ impl Display for Theme {
 impl Base for Theme {
     fn base(&self) -> Style {
         Style {
-            background_color: self.palette().background,
+            background_color: self.extended_palette().background.weakest.color,
             text_color: Color::default(),
         }
     }
@@ -124,9 +113,9 @@ impl Animate for Theme {
     }
 }
 
-pub fn border(palette: Palette) -> Border {
+pub fn border(extended_palette: Extended) -> Border {
     Border {
-        color: palette.secondary,
+        color: extended_palette.background.strongest.color,
         width: 0.5,
         radius: Radius::new(8),
     }

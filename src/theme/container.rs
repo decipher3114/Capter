@@ -1,6 +1,6 @@
 use iced::{
-    Background, Color,
-    widget::container::{self, Style},
+    Background, Color, Shadow,
+    widget::container::{Catalog, Style},
 };
 
 use super::{Theme, border};
@@ -10,7 +10,7 @@ pub enum ContainerClass {
     Transparent,
 }
 
-impl container::Catalog for Theme {
+impl Catalog for Theme {
     type Class<'a> = ContainerClass;
 
     fn default<'a>() -> Self::Class<'a> {
@@ -19,11 +19,13 @@ impl container::Catalog for Theme {
 
     fn style(&self, class: &Self::Class<'_>) -> Style {
         let palette = self.palette();
+        let extended_palette = self.extended_palette();
         match class {
             ContainerClass::Default => Style {
-                background: Some(Background::Color(palette.surface)),
-                border: border(palette),
-                ..Default::default()
+                background: Some(Background::Color(extended_palette.background.weak.color)),
+                border: border(extended_palette),
+                text_color: Some(palette.text),
+                shadow: Shadow::default(),
             },
             ContainerClass::Transparent => Style {
                 background: Some(Background::Color(Color::TRANSPARENT)),
