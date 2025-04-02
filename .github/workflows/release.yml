@@ -137,7 +137,7 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Publish AUR package
+      - name: Update AUR package
         uses: KSXGitHub/github-actions-deploy-aur@v3
         with:
           pkgname: capter
@@ -147,4 +147,12 @@ jobs:
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
           commit_message: "update: ${{ github.ref_name}}"
           force_push: true
+
+      - name: Update Winget package
+        uses: vedantmgoyal9/winget-releaser@main
+        with:
+          identifier: decipher.Capter
+          installers-regex: '\.msi$'
+          max-versions-to-keep: 3
+          token: ${{ secrets.CLASSIC_PAT }}
 
