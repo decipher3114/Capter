@@ -1,6 +1,6 @@
 [package]
 name = "Capter"
-version = "3.0.2"
+version = "3.1.0"
 description = "Cross-Platform Screen Capture and Annotation Tool"
 edition = "2024"
 authors = ["decipher"]
