@@ -6,7 +6,7 @@ use mode::Mode;
 use xcap::image::RgbaImage;
 
 mod canvas;
-mod helper;
+mod image;
 mod init;
 mod update;
 mod view;
