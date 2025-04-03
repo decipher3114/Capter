@@ -16,7 +16,9 @@
 
 ## 📥 Installation
 - ### Windows
-    Download from [Releases](https://github.com/decipher3114/Capter/releases/latest)
+    ```
+    winget install decipher.Capter
+    ```
 
 - ### Arch
     ```
