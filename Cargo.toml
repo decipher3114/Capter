@@ -16,7 +16,7 @@ chrono = { version = "0.4", default-features = false, features = ["clock"] }
 dark-light = "2.0"
 dirs = "6.0"
 edit-xml = "0.1"
-iced = { git = "https://github.com/iced-rs/iced.git", branch = "master", default-features = false, features = [
+iced = { git = "https://github.com/iced-rs/iced.git", branch = "master", features = [
     "advanced",
     "canvas",
     "image",

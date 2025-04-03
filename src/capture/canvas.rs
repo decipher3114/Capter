@@ -33,13 +33,13 @@ impl Program<Message, Theme> for Capture {
         match event {
             iced::Event::Mouse(event) => match event {
                 iced::mouse::Event::CursorMoved { position } => {
-                    return Some(Action::publish(Message::MouseMoved(*position)));
+                    Some(Action::publish(Message::MouseMoved(*position)))
                 }
                 iced::mouse::Event::ButtonPressed(iced::mouse::Button::Left) => {
-                    return Some(Action::publish(Message::MousePressed));
+                    Some(Action::publish(Message::MousePressed))
                 }
                 iced::mouse::Event::ButtonReleased(iced::mouse::Button::Left) => {
-                    return Some(Action::publish(Message::MouseReleased));
+                    Some(Action::publish(Message::MouseReleased))
                 }
                 _ => None,
             },
@@ -67,7 +67,7 @@ impl Program<Message, Theme> for Capture {
         let shapes_frame = self.cache.draw(renderer, bounds.size(), |frame| {
             self.shapes
                 .iter()
-                .for_each(|shape| draw_shape(frame, shape, false))
+                .for_each(|shape| draw_shape(frame, shape, false));
         });
 
         match &self.mode {

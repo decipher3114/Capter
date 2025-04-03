@@ -2157,6 +2157,7 @@ source = "git+https://github.com/iced-rs/iced.git?branch=master#a3a7503eef5ffe21
 dependencies = [
  "bitflags 2.9.0",
  "bytes",
+ "dark-light",
  "glam",
  "lilt",
  "log",

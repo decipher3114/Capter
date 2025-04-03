@@ -65,14 +65,14 @@ impl Theme {
     pub fn extended_palette(&self) -> Extended {
         match self {
             Self::System => {
-                dark_light::detect().map_or(EXTENDED_LIGHT_PALETTE.clone(), |theme| match theme {
-                    dark_light::Mode::Dark => EXTENDED_DARK_PALETTE.clone(),
-                    dark_light::Mode::Light => EXTENDED_LIGHT_PALETTE.clone(),
-                    dark_light::Mode::Unspecified => EXTENDED_LIGHT_PALETTE.clone(),
+                dark_light::detect().map_or(*EXTENDED_LIGHT_PALETTE, |theme| match theme {
+                    dark_light::Mode::Dark => *EXTENDED_DARK_PALETTE,
+                    dark_light::Mode::Light => *EXTENDED_LIGHT_PALETTE,
+                    dark_light::Mode::Unspecified => *EXTENDED_LIGHT_PALETTE,
                 })
             }
-            Self::Light => EXTENDED_LIGHT_PALETTE.clone(),
-            Self::Dark => EXTENDED_DARK_PALETTE.clone(),
+            Self::Light => *EXTENDED_LIGHT_PALETTE,
+            Self::Dark => *EXTENDED_DARK_PALETTE,
         }
     }
 

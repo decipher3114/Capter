@@ -17,7 +17,7 @@ impl App {
         match message {
             Message::ConfigInitialized => {
                 self.notify("", None);
-                return Task::done(Message::OpenCaptureWindow).into();
+                return Task::done(Message::OpenCaptureWindow);
             }
             Message::OpenSettingsWindow => {
                 if self.windows.is_empty() {
