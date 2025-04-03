@@ -32,7 +32,7 @@ impl Catalog for Theme {
                 Status::Disabled => extended_palette.background.strongest.color,
             },
             foreground_border_width: 0.5,
-            foreground_border_color: extended_palette.background.weakest.color,
+            foreground_border_color: extended_palette.background.strongest.color,
         }
     }
 }
