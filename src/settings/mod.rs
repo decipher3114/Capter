@@ -1,8 +1,8 @@
-use crate::theme::Theme;
-
 mod init;
 mod update;
 mod view;
+
+use crate::theme::Theme;
 
 #[derive(Debug)]
 pub struct Settings {

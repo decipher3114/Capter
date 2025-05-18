@@ -1,14 +1,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::collections::BTreeMap;
-
-use config::Config;
-use consts::{APPNAME, BOLD_FONT_TTF, ICON_FONT_TTF, MEDIUM_FONT, MEDIUM_FONT_TTF};
-use iced::{Task, daemon, window::Id};
-use interprocess::local_socket::{self, GenericNamespaced, ToNsName, traits::Stream};
-use tray_icon::create_tray_icon;
-use window::AppWindow;
-
 mod action;
 mod consts;
 mod ipc;
@@ -24,6 +15,15 @@ mod window;
 mod capture;
 mod config;
 mod settings;
+
+use std::collections::BTreeMap;
+
+use config::Config;
+use consts::{APPNAME, BOLD_FONT_TTF, ICON_FONT_TTF, MEDIUM_FONT, MEDIUM_FONT_TTF};
+use iced::{Task, daemon, window::Id};
+use interprocess::local_socket::{self, GenericNamespaced, ToNsName, traits::Stream};
+use tray_icon::create_tray_icon;
+use window::AppWindow;
 
 fn main() -> Result<(), iced::Error> {
     let name = APPNAME
@@ -82,14 +82,16 @@ pub enum Message {
 impl App {
     pub fn new() -> (App, Task<Message>) {
         let (config, task) = match Config::load() {
-            Ok((config, is_first_creation)) => (
-                config,
-                if is_first_creation {
-                    Task::done(Message::OpenSettingsWindow)
-                } else {
-                    Task::none()
-                },
-            ),
+            Ok((config, is_first_creation)) => {
+                (
+                    config,
+                    if is_first_creation {
+                        Task::done(Message::OpenSettingsWindow)
+                    } else {
+                        Task::none()
+                    },
+                )
+            }
             Err(_) => (Config::default(), Task::done(Message::OpenSettingsWindow)),
         };
 

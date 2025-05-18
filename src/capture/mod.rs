@@ -1,10 +1,3 @@
-use std::rc::Rc;
-
-use draw::{DrawElement, Tool, ToolColor};
-use iced::{Point, widget::canvas::Cache};
-use mode::Mode;
-use xcap::image::RgbaImage;
-
 mod canvas;
 mod image;
 mod init;
@@ -14,6 +7,13 @@ mod view;
 mod crop;
 mod draw;
 mod mode;
+
+use std::rc::Rc;
+
+use draw::{DrawElement, Tool, ToolColor};
+use iced::{Point, widget::canvas::Cache};
+use mode::Mode;
+use xcap::image::RgbaImage;
 
 pub struct Capture {
     toolbar_at_top: bool,

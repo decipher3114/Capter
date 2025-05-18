@@ -1,3 +1,10 @@
+pub mod button;
+pub mod container;
+pub mod slider;
+pub mod text;
+pub mod text_input;
+pub mod toggler;
+
 use std::{fmt::Display, sync::LazyLock};
 
 use iced::{
@@ -7,13 +14,6 @@ use iced::{
     theme::{Base, Palette, Style, palette::Extended},
 };
 use serde::{Deserialize, Serialize};
-
-pub mod button;
-pub mod container;
-pub mod slider;
-pub mod text;
-pub mod text_input;
-pub mod toggler;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub enum Theme {
@@ -52,11 +52,15 @@ pub type Element<'a, Message> = iced::Element<'a, Message, Theme>;
 impl Theme {
     pub fn palette(&self) -> Palette {
         match self {
-            Self::System => dark_light::detect().map_or(LIGHT_PALETTE, |theme| match theme {
-                dark_light::Mode::Dark => DARK_PALETTE,
-                dark_light::Mode::Light => LIGHT_PALETTE,
-                dark_light::Mode::Unspecified => LIGHT_PALETTE,
-            }),
+            Self::System => {
+                dark_light::detect().map_or(LIGHT_PALETTE, |theme| {
+                    match theme {
+                        dark_light::Mode::Dark => DARK_PALETTE,
+                        dark_light::Mode::Light => LIGHT_PALETTE,
+                        dark_light::Mode::Unspecified => LIGHT_PALETTE,
+                    }
+                })
+            }
             Self::Light => LIGHT_PALETTE,
             Self::Dark => DARK_PALETTE,
         }
@@ -65,10 +69,12 @@ impl Theme {
     pub fn extended_palette(&self) -> Extended {
         match self {
             Self::System => {
-                dark_light::detect().map_or(*EXTENDED_LIGHT_PALETTE, |theme| match theme {
-                    dark_light::Mode::Dark => *EXTENDED_DARK_PALETTE,
-                    dark_light::Mode::Light => *EXTENDED_LIGHT_PALETTE,
-                    dark_light::Mode::Unspecified => *EXTENDED_LIGHT_PALETTE,
+                dark_light::detect().map_or(*EXTENDED_LIGHT_PALETTE, |theme| {
+                    match theme {
+                        dark_light::Mode::Dark => *EXTENDED_DARK_PALETTE,
+                        dark_light::Mode::Light => *EXTENDED_LIGHT_PALETTE,
+                        dark_light::Mode::Unspecified => *EXTENDED_LIGHT_PALETTE,
+                    }
                 })
             }
             Self::Light => *EXTENDED_LIGHT_PALETTE,
