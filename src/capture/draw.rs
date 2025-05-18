@@ -31,13 +31,13 @@ pub enum Tool {
         top_left: Point,
         bottom_right: Point,
         size: Size,
-        is_filled: bool,
-        is_opaque: bool,
+        filled: bool,
+        opaque: bool,
     },
     Ellipse {
         center: Point,
         radii: Vector,
-        is_filled: bool,
+        filled: bool,
     },
     FreeHand {
         points: Vec<Point>,
@@ -64,8 +64,8 @@ impl Default for Tool {
             top_left: Point::default(),
             bottom_right: Point::default(),
             size: Size::default(),
-            is_filled: true,
-            is_opaque: true,
+            filled: true,
+            opaque: true,
         }
     }
 }
@@ -75,26 +75,24 @@ impl PartialEq for Tool {
         match (self, other) {
             (
                 Self::Rectangle {
-                    is_filled: l_is_filled,
-                    is_opaque: l_is_opaque,
+                    filled: l_filled,
+                    opaque: l_opaque,
                     ..
                 },
                 Self::Rectangle {
-                    is_filled: r_is_filled,
-                    is_opaque: r_is_opaque,
+                    filled: r_filled,
+                    opaque: r_opaque,
                     ..
                 },
-            ) => l_is_filled == r_is_filled && l_is_opaque == r_is_opaque,
+            ) => l_filled == r_filled && l_opaque == r_opaque,
             (
                 Self::Ellipse {
-                    is_filled: l_is_filled,
-                    ..
+                    filled: l_filled, ..
                 },
                 Self::Ellipse {
-                    is_filled: r_is_filled,
-                    ..
+                    filled: r_filled, ..
                 },
-            ) => l_is_filled == r_is_filled,
+            ) => l_filled == r_filled,
             (Self::FreeHand { .. }, Self::FreeHand { .. }) => true,
             (Self::Line { .. }, Self::Line { .. }) => true,
             (Self::Arrow { .. }, Self::Arrow { .. }) => true,
@@ -110,25 +108,25 @@ impl Tool {
             top_left: Point::ORIGIN,
             bottom_right: Point::ORIGIN,
             size: Size::ZERO,
-            is_filled: true,
-            is_opaque: true,
+            filled: true,
+            opaque: true,
         },
         Self::Rectangle {
             top_left: Point::ORIGIN,
             bottom_right: Point::ORIGIN,
             size: Size::ZERO,
-            is_filled: false,
-            is_opaque: true,
+            filled: false,
+            opaque: true,
         },
         Self::Ellipse {
             center: Point::ORIGIN,
             radii: Vector::ZERO,
-            is_filled: true,
+            filled: true,
         },
         Self::Ellipse {
             center: Point::ORIGIN,
             radii: Vector::ZERO,
-            is_filled: false,
+            filled: false,
         },
         Self::FreeHand { points: Vec::new() },
         Self::Line {
@@ -145,8 +143,8 @@ impl Tool {
             top_left: Point::ORIGIN,
             bottom_right: Point::ORIGIN,
             size: Size::ZERO,
-            is_filled: true,
-            is_opaque: false,
+            filled: true,
+            opaque: false,
         },
         Self::Text {
             anchor_point: Point::ORIGIN,
@@ -157,26 +155,22 @@ impl Tool {
     pub fn icon(&self) -> String {
         match self {
             Tool::Rectangle {
-                is_filled: true,
-                is_opaque: true,
+                filled: true,
+                opaque: true,
                 ..
             } => FILLED_RECTANGLE_ICON,
             Tool::Rectangle {
-                is_filled: false,
-                is_opaque: true,
+                filled: false,
+                opaque: true,
                 ..
             } => HOLLOW_RECTANGLE_ICON,
             Tool::Rectangle {
-                is_filled: true,
-                is_opaque: false,
+                filled: true,
+                opaque: false,
                 ..
             } => HIGHLIGHTER_ICON,
-            Tool::Ellipse {
-                is_filled: true, ..
-            } => FILLED_ELLIPSE_ICON,
-            Tool::Ellipse {
-                is_filled: false, ..
-            } => HOLLOW_ELLIPSE_ICON,
+            Tool::Ellipse { filled: true, .. } => FILLED_ELLIPSE_ICON,
+            Tool::Ellipse { filled: false, .. } => HOLLOW_ELLIPSE_ICON,
             Tool::FreeHand { .. } => FREE_HAND_ICON,
             Tool::Line { .. } => LINE_ICON,
             Tool::Arrow { .. } => ARROW_ICON,
@@ -357,7 +351,12 @@ impl Tool {
 
     pub fn need_size(&self) -> bool {
         match self {
-            Self::Rectangle { is_filled, .. } | Self::Ellipse { is_filled, .. } => !*is_filled,
+            Self::Rectangle {
+                filled: is_filled, ..
+            }
+            | Self::Ellipse {
+                filled: is_filled, ..
+            } => !*is_filled,
             Self::Line { .. } | Self::FreeHand { .. } | Self::Text { .. } => true,
             _ => false,
         }

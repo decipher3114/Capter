@@ -4,7 +4,6 @@ use anyhow::{Error, Result};
 use arboard::Clipboard;
 use chrono::Local;
 use edit_xml::{Document, ElementBuilder};
-
 use iced::Point;
 use resvg::{tiny_skia, usvg};
 use xcap::image::{
@@ -12,14 +11,13 @@ use xcap::image::{
     imageops::{crop_imm, overlay},
 };
 
-use crate::consts::{FONT_NAME, MEDIUM_FONT_TTF};
-
 use super::{
     Capture, DrawElement,
     crop::CropState,
     draw::{FONT_SIZE_FACTOR, STROKE_WIDHT_FACTOR, Tool},
     mode::Mode,
 };
+use crate::consts::{FONT_NAME, MEDIUM_FONT_TTF};
 
 impl Capture {
     pub fn finalize(mut self, directory: &Path) -> Result<PathBuf> {
@@ -117,10 +115,9 @@ pub fn create_annotation_overlay(
         match shape.tool {
             Tool::Rectangle {
                 top_left,
-                bottom_right: _,
                 size,
-                is_filled: fill,
-                is_opaque: opaque,
+                filled,
+                opaque,
                 ..
             } => {
                 let drawn_shape = element
@@ -129,7 +126,7 @@ pub fn create_annotation_overlay(
                     .attribute("width", size.width.to_string())
                     .attribute("height", size.height.to_string());
 
-                if fill {
+                if filled {
                     if opaque {
                         drawn_shape.attribute("fill", color.as_hex())
                     } else {
@@ -148,7 +145,7 @@ pub fn create_annotation_overlay(
             Tool::Ellipse {
                 center,
                 radii,
-                is_filled: fill,
+                filled,
                 ..
             } => {
                 let drawn_shape = element
@@ -157,7 +154,7 @@ pub fn create_annotation_overlay(
                     .attribute("rx", radii.x.to_string())
                     .attribute("ry", radii.y.to_string());
 
-                if fill {
+                if filled {
                     drawn_shape.attribute("fill", color.as_hex())
                 } else {
                     drawn_shape

@@ -13,12 +13,11 @@ use iced::{
     },
 };
 
-use crate::{capture::mode::Mode, consts::MEDIUM_FONT, theme::Theme};
-
 use super::{
     Capture, DrawElement, Message,
     draw::{FONT_SIZE_FACTOR, STROKE_WIDHT_FACTOR, Tool},
 };
+use crate::{capture::mode::Mode, consts::MEDIUM_FONT, theme::Theme};
 
 impl Program<Message, Theme> for Capture {
     type State = ();
@@ -31,18 +30,20 @@ impl Program<Message, Theme> for Capture {
         _cursor: iced::advanced::mouse::Cursor,
     ) -> Option<Action<Message>> {
         match event {
-            iced::Event::Mouse(event) => match event {
-                iced::mouse::Event::CursorMoved { position } => {
-                    Some(Action::publish(Message::MouseMoved(*position)))
+            iced::Event::Mouse(event) => {
+                match event {
+                    iced::mouse::Event::CursorMoved { position } => {
+                        Some(Action::publish(Message::MouseMoved(*position)))
+                    }
+                    iced::mouse::Event::ButtonPressed(iced::mouse::Button::Left) => {
+                        Some(Action::publish(Message::MousePressed))
+                    }
+                    iced::mouse::Event::ButtonReleased(iced::mouse::Button::Left) => {
+                        Some(Action::publish(Message::MouseReleased))
+                    }
+                    _ => None,
                 }
-                iced::mouse::Event::ButtonPressed(iced::mouse::Button::Left) => {
-                    Some(Action::publish(Message::MousePressed))
-                }
-                iced::mouse::Event::ButtonReleased(iced::mouse::Button::Left) => {
-                    Some(Action::publish(Message::MouseReleased))
-                }
-                _ => None,
-            },
+            }
             _ => None,
         }
     }
@@ -193,13 +194,13 @@ fn draw_shape(frame: &mut Frame, shape: &DrawElement, guide: bool) {
             top_left,
             bottom_right: _,
             size,
-            is_filled,
-            is_opaque,
+            filled,
+            opaque,
             ..
         } => {
             let path = Path::rectangle(top_left, size);
-            if is_filled {
-                if is_opaque {
+            if filled {
+                if opaque {
                     frame.fill(&path, color);
                 } else {
                     frame.fill(&path, shape.color.into_translucent_color());
@@ -211,7 +212,7 @@ fn draw_shape(frame: &mut Frame, shape: &DrawElement, guide: bool) {
         Tool::Ellipse {
             center,
             radii,
-            is_filled,
+            filled,
             ..
         } => {
             let arc = Elliptical {
@@ -224,7 +225,7 @@ fn draw_shape(frame: &mut Frame, shape: &DrawElement, guide: bool) {
             let mut builder = Builder::new();
             builder.ellipse(arc);
             let path = builder.build();
-            if is_filled {
+            if filled {
                 frame.fill(&path, color);
             } else {
                 frame.stroke(&path, stroke);
