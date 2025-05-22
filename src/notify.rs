@@ -45,7 +45,7 @@ impl App {
 
         use crate::consts::APPNAME;
 
-        if !self.config.notifications {
+        if !self.config.show_notification {
             return;
         };
 
@@ -70,7 +70,7 @@ impl App {
 
         use crate::consts::APPNAME;
 
-        if !self.config.notifications {
+        if !self.config.show_notification {
             return;
         };
 
