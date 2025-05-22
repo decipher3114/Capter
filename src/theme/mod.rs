@@ -1,5 +1,8 @@
 pub mod button;
 pub mod container;
+pub mod menu;
+pub mod picklist;
+pub mod scrollable;
 pub mod slider;
 pub mod text;
 pub mod text_input;
@@ -15,7 +18,7 @@ use iced::{
 };
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Serialize, Deserialize)]
 pub enum Theme {
     #[default]
     System,
@@ -50,6 +53,8 @@ pub static EXTENDED_DARK_PALETTE: LazyLock<Extended> =
 pub type Element<'a, Message> = iced::Element<'a, Message, Theme>;
 
 impl Theme {
+    pub const ALL: [Theme; 3] = [Self::System, Self::Light, Self::Dark];
+
     pub fn palette(&self) -> Palette {
         match self {
             Self::System => {
@@ -107,6 +112,10 @@ impl Base for Theme {
             background_color: self.extended_palette().background.weakest.color,
             text_color: Color::default(),
         }
+    }
+
+    fn palette(&self) -> Option<Palette> {
+        Some(self.palette())
     }
 }
 

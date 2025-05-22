@@ -2,21 +2,20 @@ mod init;
 mod update;
 mod view;
 
-use crate::theme::Theme;
+use crate::{organize_type::OrgranizeMode, theme::Theme};
 
 #[derive(Debug)]
 pub struct Settings {
-    pub theme: Theme,
-    notifications: bool,
-    screenshot_dir: String,
+    folder_path: String,
 }
 
 #[derive(Debug, Clone)]
 pub enum Message {
     UpdateFolderPath,
     OpenFolder,
-    ToggleTheme,
-    UpdateNotifications(bool),
+    UpdateTheme(Theme),
+    ToggleShowNotification(bool),
+    UpdateOrganizeMode(OrgranizeMode),
     RequestExit,
 }
 

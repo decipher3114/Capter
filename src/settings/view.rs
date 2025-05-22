@@ -1,23 +1,26 @@
 use iced::{
     Alignment::Center,
     Length,
-    widget::{Button, Column, Container, Row, Space, Text, Toggler},
-};
-
-use crate::{
-    consts::{BOLD_FONT, FOLDER_ICON_ICON, ICON_FONT},
-    theme::{Element, button::ButtonClass},
+    widget::{Button, Column, Container, PickList, Row, Scrollable, Space, Text, Toggler},
 };
 
 use super::{Message, Settings};
+use crate::{
+    config::Config,
+    consts::{BOLD_FONT, FOLDER_ICON_ICON, ICON_FONT},
+    organize_type::OrgranizeMode,
+    theme::{Element, Theme, button::ButtonClass},
+};
+
+const TEXT_SIZE: u32 = 20;
 
 impl Settings {
-    pub fn view(&self) -> Element<Message> {
+    pub fn view<'a>(&'a self, config: &'a Config) -> Element<'a, Message> {
         let header = Row::new()
             .push(Text::new("Capter").size(60).font(BOLD_FONT))
             .push(Space::with_width(Length::Fill))
             .push(
-                Button::new(Text::new("Exit").center().size(20))
+                Button::new(Text::new("Exit").center().size(TEXT_SIZE))
                     .on_press(Message::RequestExit)
                     .height(40)
                     .width(80)
@@ -25,73 +28,57 @@ impl Settings {
             )
             .align_y(Center);
 
-        let body = Column::new()
-            .push(
-                Container::new(
+        let body = Scrollable::new(
+            Column::new()
+                .push(list_item(
+                    "Theme",
+                    PickList::new(&Theme::ALL[..], Some(&config.theme), Message::UpdateTheme)
+                        .text_size(TEXT_SIZE)
+                        .into(),
+                ))
+                .push(list_item(
+                    "Show Notification",
+                    Toggler::new(config.show_notification)
+                        .size(22)
+                        .on_toggle(Message::ToggleShowNotification)
+                        .into(),
+                ))
+                .push(list_item(
+                    "Screenshots Folder",
                     Row::new()
-                        .push(Text::new("Screenshots Directory").size(22).font(BOLD_FONT))
-                        .push(Space::with_width(Length::Fill))
                         .push(
                             Button::new(
                                 Text::new(FOLDER_ICON_ICON)
                                     .font(ICON_FONT)
-                                    .size(20)
+                                    .size(TEXT_SIZE)
                                     .center(),
                             )
-                            .height(40)
-                            .width(40)
                             .on_press(Message::OpenFolder),
                         )
                         .push(Space::with_width(10))
                         .push(
-                            Button::new(Text::new(self.screenshot_dir.as_str()).size(20).center())
-                                .height(40)
-                                .width(250)
-                                .on_press(Message::UpdateFolderPath),
+                            Button::new(
+                                Text::new(self.folder_path.as_str())
+                                    .size(TEXT_SIZE)
+                                    .center(),
+                            )
+                            .on_press(Message::UpdateFolderPath),
                         )
-                        .align_y(Center)
-                        .width(Length::Fill)
-                        .height(Length::Fill)
-                        .padding(10),
-                )
-                .height(80),
-            )
-            .push(
-                Container::new(
-                    Row::new()
-                        .push(Text::new("App Theme").size(22).font(BOLD_FONT))
-                        .push(Space::with_width(Length::Fill))
-                        .push(
-                            Button::new(Text::new(self.theme.to_string()).size(20).center())
-                                .height(40)
-                                .width(160)
-                                .on_press(Message::ToggleTheme),
-                        )
-                        .align_y(Center)
-                        .width(Length::Fill)
-                        .height(Length::Fill)
-                        .padding(10),
-                )
-                .height(80),
-            )
-            .push(
-                Container::new(
-                    Row::new()
-                        .push(Text::new("Notifications").size(22).font(BOLD_FONT))
-                        .push(Space::with_width(Length::Fill))
-                        .push(
-                            Toggler::new(self.notifications)
-                                .size(22)
-                                .on_toggle(Message::UpdateNotifications),
-                        )
-                        .align_y(Center)
-                        .width(Length::Fill)
-                        .height(Length::Fill)
-                        .padding(10),
-                )
-                .height(80),
-            )
-            .spacing(10);
+                        .into(),
+                ))
+                .push(list_item(
+                    "Organize Mode",
+                    PickList::new(
+                        &OrgranizeMode::ALL[..],
+                        Some(&config.organize_mode),
+                        Message::UpdateOrganizeMode,
+                    )
+                    .text_size(TEXT_SIZE)
+                    .into(),
+                ))
+                .spacing(10),
+        )
+        .spacing(5);
 
         Column::new()
             .push(header)
@@ -100,4 +87,19 @@ impl Settings {
             .padding(15)
             .into()
     }
+}
+
+fn list_item<'a>(label: &'a str, item: Element<'a, Message>) -> Element<'a, Message> {
+    Container::new(
+        Row::new()
+            .push(Text::new(label).size(22).font(BOLD_FONT))
+            .push(Space::with_width(Length::Fill))
+            .push(item)
+            .align_y(Center)
+            .width(Length::Fill)
+            .height(Length::Fill)
+            .padding(10),
+    )
+    .height(80)
+    .into()
 }

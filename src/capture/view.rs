@@ -7,15 +7,14 @@ use iced::{
     },
 };
 
-use crate::{
-    consts::{ICON_FONT, MEDIUM_FONT, MOVE_ICON},
-    theme::{Element, button::ButtonClass, container::ContainerClass, text::TextClass},
-};
-
 use super::{
     Capture, Message, Mode,
     crop::CropState,
     draw::{Tool, ToolColor},
+};
+use crate::{
+    consts::{ICON_FONT, MEDIUM_FONT, MOVE_ICON},
+    theme::{Element, button::ButtonClass, container::ContainerClass, text::TextClass},
 };
 
 const PADDING: f32 = 10.0;
@@ -53,7 +52,11 @@ impl Capture {
         };
 
         match &self.mode {
-            Mode::Crop { size, status, .. } => {
+            Mode::Crop {
+                size,
+                state: status,
+                ..
+            } => {
                 let description = match status {
                     CropState::FullScreen => String::from("Fullscreen"),
                     CropState::Window(window) => window.name.clone(),
@@ -93,7 +96,7 @@ impl Capture {
             }
             Mode::Draw {
                 element: shape,
-                status,
+                state: status,
             } => {
                 stack = stack.push(canvas_with_tooltip(format!(
                     "{} x {}",

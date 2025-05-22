@@ -126,8 +126,11 @@ impl App {
             }
             Message::WindowClosed(id) => {
                 match self.windows.remove(&id) {
-                    Some(AppWindow::Capture(capture_window)) => {
-                        let result = capture_window.finalize(&self.config.screenshot_dir);
+                    Some(AppWindow::Settings(_)) => {
+                        let _ = self.config.save();
+                    }
+                    Some(AppWindow::Capture(capture)) => {
+                        let result = capture.finalize(&self.config);
 
                         let image_path = result
                             .as_ref()
@@ -135,14 +138,12 @@ impl App {
                             .and_then(|filename| filename.to_str().map(String::from));
 
                         let msg = result
-                            .map(|_| "Screenshot captured".to_string())
+                            .map(|_| "Screenshot saved and copied to clipboard".to_string())
                             .unwrap_or_else(|err| err.to_string());
 
                         self.notify(&msg, image_path);
                     }
-                    Some(AppWindow::Settings(_)) => {
-                        let _ = self.config.save();
-                    }
+
                     None => (),
                 };
             }
@@ -162,14 +163,13 @@ impl App {
                             .map(move |message| Message::Settings(id, message)),
                     );
 
-                    action
-                        .requests
-                        .into_iter()
-                        .for_each(|request| match request {
+                    action.requests.into_iter().for_each(|request| {
+                        match request {
                             settings::Request::Exit => {
                                 tasks.push(Task::done(Message::ExitApp));
                             }
-                        });
+                        }
+                    });
 
                     return Task::batch(tasks);
                 }
@@ -186,14 +186,13 @@ impl App {
                             .map(move |message| Message::Capture(id, message)),
                     );
 
-                    action
-                        .requests
-                        .into_iter()
-                        .for_each(|request| match request {
+                    action.requests.into_iter().for_each(|request| {
+                        match request {
                             capture::Request::Close => {
                                 tasks.push(Task::done(Message::RequestClose(id)));
                             }
-                        });
+                        }
+                    });
 
                     return Task::batch(tasks);
                 }

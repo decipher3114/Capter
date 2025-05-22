@@ -16,6 +16,8 @@ mod capture;
 mod config;
 mod settings;
 
+mod organize_type;
+
 use std::collections::BTreeMap;
 
 use config::Config;
@@ -44,16 +46,17 @@ fn main() -> Result<(), iced::Error> {
         gtk::main();
     });
 
-    daemon(App::title, App::update, App::view)
+    daemon(App::new, App::update, App::view)
         .font(MEDIUM_FONT_TTF)
         .font(BOLD_FONT_TTF)
         .font(ICON_FONT_TTF)
         .default_font(MEDIUM_FONT)
+        .title(App::title)
         .style(App::style)
         .theme(App::theme)
         .subscription(App::subscription)
         .antialiasing(true)
-        .run_with(App::new)
+        .run()
 }
 
 pub struct App {

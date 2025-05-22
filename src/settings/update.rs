@@ -1,32 +1,32 @@
 use rfd::FileDialog;
 
-use crate::{action::Action, config::Config};
-
 use super::{Message, Request, Settings};
+use crate::{action::Action, config::Config};
 
 impl Settings {
     pub fn update(&mut self, message: Message, config: &mut Config) -> Action<Message, Request> {
         match message {
             Message::UpdateFolderPath => {
                 if let Some(path) = FileDialog::new()
-                    .set_directory(config.screenshot_dir.clone())
+                    .set_directory(config.folder_path.clone())
                     .pick_folder()
                 {
-                    config.screenshot_dir = path;
+                    config.folder_path = path;
 
-                    self.screenshot_dir = config.display_screenshot_dir();
+                    self.folder_path = config.truncate_folder_path();
                 }
             }
             Message::OpenFolder => {
                 config.open_screenshot_folder();
             }
-            Message::ToggleTheme => {
-                self.theme.toggle();
-                config.theme = self.theme.clone();
+            Message::UpdateTheme(theme) => {
+                config.theme = theme;
             }
-            Message::UpdateNotifications(notifications) => {
-                self.notifications = notifications;
-                config.notifications = notifications;
+            Message::ToggleShowNotification(show_notification) => {
+                config.show_notification = show_notification;
+            }
+            Message::UpdateOrganizeMode(organize_type) => {
+                config.organize_mode = organize_type;
             }
             Message::RequestExit => {
                 return Action::requests([Request::Exit]);

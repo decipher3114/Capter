@@ -1,6 +1,6 @@
-use std::path::{Path, PathBuf};
+use std::{fs, path::PathBuf};
 
-use anyhow::{Error, Result};
+use anyhow::{Context, Error, Result};
 use arboard::Clipboard;
 use chrono::Local;
 use edit_xml::{Document, ElementBuilder};
@@ -17,14 +17,18 @@ use super::{
     draw::{FONT_SIZE_FACTOR, STROKE_WIDHT_FACTOR, Tool},
     mode::Mode,
 };
-use crate::consts::{FONT_NAME, MEDIUM_FONT_TTF};
+use crate::{
+    config::Config,
+    consts::{APPNAME, FONT_NAME, MEDIUM_FONT_TTF},
+    organize_type::OrgranizeMode,
+};
 
 impl Capture {
-    pub fn finalize(mut self, directory: &Path) -> Result<PathBuf> {
+    pub fn finalize(mut self, config: &Config) -> Result<PathBuf> {
         if let Mode::Crop {
             top_left,
             bottom_right,
-            status,
+            state,
             ..
         } = self.mode
         {
@@ -42,7 +46,7 @@ impl Capture {
                 create_annotation_overlay(img_width, img_height, self.shapes, self.scale_factor)
                     .unwrap_or(RgbaImage::new(0, 0));
 
-            match status {
+            match state {
                 CropState::FullScreen => {
                     overlay(&mut self.image, &annotation_overlay, 0, 0);
                 }
@@ -79,12 +83,12 @@ impl Capture {
                             .to_image();
                 }
                 CropState::None => {
-                    return Err(Error::msg("Screenshot Cancelled"));
+                    return Err(Error::msg("Screenshot Cancelled!!"));
                 }
             };
         }
 
-        save_image(self.image, directory)
+        save_image(self.image, config)
     }
 }
 
@@ -263,22 +267,46 @@ pub fn create_annotation_overlay(
     RgbaImage::from_vec(width, height, pixmap.take())
 }
 
-fn save_image(image: RgbaImage, directory: &Path) -> Result<PathBuf> {
-    let filename = format!("Capture_{}.png", Local::now().format("%Y-%m-%d-%H-%M-%S"));
-    let image_path = directory.join(&filename);
+fn save_image(image: RgbaImage, config: &Config) -> Result<PathBuf> {
+    let timestamp = Local::now().format("%Y-%m-%d_%H-%M-%S");
+
+    let file_name = format!("{}_{}.png", APPNAME, timestamp);
+
+    let folder_path = match config.organize_mode {
+        OrgranizeMode::Flat => config.folder_path.clone(),
+        OrgranizeMode::ByYear => {
+            let year = Local::now().format("%Y");
+            config.folder_path.join(year.to_string())
+        }
+        OrgranizeMode::ByYearAndMonth => {
+            let year = Local::now().format("%Y");
+            let month = Local::now().format("%m");
+            config
+                .folder_path
+                .join(year.to_string())
+                .join(month.to_string())
+        }
+    };
+
+    if !folder_path.exists() {
+        fs::create_dir_all(&folder_path)
+            .with_context(|| format!("Failed to create folder: {}", folder_path.display()))?;
+    }
+
+    let image_path = folder_path.join(file_name);
 
     Clipboard::new()
-        .expect("Failed to initialize clipboard")
+        .context("Failed to initialize clipboard")?
         .set_image(arboard::ImageData {
             width: image.width() as usize,
             height: image.height() as usize,
             bytes: std::borrow::Cow::Borrowed(image.as_raw()),
         })
-        .expect("Failed to copy image to clipboard");
+        .context("Failed to copy image to clipboard")?;
 
     image
         .save_with_format(&image_path, ImageFormat::Png)
-        .expect("Failed to save image");
+        .context("Failed to save image!!")?;
 
     Ok(image_path)
 }

@@ -8,13 +8,13 @@ use super::{CapturedWindow, DrawElement, crop::CropState, draw::DrawState};
 pub enum Mode {
     Draw {
         element: DrawElement,
-        status: DrawState,
+        state: DrawState,
     },
     Crop {
         top_left: Point,
         bottom_right: Point,
         size: Size,
-        status: CropState,
+        state: CropState,
     },
 }
 
@@ -24,7 +24,7 @@ impl Default for Mode {
             top_left: Point::default(),
             bottom_right: Point::default(),
             size: Size::default(),
-            status: CropState::default(),
+            state: CropState::default(),
         }
     }
 }
@@ -45,7 +45,7 @@ impl Mode {
             top_left,
             bottom_right,
             size,
-            status,
+            state: status,
         } = self
         {
             let _ = windows
@@ -86,7 +86,7 @@ impl Mode {
     pub fn allows_drawing(&self) -> bool {
         if let Mode::Draw {
             element: shape,
-            status,
+            state: status,
         } = self
         {
             shape.tool.is_valid() || (shape.tool.is_text_tool() && status.is_waiting_for_input())

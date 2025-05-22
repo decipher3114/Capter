@@ -1,13 +1,10 @@
-use crate::config::Config;
-
 use super::Settings;
+use crate::config::Config;
 
 impl Settings {
     pub fn init(config: &Config) -> Self {
         Self {
-            theme: config.theme.clone(),
-            notifications: config.notifications,
-            screenshot_dir: config.display_screenshot_dir(),
+            folder_path: config.truncate_folder_path(),
         }
     }
 }

@@ -2,14 +2,14 @@ use std::ops::Mul;
 
 use iced::{
     Color, Pixels, Point, Radians, Rectangle, Renderer, Size,
-    alignment::{Horizontal, Vertical},
+    alignment::Vertical,
     widget::{
         Action,
         canvas::{
             Fill, Frame, Geometry, LineCap, LineDash, Path, Program, Stroke, Style, Text,
             path::{Builder, arc::Elliptical},
         },
-        text::LineHeight,
+        text::{Alignment, LineHeight},
     },
 };
 
@@ -83,7 +83,7 @@ impl Program<Message, Theme> for Capture {
                 size,
                 ..
             } => {
-                let overlay = Fill::from(Color::from_rgba(0.0, 0.0, 0.0, 0.9));
+                let overlay = Fill::from(Color::from_rgba(0.0, 0.0, 0.0, 0.5));
 
                 let selection = Path::rectangle(top_left.to_owned(), size.to_owned());
 
@@ -284,7 +284,7 @@ fn draw_shape(frame: &mut Frame, shape: &DrawElement, guide: bool) {
                 size: Pixels(font_size as f32),
                 color,
                 font: MEDIUM_FONT,
-                align_x: Horizontal::Left,
+                align_x: Alignment::Left,
                 align_y: Vertical::Top,
                 line_height: LineHeight::Relative(1.0),
                 ..Default::default()

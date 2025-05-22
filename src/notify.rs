@@ -8,7 +8,7 @@ impl App {
             notification::visual::{Image, Placement, Text},
         };
 
-        if !self.config.notifications {
+        if !self.config.show_notification {
             return;
         };
 
@@ -36,8 +36,7 @@ impl App {
 
         let _ = notification_builder
             .build(1, &self.notifier, APPNAME, APPID)
-            .expect("Notification must be built")
-            .show();
+            .and_then(|notification| notification.show());
     }
 
     #[cfg(target_os = "linux")]

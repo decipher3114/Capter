@@ -7,21 +7,23 @@ use std::{
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 
-use crate::theme::Theme;
+use crate::{organize_type::OrgranizeMode, theme::Theme};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
-    pub screenshot_dir: PathBuf,
-    pub notifications: bool,
+    pub folder_path: PathBuf,
+    pub organize_mode: OrgranizeMode,
+    pub show_notification: bool,
     pub theme: Theme,
 }
 
 impl Default for Config {
     fn default() -> Self {
         Self {
-            theme: Theme::Light,
-            notifications: true,
-            screenshot_dir: Self::default_screenshot_dir(),
+            folder_path: Self::default_screenshot_dir(),
+            organize_mode: Default::default(),
+            show_notification: true,
+            theme: Default::default(),
         }
     }
 }
@@ -53,15 +55,15 @@ impl Config {
         Ok(())
     }
 
-    /// Gets the config file path and ensures the directory exists.
+    /// Gets the config file path and ensures the folder exists.
     fn get_config_file() -> Result<(File, bool)> {
-        let config_dir = dirs::config_dir()
-            .with_context(|| "Failed to get config directory")?
+        let config_folder = dirs::config_dir()
+            .with_context(|| "Failed to get config folder path")?
             .join("Capter");
-        let config_path = config_dir.join("capter.toml");
+        let config_path = config_folder.join("capter.toml");
 
-        if !config_dir.exists() {
-            DirBuilder::new().recursive(true).create(&config_dir)?;
+        if !config_folder.exists() {
+            DirBuilder::new().recursive(true).create(&config_folder)?;
         }
 
         let is_newly_created = !config_path.exists();
@@ -75,12 +77,12 @@ impl Config {
         Ok((file, is_newly_created))
     }
 
-    /// Returns a shortened version of the screenshot directory for UI.
-    pub fn display_screenshot_dir(&self) -> String {
+    /// Returns a truncated version of the screenshot folder path for UI.
+    pub fn truncate_folder_path(&self) -> String {
         let home_dir = dirs::home_dir().unwrap_or_else(|| PathBuf::from(""));
 
-        let mut display_path = self.screenshot_dir.clone();
-        if let Ok(stripped) = self.screenshot_dir.strip_prefix(&home_dir) {
+        let mut display_path = self.folder_path.clone();
+        if let Ok(stripped) = self.folder_path.strip_prefix(&home_dir) {
             display_path = PathBuf::from("~").join(stripped);
         }
 
@@ -92,7 +94,7 @@ impl Config {
         }
     }
 
-    /// Provides the default screenshot directory.
+    /// Provides the default screenshots folder.
     fn default_screenshot_dir() -> PathBuf {
         let screenshot_dir = dirs::picture_dir()
             .unwrap_or_else(|| PathBuf::from("Pictures"))
@@ -101,12 +103,12 @@ impl Config {
         DirBuilder::new()
             .recursive(true)
             .create(&screenshot_dir)
-            .expect("Failed to create screenshot directory");
+            .expect("Failed to create screenshots folder");
 
         screenshot_dir
     }
 
     pub fn open_screenshot_folder(&self) {
-        opener::open(&self.screenshot_dir).expect("Failed to open screenshot folder");
+        opener::open(&self.folder_path).expect("Failed to open screenshot folder");
     }
 }
