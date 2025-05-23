@@ -9,6 +9,7 @@ use crate::{
     capture::{self, Capture},
     consts::APPICON,
     settings::{self, Settings},
+    tray_icon::create_tray_icon,
     window::AppWindow,
 };
 
@@ -197,6 +198,9 @@ impl App {
 
                     return Task::batch(tasks);
                 }
+            }
+            Message::CreateTrayIcon => {
+                self.tray_icon = Some(create_tray_icon());
             }
         }
         Task::none()
