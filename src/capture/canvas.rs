@@ -30,20 +30,18 @@ impl Program<Message, Theme> for Capture {
         _cursor: iced::advanced::mouse::Cursor,
     ) -> Option<Action<Message>> {
         match event {
-            iced::Event::Mouse(event) => {
-                match event {
-                    iced::mouse::Event::CursorMoved { position } => {
-                        Some(Action::publish(Message::MouseMoved(*position)))
-                    }
-                    iced::mouse::Event::ButtonPressed(iced::mouse::Button::Left) => {
-                        Some(Action::publish(Message::MousePressed))
-                    }
-                    iced::mouse::Event::ButtonReleased(iced::mouse::Button::Left) => {
-                        Some(Action::publish(Message::MouseReleased))
-                    }
-                    _ => None,
+            iced::Event::Mouse(event) => match event {
+                iced::mouse::Event::CursorMoved { position } => {
+                    Some(Action::publish(Message::MouseMoved(*position)))
                 }
-            }
+                iced::mouse::Event::ButtonPressed(iced::mouse::Button::Left) => {
+                    Some(Action::publish(Message::MousePressed))
+                }
+                iced::mouse::Event::ButtonReleased(iced::mouse::Button::Left) => {
+                    Some(Action::publish(Message::MouseReleased))
+                }
+                _ => None,
+            },
             _ => None,
         }
     }

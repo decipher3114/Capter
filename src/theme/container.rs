@@ -21,20 +21,16 @@ impl Catalog for Theme {
         let palette = self.palette();
         let extended_palette = self.extended_palette();
         match class {
-            ContainerClass::Default => {
-                Style {
-                    background: Some(Background::Color(extended_palette.background.weak.color)),
-                    border: border(extended_palette),
-                    text_color: Some(palette.text),
-                    ..Default::default()
-                }
-            }
-            ContainerClass::Transparent => {
-                Style {
-                    background: Some(Background::Color(Color::TRANSPARENT)),
-                    ..Default::default()
-                }
-            }
+            ContainerClass::Default => Style {
+                background: Some(Background::Color(extended_palette.background.weak.color)),
+                border: border(extended_palette),
+                text_color: Some(palette.text),
+                ..Default::default()
+            },
+            ContainerClass::Transparent => Style {
+                background: Some(Background::Color(Color::TRANSPARENT)),
+                ..Default::default()
+            },
         }
     }
 }
