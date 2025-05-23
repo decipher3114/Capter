@@ -1,10 +1,10 @@
 [package]
-name = "Capter"
-version = "3.1.0"
+name        = "Capter"
+version     = "3.1.0"
 description = "Cross-Platform Screen Capture and Annotation Tool"
-edition = "2024"
-authors = ["decipher"]
-build = "build.rs"
+edition     = "2024"
+authors     = ["decipher"]
+build       = "build.rs"
 
 [dependencies]
 anyhow = "1.0"
@@ -25,7 +25,7 @@ iced = { git = "https://github.com/iced-rs/iced.git", branch = "master", feature
 ] }
 interprocess = { version = "2.2", features = ["tokio"] }
 mouse_position = "0.1"
-opener = "0.7"
+opener = "0.8"
 rdev = { git = "https://github.com/rustdesk-org/rdev", branch = "master" }
 resvg = { version = "0.45", default-features = false, features = ["text"] }
 rfd = "0.15"
@@ -33,13 +33,13 @@ serde = { version = "1.0", features = ["derive"] }
 tokio = { version = "1.45", default-features = false, features = ["time"] }
 toml = { version = "0.8" }
 tray-icon = "0.20"
-xcap = { version = "0.4", default-features = false }
+xcap = { version = "0.6", default-features = false }
 
 [target.'cfg( target_os = "windows" )'.dependencies]
 win32_notif = "0.4"
 
 [target.'cfg( target_os = "linux" )'.dependencies]
-gtk = "0.18"
+gtk         = "0.18"
 notify-rust = { version = "4.11", features = ["images"] }
 
 [target.'cfg( target_os = "macos")'.dependencies]
@@ -49,7 +49,7 @@ notify-rust = { version = "4.11", features = ["images"] }
 winresource = "0.1"
 
 [package.metadata.winresource]
-ProductName = "Capter"
+ProductName     = "Capter"
 FileDescription = "Capter"
 
 [package.metadata.packager]
@@ -68,14 +68,14 @@ icons = [
 out-dir = "target/packages"
 
 [package.metadata.packager.wix]
-banner-path = "assets/images/wix_banner.png"
+banner-path       = "assets/images/wix_banner.png"
 dialog-image-path = "assets/images/dialog_image.png"
 
 [package.metadata.packager.windows]
-digest-algorithim = "SHA256"
+digest-algorithim      = "SHA256"
 certificate-thumbprint = "07a9c417660868a4420fe9e2f8b6ac2e1a33228a"
-tsp = true
-timestamp-url = "http://timestamp.digicert.com"
+tsp                    = true
+timestamp-url          = "http://timestamp.digicert.com"
 
 [package.metadata.packager.macos]
 minimum-system-version = "10.13"
