@@ -48,6 +48,10 @@ notify-rust = { version = "4.11", features = ["images"] }
 [target.'cfg( target_os = "windows" )'.build-dependencies]
 winresource = "0.1"
 
+[profile.release]
+codegen-units = 1
+lto = true
+
 [package.metadata.winresource]
 ProductName     = "Capter"
 FileDescription = "Capter"
