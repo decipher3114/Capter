@@ -20,11 +20,11 @@ mod organize_type;
 
 use std::collections::BTreeMap;
 
+use ::tray_icon::TrayIcon;
 use config::Config;
 use consts::{APPNAME, BOLD_FONT_TTF, ICON_FONT_TTF, MEDIUM_FONT, MEDIUM_FONT_TTF};
 use iced::{Task, daemon, window::Id};
 use interprocess::local_socket::{self, GenericNamespaced, ToNsName, traits::Stream};
-use tray_icon::create_tray_icon;
 use window::AppWindow;
 
 fn main() -> Result<(), iced::Error> {
@@ -36,13 +36,10 @@ fn main() -> Result<(), iced::Error> {
         return Ok(());
     };
 
-    #[cfg(not(target_os = "linux"))]
-    let _tray_icon = create_tray_icon();
-
     #[cfg(target_os = "linux")]
     std::thread::spawn(|| {
         gtk::init().expect("GTK must be initialized");
-        let _tray_icon = create_tray_icon();
+        let _tray_icon = tray_icon::create_tray_icon();
         gtk::main();
     });
 
@@ -65,6 +62,7 @@ pub struct App {
 
     config: Config,
     windows: BTreeMap<Id, AppWindow>,
+    tray_icon: Option<TrayIcon>,
 }
 
 #[derive(Debug, Clone)]
@@ -80,23 +78,27 @@ pub enum Message {
     ExitApp,
     Settings(Id, settings::Message),
     Capture(Id, capture::Message),
+    CreateTrayIcon,
 }
 
 impl App {
     pub fn new() -> (App, Task<Message>) {
         let (config, task) = match Config::load() {
-            Ok((config, is_first_creation)) => {
-                (
-                    config,
-                    if is_first_creation {
-                        Task::done(Message::OpenSettingsWindow)
-                    } else {
-                        Task::none()
-                    },
-                )
-            }
+            Ok((config, is_first_creation)) => (
+                config,
+                if is_first_creation {
+                    Task::done(Message::OpenSettingsWindow)
+                } else {
+                    Task::none()
+                },
+            ),
             Err(_) => (Config::default(), Task::done(Message::OpenSettingsWindow)),
         };
+        let task = Task::batch([
+            task,
+            #[cfg(not(target_os = "linux"))]
+            Task::done(Message::CreateTrayIcon),
+        ]);
 
         (
             App {
@@ -106,6 +108,7 @@ impl App {
 
                 config,
                 windows: BTreeMap::new(),
+                tray_icon: None,
             },
             task,
         )
