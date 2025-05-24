@@ -107,7 +107,7 @@ pub fn tray_menu_listener() -> impl Stream<Item = Message> {
                 "exit" => {
                     let _ = output.send(Message::ExitApp).await;
                 }
-                _ => (),
+                _ => {}
             }
         }
     })

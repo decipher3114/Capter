@@ -15,22 +15,28 @@ impl App {
     pub fn subscription(&self) -> Subscription<Message> {
         let window_events = window::close_events().map(Message::WindowClosed);
 
-        let app_key_listener = keyboard::on_key_press(|key, modifiers| match key {
-            key::Key::Named(named) => match named {
-                key::Named::Escape => Some(Message::Cancel),
-                key::Named::Enter => Some(Message::Done),
-                _ => None,
-            },
-            key::Key::Character(char) => match char.as_str() {
-                "s" if modifiers.contains(Modifiers::SHIFT)
-                    && modifiers.contains(Modifiers::ALT) =>
-                {
-                    Some(Message::OpenCaptureWindow)
+        let app_key_listener = keyboard::on_key_press(|key, modifiers| {
+            match key {
+                key::Key::Named(named) => {
+                    match named {
+                        key::Named::Escape => Some(Message::Cancel),
+                        key::Named::Enter => Some(Message::Done),
+                        _ => None,
+                    }
                 }
-                "z" if modifiers == Modifiers::CTRL => Some(Message::Undo),
+                key::Key::Character(char) => {
+                    match char.as_str() {
+                        "s" if modifiers.contains(Modifiers::SHIFT)
+                            && modifiers.contains(Modifiers::ALT) =>
+                        {
+                            Some(Message::OpenCaptureWindow)
+                        }
+                        "z" if modifiers == Modifiers::CTRL => Some(Message::Undo),
+                        _ => None,
+                    }
+                }
                 _ => None,
-            },
-            _ => None,
+            }
         });
 
         let global_key_listener = Subscription::run(global_key_listener);

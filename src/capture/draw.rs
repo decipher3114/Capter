@@ -280,7 +280,7 @@ impl Tool {
                     final_pt.y - size * (rad + std::f32::consts::PI / 5.0).sin(),
                 );
             }
-            Self::Text { .. } => (),
+            _ => {}
         }
     }
 

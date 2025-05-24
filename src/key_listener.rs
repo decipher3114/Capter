@@ -2,8 +2,7 @@ use iced::{
     futures::{SinkExt, Stream, StreamExt, channel::mpsc},
     stream,
 };
-use rdev::listen;
-use rdev::{EventType, Key};
+use rdev::{EventType, Key, listen};
 
 use crate::Message;
 
@@ -23,27 +22,27 @@ pub fn global_key_listener() -> impl Stream<Item = Message> {
         loop {
             let event = receiver.select_next_some().await;
             match event.event_type {
-                EventType::KeyPress(key) => match key {
-                    Key::Alt => alt_pressed = true,
-                    Key::ShiftLeft | Key::ShiftRight => shift_pressed = true,
-                    Key::KeyS if alt_pressed && shift_pressed => {
-                        let _ = output.send(Message::OpenCaptureWindow).await;
+                EventType::KeyPress(key) => {
+                    match key {
+                        Key::Alt => alt_pressed = true,
+                        Key::ShiftLeft | Key::ShiftRight => shift_pressed = true,
+                        Key::KeyS if alt_pressed && shift_pressed => {
+                            let _ = output.send(Message::OpenCaptureWindow).await;
+                        }
+                        Key::KeyO if alt_pressed && shift_pressed => {
+                            let _ = output.send(Message::OpenSettingsWindow).await;
+                        }
+                        _ => {}
                     }
-                    Key::KeyO if alt_pressed && shift_pressed => {
-                        let _ = output.send(Message::OpenSettingsWindow).await;
+                }
+                EventType::KeyRelease(key) => {
+                    match key {
+                        Key::Alt => alt_pressed = false,
+                        Key::ShiftLeft | Key::ShiftRight => shift_pressed = false,
+                        _ => {}
                     }
-                    _ => (),
-                },
-                EventType::KeyRelease(key) => match key {
-                    Key::Alt => {
-                        alt_pressed = false;
-                    }
-                    Key::ShiftLeft | Key::ShiftRight => {
-                        shift_pressed = false;
-                    }
-                    _ => (),
-                },
-                _ => (),
+                }
+                _ => {}
             }
         }
     })

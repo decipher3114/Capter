@@ -4,7 +4,7 @@ use iced::{
     widget::text_input::{Catalog, Status, Style},
 };
 
-use super::Theme;
+use crate::theme::Theme;
 
 pub enum TextInputClass {
     Default,

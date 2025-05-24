@@ -11,13 +11,13 @@ use xcap::image::{
     imageops::{crop_imm, overlay},
 };
 
-use super::{
-    Capture, DrawElement,
-    crop::CropState,
-    draw::{FONT_SIZE_FACTOR, STROKE_WIDHT_FACTOR, Tool},
-    mode::Mode,
-};
 use crate::{
+    capture::{
+        Capture,
+        crop::CropState,
+        draw::{DrawElement, FONT_SIZE_FACTOR, STROKE_WIDHT_FACTOR, Tool},
+        mode::Mode,
+    },
     config::Config,
     consts::{APPNAME, FONT_NAME, MEDIUM_FONT_TTF},
     organize_type::OrgranizeMode,

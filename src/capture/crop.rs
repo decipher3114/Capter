@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use iced::Point;
 
-use super::CapturedWindow;
+use crate::capture::CapturedWindow;
 
 #[derive(Debug, Default)]
 pub enum CropState {

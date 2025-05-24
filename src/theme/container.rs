@@ -3,7 +3,7 @@ use iced::{
     widget::container::{Catalog, Style},
 };
 
-use super::{Theme, border};
+use crate::theme::{Theme, border};
 
 pub enum ContainerClass {
     Default,

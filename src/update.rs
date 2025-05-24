@@ -143,8 +143,7 @@ impl App {
 
                         self.notify(&msg, image_path);
                     }
-
-                    None => (),
+                    None => {}
                 };
             }
             Message::ExitApp => {

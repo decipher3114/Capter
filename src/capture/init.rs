@@ -4,7 +4,7 @@ use anyhow::{Context, Result};
 use iced::{Point, widget::canvas::Cache};
 use xcap::Monitor;
 
-use super::{Capture, CapturedWindow, mode::Mode};
+use crate::capture::{Capture, CapturedWindow, mode::Mode};
 
 impl Capture {
     pub fn new(monitor: Monitor) -> Result<Self> {

@@ -3,7 +3,7 @@ use iced::{
     widget::slider::{Catalog, Handle, HandleShape, Rail, Status, Style},
 };
 
-use super::{Theme, border};
+use crate::theme::{Theme, border};
 
 pub enum SliderClass {
     Default,

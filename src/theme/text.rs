@@ -3,7 +3,7 @@ use iced::{
     widget::text::{Catalog, Style},
 };
 
-use super::Theme;
+use crate::theme::Theme;
 
 pub enum TextClass {
     Default,

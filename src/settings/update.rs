@@ -1,7 +1,10 @@
 use rfd::FileDialog;
 
-use super::{Message, Request, Settings};
-use crate::{action::Action, config::Config};
+use crate::{
+    action::Action,
+    config::Config,
+    settings::{Message, Request, Settings},
+};
 
 impl Settings {
     pub fn update(&mut self, message: Message, config: &mut Config) -> Action<Message, Request> {

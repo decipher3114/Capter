@@ -1,7 +1,14 @@
 use iced::{Point, Size, widget::text_input::focus};
 
-use super::{Capture, DrawElement, Message, Request, crop::CropState, draw::DrawState, mode::Mode};
-use crate::action::Action;
+use crate::{
+    action::Action,
+    capture::{
+        Capture, Message, Request,
+        crop::CropState,
+        draw::{DrawElement, DrawState},
+        mode::Mode,
+    },
+};
 
 impl Capture {
     pub fn update(&mut self, message: Message) -> Action<Message, Request> {

@@ -2,7 +2,11 @@ use std::rc::Rc;
 
 use iced::{Point, Size};
 
-use super::{CapturedWindow, DrawElement, crop::CropState, draw::DrawState};
+use crate::capture::{
+    CapturedWindow,
+    crop::CropState,
+    draw::{DrawElement, DrawState},
+};
 
 #[derive(Debug)]
 pub enum Mode {

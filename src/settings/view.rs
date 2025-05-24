@@ -4,11 +4,11 @@ use iced::{
     widget::{Button, Column, Container, PickList, Row, Scrollable, Space, Text, Toggler},
 };
 
-use super::{Message, Settings};
 use crate::{
     config::Config,
-    consts::{BOLD_FONT, FOLDER_ICON_ICON, ICON_FONT},
+    consts::{APPNAME, BOLD_FONT, FOLDER_ICON_ICON, ICON_FONT},
     organize_type::OrgranizeMode,
+    settings::{Message, Settings},
     theme::{Element, Theme, button::ButtonClass},
 };
 
@@ -17,13 +17,12 @@ const TEXT_SIZE: u32 = 20;
 impl Settings {
     pub fn view<'a>(&'a self, config: &'a Config) -> Element<'a, Message> {
         let header = Row::new()
-            .push(Text::new("Capter").size(60).font(BOLD_FONT))
+            .push(Text::new(APPNAME).size(60).font(BOLD_FONT))
             .push(Space::with_width(Length::Fill))
             .push(
                 Button::new(Text::new("Exit").center().size(TEXT_SIZE))
                     .on_press(Message::RequestExit)
                     .height(40)
-                    .width(80)
                     .class(ButtonClass::Danger),
             )
             .align_y(Center);
@@ -78,13 +77,13 @@ impl Settings {
                 ))
                 .spacing(10),
         )
-        .spacing(5);
+        .spacing(10);
 
         Column::new()
             .push(header)
             .push(body)
             .spacing(10)
-            .padding(15)
+            .padding(10)
             .into()
     }
 }

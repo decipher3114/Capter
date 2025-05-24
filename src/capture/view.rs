@@ -7,12 +7,13 @@ use iced::{
     },
 };
 
-use super::{
-    Capture, Message, Mode,
-    crop::CropState,
-    draw::{Tool, ToolColor},
-};
 use crate::{
+    capture::{
+        Capture, Message,
+        crop::CropState,
+        draw::{Tool, ToolColor},
+        mode::Mode,
+    },
     consts::{ICON_FONT, MEDIUM_FONT, MOVE_ICON},
     theme::{Element, button::ButtonClass, container::ContainerClass, text::TextClass},
 };

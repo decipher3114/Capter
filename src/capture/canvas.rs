@@ -13,11 +13,15 @@ use iced::{
     },
 };
 
-use super::{
-    Capture, DrawElement, Message,
-    draw::{FONT_SIZE_FACTOR, STROKE_WIDHT_FACTOR, Tool},
+use crate::{
+    capture::{
+        Capture, Message,
+        draw::{DrawElement, FONT_SIZE_FACTOR, STROKE_WIDHT_FACTOR, Tool},
+        mode::Mode,
+    },
+    consts::MEDIUM_FONT,
+    theme::Theme,
 };
-use crate::{capture::mode::Mode, consts::MEDIUM_FONT, theme::Theme};
 
 impl Program<Message, Theme> for Capture {
     type State = ();

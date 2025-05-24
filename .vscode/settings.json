@@ -1,0 +1,32 @@
+{
+    "evenBetterToml.formatter.alignComments": true,
+    "evenBetterToml.formatter.alignEntries": true,
+    "evenBetterToml.formatter.arrayAutoCollapse": true,
+    "evenBetterToml.formatter.arrayAutoExpand": true,
+    "evenBetterToml.formatter.arrayTrailingComma": true,
+    "evenBetterToml.formatter.trailingNewline": true,
+    "evenBetterToml.formatter.reorderArrays": true,
+    "evenBetterToml.formatter.reorderInlineTables": true,
+    "evenBetterToml.formatter.reorderKeys": true,
+    "evenBetterToml.rules": [
+        {
+            "formatting": {
+                "reorder_arrays": false,
+                "reorder_inline_tables": false,
+                "reorder_keys": false
+            },
+            "include": [
+                "Cargo.toml"
+            ],
+            "keys": [
+                "package",
+            ]
+        }
+    ],
+    "rust-analyzer.check.command": "clippy",
+    "rust-analyzer.imports.granularity.enforce": true,
+    "rust-analyzer.imports.prefix": "crate",
+    "rust-analyzer.rustfmt.extraArgs": [
+        "+nightly"
+    ],
+}

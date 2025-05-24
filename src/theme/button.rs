@@ -3,7 +3,7 @@ use iced::{
     widget::button::{Catalog, Status, Style},
 };
 
-use super::{Theme, border};
+use crate::theme::{Theme, border};
 
 pub enum ButtonClass {
     Default,
@@ -25,28 +25,32 @@ impl Catalog for Theme {
         Style {
             background: {
                 match status {
-                    Status::Active => match class {
-                        ButtonClass::Default => {
-                            Some(Background::Color(extended_palette.background.strong.color))
+                    Status::Active => {
+                        match class {
+                            ButtonClass::Default => {
+                                Some(Background::Color(extended_palette.background.strong.color))
+                            }
+                            ButtonClass::Danger => {
+                                Some(Background::Color(extended_palette.danger.base.color))
+                            }
+                            ButtonClass::Selected => {
+                                Some(Background::Color(extended_palette.primary.base.color))
+                            }
                         }
-                        ButtonClass::Danger => {
-                            Some(Background::Color(extended_palette.danger.base.color))
+                    }
+                    Status::Hovered | Status::Pressed => {
+                        match class {
+                            ButtonClass::Default => {
+                                Some(Background::Color(extended_palette.background.strong.color))
+                            }
+                            ButtonClass::Danger => {
+                                Some(Background::Color(extended_palette.danger.strong.color))
+                            }
+                            ButtonClass::Selected => {
+                                Some(Background::Color(extended_palette.primary.strong.color))
+                            }
                         }
-                        ButtonClass::Selected => {
-                            Some(Background::Color(extended_palette.primary.base.color))
-                        }
-                    },
-                    Status::Hovered | Status::Pressed => match class {
-                        ButtonClass::Default => {
-                            Some(Background::Color(extended_palette.background.strong.color))
-                        }
-                        ButtonClass::Danger => {
-                            Some(Background::Color(extended_palette.danger.strong.color))
-                        }
-                        ButtonClass::Selected => {
-                            Some(Background::Color(extended_palette.primary.strong.color))
-                        }
-                    },
+                    }
                     Status::Disabled => Some(Background::Color(Color::default())),
                 }
             },
