@@ -102,3 +102,7 @@ depends = [
     "libxrandr",
     "dbus",
 ]
+
+[profile.release]
+codegen-units = 1
+lto = true
