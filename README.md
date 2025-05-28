@@ -5,9 +5,10 @@
       <img src="https://raw.githubusercontent.com/decipher3114/Capter/master/assets/images/banner_dark.png">
     </picture>
 </p>
-<h3 align="center">Cross-Platform Screen Capture Tool</h3>
+<h3 align="center">Cross-Platform Screen Capture and Annotation Tool</h3>
 
 ## ✨ Features
+
 - Capture fullscreen, window, or cropped area with ease
 - Window selection assistance for precise captures
 - Powerful annotation tools: Rectangle, Circle, Line, Arrow, Freehand, Highlighter, and Text
@@ -15,36 +16,40 @@
 - Built-in copy-to-clipboard support for quick sharing
 
 ## 📥 Installation
+
 - ### Windows
-    ```
-    winget install decipher.Capter
-    ```
+
+  ```
+  winget install decipher.Capter
+  ```
 
 - ### Arch
-    ```
-    paru -S capter
-    ```
-    OR
-    ```
-    yay -S capter
-    ```
+  ```
+  paru -S capter
+  ```
+  OR
+  ```
+  yay -S capter
+  ```
 - ### Debian
-    Download from [Releases](https://github.com/decipher3114/Capter/releases/latest)
+
+  Download from [Releases](https://github.com/decipher3114/Capter/releases/latest)
 
 - ### Mac OS
-    Download from [Releases](https://github.com/decipher3114/Capter/releases/latest)
+
+  Download from [Releases](https://github.com/decipher3114/Capter/releases/latest)
 
 - ### Cargo
-    ```
-    cargo install --git https://github.com/decipher3114/Capter
-    ```
+  ```
+  cargo install --git https://github.com/decipher3114/Capter
+  ```
 
 ## 🎬 Video
 
 [![YouTube](http://i.ytimg.com/vi/1RSB8945yJA/0.jpg)](https://www.youtube.com/watch?v=1RSB8945yJA)
 
-
 ### 🙌 Thanks to
+
 - [iced](https://github.com/iced-rs) community for their help
 - [XelXen](https://github.com/xelxen) for UI idea
 - Other crate maintainers

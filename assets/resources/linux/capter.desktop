@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Capter
-Comment=A simple cross-platform screenshot tool
-Exec=capter 
+Comment=Cross-Platform Screen Capture and Annotation Tool
+Exec=capter
 Icon=capter
 Terminal=false
 Type=Application

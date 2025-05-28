@@ -1,0 +1,67 @@
+name: Build
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+            container: "archlinux"
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+            container: ""
+          - target: x86_64-apple-darwin
+            os: macos-latest
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Packages (apt)
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.container == '' }}
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: pkg-config libclang-dev libxcb1-dev libxrandr-dev libdbus-1-dev libpipewire-0.3-dev libwayland-dev libegl-dev libxdo-dev libgtk-3-dev libgbm-dev
+          version: 1.0
+
+      - name: Install Packages (pacman)
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.container == 'archlinux' }}
+        run: |
+          pacman -Syyu --noconfirm base-devel clang libxcb libxrandr dbus libpipewire xdotool gtk3
+
+      - name: Setup Dev Drive
+        if: ${{ matrix.os == 'windows-latest' }}
+        uses: samypr100/setup-dev-drive@v3
+        with:
+          drive-size: 5GB
+          workspace-copy: true
+          native-dev-drive: true
+          env-mapping: |
+            CARGO_HOME,{{ DEV_DRIVE }}/.cargo
+            RUSTUP_HOME,{{ DEV_DRIVE }}/.rustup
+
+      - name: Setup Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: stable
+          target: ${{ matrix.target }}
+
+      - name: Build binary
+        run: |
+          cargo build --locked -v
