@@ -49,7 +49,7 @@ jobs:
         if: ${{ matrix.os == 'windows-latest' }}
         uses: samypr100/setup-dev-drive@v3
         with:
-          drive-size: 5GB
+          drive-size: 10GB
           workspace-copy: true
           native-dev-drive: true
           env-mapping: |
@@ -61,7 +61,7 @@ jobs:
         with:
           toolchain: stable
           target: ${{ matrix.target }}
-          cache-shared-key: ${{ matrix.os }}-${{ matrix.container }}
+          cache-shared-key: build-${{ matrix.os }}-${{ matrix.container }}
           cache-workspaces: ${{ env.DEV_DRIVE_WORKSPACE }}
 
       - name: Build binary
