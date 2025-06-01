@@ -5,7 +5,7 @@ impl App {
     pub fn notify(&self, body: &str, image_path: Option<String>) {
         use win32_notif::{
             NotificationActivatedEventHandler, NotificationBuilder,
-            notification::visual::{Image, Placement, Text},
+            notification::visual::{Image, Placement, Text, image::ImageCrop},
         };
 
         if !self.config.show_notification {
@@ -14,16 +14,18 @@ impl App {
 
         use crate::consts::{APPID, APPNAME};
 
-        let mut notification_builder = NotificationBuilder::new().visual(Text::create(1, body));
+        let mut notification_builder =
+            NotificationBuilder::new().visual(Text::new(1, None, None, String::from(body)));
 
         if let Some(image_path) = image_path {
             notification_builder = notification_builder.visual(Image::new(
                 1,
-                image_path.clone(),
+                format!("file:///{image_path}"),
                 None,
-                true,
+                false,
                 Placement::Hero,
-                true,
+                ImageCrop::Default,
+                false,
             ));
 
             notification_builder = notification_builder.on_activated(
