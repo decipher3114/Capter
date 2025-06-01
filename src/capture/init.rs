@@ -24,12 +24,14 @@ impl Capture {
                             && !window.title().ok()?.is_empty()
                             && !window.app_name().ok()?.is_empty()
                         {
+                            let scale_factor = monitor.scale_factor().unwrap_or(1.0);
+
                             Some(Rc::new(CapturedWindow {
                                 name: window.title().ok()?.to_string(),
-                                x: window.x().ok()? as f32,
-                                y: window.y().ok()? as f32,
-                                width: window.width().ok()? as f32,
-                                height: window.height().ok()? as f32,
+                                x: window.x().ok()? as f32 * scale_factor,
+                                y: window.y().ok()? as f32 * scale_factor,
+                                width: window.width().ok()? as f32 * scale_factor,
+                                height: window.height().ok()? as f32 * scale_factor,
                                 screenshot: window.capture_image().ok()?,
                             }))
                         } else {
