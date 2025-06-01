@@ -61,7 +61,10 @@ jobs:
         with:
           toolchain: stable
           target: ${{ matrix.target }}
+          cache-shared-key: ${{ matrix.os }}-${{ matrix.container }}
+          cache-workspaces: ${{ env.DEV_DRIVE_WORKSPACE }}
 
       - name: Build binary
+        working-directory: ${{ env.DEV_DRIVE_WORKSPACE }}
         run: |
-          cargo build --locked -v
+          cargo build --locked

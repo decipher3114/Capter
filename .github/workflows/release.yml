@@ -70,8 +70,11 @@ jobs:
         with:
           toolchain: stable
           target: ${{ matrix.target }}
+          cache-shared-key: ${{ matrix.os }}-${{ matrix.container }}
+          cache-workspaces: ${{ env.DEV_DRIVE_WORKSPACE }}
 
       - name: Build binary
+        working-directory: ${{ env.DEV_DRIVE_WORKSPACE }}
         run: |
           cargo build --release --locked
 
@@ -81,8 +84,9 @@ jobs:
           tool: cargo-packager
 
       - name: Package binary
+        working-directory: ${{ env.DEV_DRIVE_WORKSPACE }}
         run: |
-          cargo packager --release --formats ${{ matrix.format }} -v
+          cargo packager --release --formats ${{ matrix.format }}
 
       - name: Upload Artifact (msi)
         uses: actions/upload-artifact@v4
@@ -90,7 +94,7 @@ jobs:
         with:
           name: msi
           path: |
-            target/packages/*.msi
+            ${{ env.DEV_DRIVE_WORKSPACE }}/target/packages/*.msi
 
       - name: Upload Artifact (deb)
         uses: actions/upload-artifact@v4
@@ -123,7 +127,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Update CHANGELOG
+      - name: Generate CHANGELOG
         id: changelog
         uses: requarks/changelog-action@v1
         with:
