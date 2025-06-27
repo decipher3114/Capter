@@ -270,7 +270,7 @@ pub fn create_annotation_overlay(
 fn save_image(image: RgbaImage, config: &Config) -> Result<PathBuf> {
     let timestamp = Local::now().format("%Y-%m-%d_%H-%M-%S");
 
-    let file_name = format!("{}_{}.png", APPNAME, timestamp);
+    let file_name = format!("{APPNAME}_{timestamp}.png");
 
     let folder_path = match config.organize_mode {
         OrgranizeMode::Flat => config.folder_path.clone(),
