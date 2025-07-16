@@ -11,7 +11,7 @@ build       = "build.rs"
 
 [dependencies]
 anyhow = "1.0"
-arboard = { version = "3.5", features = [
+arboard = { version = "3.6", features = [
     "wayland-data-control",
     "wl-clipboard-rs",
 ] }
@@ -33,9 +33,9 @@ rdev = { git = "https://github.com/rustdesk-org/rdev", branch = "master" }
 resvg = { version = "0.45", default-features = false, features = ["text"] }
 rfd = "0.15"
 serde = { version = "1.0", features = ["derive"] }
-tokio = { version = "1.45", default-features = false, features = ["time"] }
-toml = { version = "0.8" }
-tray-icon = "0.20"
+tokio = { version = "1.46", default-features = false, features = ["time"] }
+toml = { version = "0.9" }
+tray-icon = "0.21"
 xcap = { version = "0.6", default-features = false }
 
 [target.'cfg( target_os = "windows" )'.dependencies]
