@@ -18,7 +18,7 @@ impl Capture {
             }
             Message::Undo => {
                 if self.mode.is_draw_mode() {
-                    self.shapes.pop();
+                    self.elements.pop();
                     self.cache.clear();
                 }
             }
@@ -33,7 +33,7 @@ impl Capture {
                             &self.windows,
                             &self.cursor_position,
                             self.scale_factor,
-                            self.image.dimensions(),
+                            self.screenshot.dimensions(),
                         );
                     }
                     Mode::Crop { .. } => {
@@ -44,14 +44,14 @@ impl Capture {
             Message::Cancel => {
                 match &mut self.mode {
                     Mode::Draw { .. } => {
-                        self.shapes.clear();
+                        self.elements.clear();
                         self.cache.clear();
                         self.mode = Mode::default();
                         self.mode.get_window_below_cursor(
                             &self.windows,
                             &self.cursor_position,
                             self.scale_factor,
-                            self.image.dimensions(),
+                            self.screenshot.dimensions(),
                         );
                     }
                     Mode::Crop { state: status, .. } => {
@@ -122,7 +122,7 @@ impl Capture {
                         state: status,
                     } => {
                         if shape.tool.is_text_tool() && shape.tool.is_valid() {
-                            self.shapes.push(shape.clone());
+                            self.elements.push(shape.clone());
                             self.cache.clear();
                             shape.tool.reset();
                         }
@@ -150,7 +150,7 @@ impl Capture {
                                     &self.windows,
                                     &self.cursor_position,
                                     self.scale_factor,
-                                    self.image.dimensions(),
+                                    self.screenshot.dimensions(),
                                 );
                             }
                             CropState::InProgress { start, end } => {
@@ -194,7 +194,7 @@ impl Capture {
                                     &self.windows,
                                     &self.cursor_position,
                                     self.scale_factor,
-                                    self.image.dimensions(),
+                                    self.screenshot.dimensions(),
                                 );
                             }
                         }
@@ -208,7 +208,7 @@ impl Capture {
                             return focus("text_input").into();
                         } else {
                             if shape.tool.is_valid() {
-                                self.shapes.push(shape.clone());
+                                self.elements.push(shape.clone());
                                 self.cache.clear();
                                 shape.tool.reset();
                             }
@@ -228,7 +228,7 @@ impl Capture {
         } = &mut self.mode
         {
             if shape.tool.is_valid() {
-                self.shapes.push(shape.clone());
+                self.elements.push(shape.clone());
             }
             shape.tool.reset();
             *status = DrawState::Idle;

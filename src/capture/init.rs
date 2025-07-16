@@ -1,10 +1,10 @@
 use std::rc::Rc;
 
 use anyhow::{Context, Result};
-use iced::{Point, widget::canvas::Cache};
+use iced::widget::image::Handle;
 use xcap::Monitor;
 
-use crate::capture::{Capture, CapturedWindow, mode::Mode};
+use crate::capture::{Capture, CapturedWindow};
 
 impl Capture {
     pub fn new(monitor: Monitor) -> Result<Self> {
@@ -45,14 +45,19 @@ impl Capture {
             .with_context(|| "Unable to capture Monitor")?;
 
         Ok(Capture {
-            toolbar_at_top: true,
             scale_factor,
-            image: screenshot,
+            screenshot: screenshot.clone(),
+            screenshot_handle: Handle::from_rgba(
+                screenshot.width(),
+                screenshot.height(),
+                screenshot.into_raw(),
+            ),
             windows,
-            cursor_position: Point::default(),
-            mode: Mode::default(),
-            shapes: Vec::new(),
-            cache: Cache::new(),
+            toolbar_at_top: true,
+            cursor_position: Default::default(),
+            mode: Default::default(),
+            elements: Default::default(),
+            cache: Default::default(),
         })
     }
 }

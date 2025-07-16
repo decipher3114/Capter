@@ -41,14 +41,14 @@ impl Capture {
                 bottom_right.y * self.scale_factor,
             );
 
-            let (img_width, img_height) = self.image.dimensions();
+            let (img_width, img_height) = self.screenshot.dimensions();
             let annotation_overlay =
-                create_annotation_overlay(img_width, img_height, self.shapes, self.scale_factor)
+                create_annotation_overlay(img_width, img_height, self.elements, self.scale_factor)
                     .unwrap_or(RgbaImage::new(0, 0));
 
             match state {
                 CropState::FullScreen => {
-                    overlay(&mut self.image, &annotation_overlay, 0, 0);
+                    overlay(&mut self.screenshot, &annotation_overlay, 0, 0);
                 }
                 CropState::Window(window) => {
                     let mut base_image = RgbaImage::new(img_width, img_height);
@@ -62,7 +62,7 @@ impl Capture {
 
                     overlay(&mut base_image, &annotation_overlay, 0, 0);
 
-                    self.image = crop_imm(
+                    self.screenshot = crop_imm(
                         &base_image,
                         top_left.x as u32,
                         top_left.y as u32,
@@ -77,10 +77,15 @@ impl Capture {
                     let size = bottom_right - top_left;
                     let width = size.x;
                     let height = size.y;
-                    overlay(&mut self.image, &annotation_overlay, 0, 0);
-                    self.image =
-                        crop_imm(&self.image, x as u32, y as u32, width as u32, height as u32)
-                            .to_image();
+                    overlay(&mut self.screenshot, &annotation_overlay, 0, 0);
+                    self.screenshot = crop_imm(
+                        &self.screenshot,
+                        x as u32,
+                        y as u32,
+                        width as u32,
+                        height as u32,
+                    )
+                    .to_image();
                 }
                 CropState::None => {
                     return Err(Error::msg("Screenshot Cancelled!!"));
@@ -88,7 +93,7 @@ impl Capture {
             };
         }
 
-        save_image(self.image, config)
+        save_image(self.screenshot, config)
     }
 }
 

@@ -8,6 +8,8 @@ use crate::consts::{
 pub const STROKE_WIDHT_FACTOR: u32 = 2;
 pub const FONT_SIZE_FACTOR: u32 = 12;
 
+pub type DrawElements = Vec<DrawElement>;
+
 #[derive(Debug, Clone)]
 pub struct DrawElement {
     pub tool: Tool,

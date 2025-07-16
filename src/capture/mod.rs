@@ -10,19 +10,32 @@ mod mode;
 
 use std::rc::Rc;
 
-use draw::{DrawElement, Tool, ToolColor};
-use iced::{Point, widget::canvas::Cache};
+use draw::{Tool, ToolColor};
+use iced::{
+    Point,
+    widget::{canvas::Cache, image::Handle},
+};
 use mode::Mode;
 use xcap::image::RgbaImage;
 
+use crate::capture::draw::DrawElements;
+
 pub struct Capture {
-    toolbar_at_top: bool,
+    // Attributes
     scale_factor: f32,
-    image: RgbaImage,
+
+    // Screenshot
+    screenshot: RgbaImage,
+    screenshot_handle: Handle,
     windows: Vec<Rc<CapturedWindow>>,
+
+    // UI
+    toolbar_at_top: bool,
+
+    // State
     cursor_position: Point,
     mode: Mode,
-    shapes: Vec<DrawElement>,
+    elements: DrawElements,
     cache: Cache,
 }
 

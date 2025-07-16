@@ -3,7 +3,7 @@ use iced::{
     Length,
     widget::{
         Button, Canvas, Column, Container, Image, Row, Slider, Stack, Text, TextInput, Tooltip,
-        image::Handle, opaque, tooltip::Position,
+        opaque, tooltip::Position,
     },
 };
 
@@ -29,13 +29,9 @@ impl Capture {
         let mut stack = Stack::new().height(Length::Fill).width(Length::Fill);
 
         stack = stack.push(
-            Image::new(Handle::from_rgba(
-                self.image.width(),
-                self.image.height(),
-                self.image.clone().into_raw(),
-            ))
-            .height(Length::Fill)
-            .width(Length::Fill),
+            Image::new(self.screenshot_handle.clone())
+                .height(Length::Fill)
+                .width(Length::Fill),
         );
 
         let canvas_with_tooltip = |description| {

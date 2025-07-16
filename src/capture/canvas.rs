@@ -70,7 +70,7 @@ impl Program<Message, Theme> for Capture {
         );
 
         let shapes_frame = self.cache.draw(renderer, bounds.size(), |frame| {
-            self.shapes
+            self.elements
                 .iter()
                 .for_each(|shape| draw_shape(frame, shape, false));
         });
