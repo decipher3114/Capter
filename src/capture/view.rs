@@ -25,7 +25,7 @@ const BUTTON_SIZE: f32 = 30.0;
 const CONTAINER_WIDTH: f32 = 420.0;
 
 impl Capture {
-    pub fn view(&self) -> Element<Message> {
+    pub fn view(&self) -> Element<'_, Message> {
         let mut stack = Stack::new().height(Length::Fill).width(Length::Fill);
 
         stack = stack.push(
@@ -146,17 +146,17 @@ impl Capture {
                         .align_x(Alignment::Center)
                         .spacing(SPACING);
 
-                    if status.is_waiting_for_input() {
-                        if let Tool::Text { text, .. } = &shape.tool {
-                            toolbar_column = toolbar_column.push(
-                                TextInput::new("Enter Text", text)
-                                    .width(Length::Fill)
-                                    .font(MEDIUM_FONT)
-                                    .size(TEXT_SIZE)
-                                    .on_input(Message::UpdateText)
-                                    .id("text_input"),
-                            );
-                        }
+                    if status.is_waiting_for_input()
+                        && let Tool::Text { text, .. } = &shape.tool
+                    {
+                        toolbar_column = toolbar_column.push(
+                            TextInput::new("Enter Text", text)
+                                .width(Length::Fill)
+                                .font(MEDIUM_FONT)
+                                .size(TEXT_SIZE)
+                                .on_input(Message::UpdateText)
+                                .id("text_input"),
+                        );
                     }
 
                     stack = stack.push(self.toolbar(toolbar_column))

@@ -22,18 +22,14 @@ impl App {
         theme.base()
     }
 
-    pub fn view(&self, id: Id) -> Element<Message> {
+    pub fn view(&self, id: Id) -> Element<'_, Message> {
         match &self.windows.get(&id) {
-            Some(AppWindow::Settings(settings)) => {
-                settings
-                    .view(&self.config)
-                    .map(move |message| Message::Settings(id, message))
-            }
-            Some(AppWindow::Capture(capture)) => {
-                capture
-                    .view()
-                    .map(move |message| Message::Capture(id, message))
-            }
+            Some(AppWindow::Settings(settings)) => settings
+                .view(&self.config)
+                .map(move |message| Message::Settings(id, message)),
+            Some(AppWindow::Capture(capture)) => capture
+                .view()
+                .map(move |message| Message::Capture(id, message)),
             None => unreachable!(),
         }
     }

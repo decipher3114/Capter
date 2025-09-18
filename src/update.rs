@@ -162,13 +162,14 @@ impl App {
                             .map(move |message| Message::Settings(id, message)),
                     );
 
-                    action.requests.into_iter().for_each(|request| {
-                        match request {
+                    action
+                        .requests
+                        .into_iter()
+                        .for_each(|request| match request {
                             settings::Request::Exit => {
                                 tasks.push(Task::done(Message::ExitApp));
                             }
-                        }
-                    });
+                        });
 
                     return Task::batch(tasks);
                 }
@@ -185,13 +186,14 @@ impl App {
                             .map(move |message| Message::Capture(id, message)),
                     );
 
-                    action.requests.into_iter().for_each(|request| {
-                        match request {
+                    action
+                        .requests
+                        .into_iter()
+                        .for_each(|request| match request {
                             capture::Request::Close => {
                                 tasks.push(Task::done(Message::RequestClose(id)));
                             }
-                        }
-                    });
+                        });
 
                     return Task::batch(tasks);
                 }

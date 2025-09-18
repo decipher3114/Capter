@@ -1,74 +1,15 @@
 [package]
-name        = "capter"
-version     = "4.0.1"
-edition     = "2024"
-authors     = ["decipher <decipher3114@gmail.com>"]
+name = "capter"
+version = "4.0.1"
+edition = "2024"
 description = "Cross-Platform Screen Capture and Annotation Tool"
-license     = "Apache-2.0"
-categories  = ["Utility"]
-readme      = "README.md"
-build       = "build.rs"
-
-[dependencies]
-anyhow = "1.0"
-arboard = { version = "3.6", features = [
-    "wayland-data-control",
-    "wl-clipboard-rs",
-] }
-chrono = { version = "0.4", default-features = false, features = ["clock"] }
-dark-light = "2.0"
-dirs = "6.0"
-edit-xml = "0.1"
-iced = { git = "https://github.com/iced-rs/iced.git", branch = "master", features = [
-    "advanced",
-    "canvas",
-    "image",
-    "lazy",
-    "tokio",
-] }
-interprocess = { version = "2.2", features = ["tokio"] }
-mouse_position = "0.1"
-opener = "0.8"
-rdev = { git = "https://github.com/rustdesk-org/rdev", branch = "master" }
-resvg = { version = "0.45", default-features = false, features = ["text"] }
-rfd = "0.15"
-serde = { version = "1.0", features = ["derive"] }
-tokio = { version = "1.46", default-features = false, features = ["time"] }
-toml = { version = "0.9" }
-tray-icon = "0.21"
-xcap = { version = "0.6", default-features = false }
-
-[target.'cfg( target_os = "windows" )'.dependencies]
-win32_notif = "0.7"
-
-[target.'cfg( target_os = "linux" )'.dependencies]
-gtk         = "0.18"
-notify-rust = { version = "4.11", features = ["images"] }
-
-[target.'cfg( target_os = "macos")'.dependencies]
-notify-rust = { version = "4.11", features = ["images"] }
-
-[target.'cfg( target_os = "windows" )'.build-dependencies]
-winresource = "0.1"
-
-[profile.dev]
-opt-level       = 0
-debug           = false
-incremental     = true
-codegen-units   = 256
-panic           = "unwind"
-overflow-checks = true
-
-[profile.release]
-codegen-units   = 1
-lto             = true
-opt-level       = 3
-panic           = "abort"
-overflow-checks = false
-strip           = "symbols"
+readme = "README.md"
+license = "Apache-2.0"
+categories = ["Utility"]
+build = "build.rs"
 
 [package.metadata.winresource]
-ProductName     = "capter"
+ProductName = "capter"
 FileDescription = "capter"
 
 [package.metadata.packager]
@@ -81,21 +22,79 @@ license-file = "LICENSE"
 copyright = "Copyright © decipher"
 before-packaging-command = "cargo build --release"
 icons = [
-    "assets/resources/windows/icon.ico",
-    "assets/resources/macos/icon.icns",
-    "assets/resources/linux/hicolor/*/apps/capter.png",
+  "assets/resources/windows/icon.ico",
+  "assets/resources/macos/icon.icns",
+  "assets/resources/linux/hicolor/*/apps/capter.png",
 ]
 out-dir = "target/packages"
 
 [package.metadata.packager.wix]
-banner-path       = "assets/images/wix_banner.png"
+banner-path = "assets/images/wix_banner.png"
 dialog-image-path = "assets/images/dialog_image.png"
 
 [package.metadata.packager.windows]
-digest-algorithim      = "SHA256"
+digest-algorithim = "SHA256"
 certificate-thumbprint = "07a9c417660868a4420fe9e2f8b6ac2e1a33228a"
-tsp                    = true
-timestamp-url          = "http://timestamp.digicert.com"
+tsp = true
+timestamp-url = "http://timestamp.digicert.com"
 
 [package.metadata.packager.macos]
 minimum-system-version = "10.13"
+
+[dependencies]
+anyhow = "1.0"
+arboard = { version = "3.6", features = [
+  "wayland-data-control",
+  "wl-clipboard-rs",
+] }
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+dark-light = "2.0"
+dirs = "6.0"
+edit-xml = "0.1"
+iced = { git = "https://github.com/iced-rs/iced.git", branch = "master", features = [
+  "advanced",
+  "canvas",
+  "image",
+  "lazy",
+  "tokio",
+] }
+interprocess = { version = "2.2", features = ["tokio"] }
+mouse_position = "0.1"
+opener = "0.8"
+rdev = { git = "https://github.com/rustdesk-org/rdev", branch = "master" }
+resvg = { version = "0.45", default-features = false, features = ["text"] }
+rfd = "0.15"
+serde = { version = "1.0", features = ["derive"] }
+tokio = { version = "1.47", default-features = false, features = ["time"] }
+toml = { version = "0.9" }
+tray-icon = "0.21"
+xcap = { version = "0.7", default-features = false }
+
+[target.'cfg( target_os = "linux" )'.dependencies]
+gtk = "0.18"
+notify-rust = { version = "4.11", features = ["images"] }
+
+[target.'cfg( target_os = "macos")'.dependencies]
+notify-rust = { version = "4.11", features = ["images"] }
+
+[target.'cfg( target_os = "windows" )'.dependencies]
+win32_notif = "0.7"
+
+[target.'cfg( target_os = "windows" )'.build-dependencies]
+winresource = "0.1"
+
+[profile.dev]
+opt-level = 0
+debug = false
+overflow-checks = true
+panic = "unwind"
+incremental = true
+codegen-units = 256
+
+[profile.release]
+opt-level = 3
+strip = "symbols"
+overflow-checks = false
+lto = true
+panic = "abort"
+codegen-units = 1

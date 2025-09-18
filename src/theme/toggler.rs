@@ -21,18 +21,14 @@ impl Catalog for Theme {
             background_border_width: 0.5,
             background_border_color: extended_palette.background.strongest.color,
             foreground: match status {
-                Status::Active { is_toggled } => {
-                    match is_toggled {
-                        true => extended_palette.primary.base.color,
-                        false => extended_palette.secondary.base.color,
-                    }
-                }
-                Status::Hovered { is_toggled } => {
-                    match is_toggled {
-                        true => extended_palette.primary.strong.color,
-                        false => extended_palette.secondary.strong.color,
-                    }
-                }
+                Status::Active { is_toggled } => match is_toggled {
+                    true => extended_palette.primary.base.color,
+                    false => extended_palette.secondary.base.color,
+                },
+                Status::Hovered { is_toggled } => match is_toggled {
+                    true => extended_palette.primary.strong.color,
+                    false => extended_palette.secondary.strong.color,
+                },
                 Status::Disabled => extended_palette.background.strongest.color,
             },
             foreground_border_width: 0.5,

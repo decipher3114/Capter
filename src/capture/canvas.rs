@@ -34,20 +34,18 @@ impl Program<Message, Theme> for Capture {
         _cursor: iced::advanced::mouse::Cursor,
     ) -> Option<Action<Message>> {
         match event {
-            iced::Event::Mouse(event) => {
-                match event {
-                    iced::mouse::Event::CursorMoved { position } => {
-                        Some(Action::publish(Message::MouseMoved(*position)))
-                    }
-                    iced::mouse::Event::ButtonPressed(iced::mouse::Button::Left) => {
-                        Some(Action::publish(Message::MousePressed))
-                    }
-                    iced::mouse::Event::ButtonReleased(iced::mouse::Button::Left) => {
-                        Some(Action::publish(Message::MouseReleased))
-                    }
-                    _ => None,
+            iced::Event::Mouse(event) => match event {
+                iced::mouse::Event::CursorMoved { position } => {
+                    Some(Action::publish(Message::MouseMoved(*position)))
                 }
-            }
+                iced::mouse::Event::ButtonPressed(iced::mouse::Button::Left) => {
+                    Some(Action::publish(Message::MousePressed))
+                }
+                iced::mouse::Event::ButtonReleased(iced::mouse::Button::Left) => {
+                    Some(Action::publish(Message::MouseReleased))
+                }
+                _ => None,
+            },
             _ => None,
         }
     }
@@ -176,10 +174,10 @@ impl Program<Message, Theme> for Capture {
         cursor: iced::advanced::mouse::Cursor,
     ) -> iced::mouse::Interaction {
         if cursor.is_over(bounds) {
-            if let Mode::Draw { element: shape, .. } = &self.mode {
-                if shape.tool.is_text_tool() {
-                    return iced::mouse::Interaction::Text;
-                }
+            if let Mode::Draw { element, .. } = &self.mode
+                && element.tool.is_text_tool()
+            {
+                return iced::mouse::Interaction::Text;
             }
             return iced::mouse::Interaction::Crosshair;
         }
@@ -187,16 +185,15 @@ impl Program<Message, Theme> for Capture {
     }
 }
 
-fn draw_shape(frame: &mut Frame, shape: &DrawElement, guide: bool) {
-    let tool = shape.tool.clone();
-    let color = shape.color.into();
+fn draw_shape(frame: &mut Frame, element: &DrawElement, guide: bool) {
+    let tool = element.tool.clone();
+    let color = element.color.into();
     let stroke = Stroke::default()
-        .with_width(shape.size.mul(STROKE_WIDHT_FACTOR) as f32)
+        .with_width(element.size.mul(STROKE_WIDHT_FACTOR) as f32)
         .with_color(color);
     match tool {
         Tool::Rectangle {
             top_left,
-            bottom_right: _,
             size,
             filled,
             opaque,
@@ -207,7 +204,7 @@ fn draw_shape(frame: &mut Frame, shape: &DrawElement, guide: bool) {
                 if opaque {
                     frame.fill(&path, color);
                 } else {
-                    frame.fill(&path, shape.color.into_translucent_color());
+                    frame.fill(&path, element.color.into_translucent_color());
                 }
             } else {
                 frame.stroke(&path, stroke);
@@ -270,7 +267,7 @@ fn draw_shape(frame: &mut Frame, shape: &DrawElement, guide: bool) {
             anchor_point: mid_point,
             text,
         } => {
-            let font_size = shape.size.mul(FONT_SIZE_FACTOR);
+            let font_size = element.size.mul(FONT_SIZE_FACTOR);
 
             let top_left = Point::new(mid_point.x, mid_point.y - (font_size / 2) as f32);
 

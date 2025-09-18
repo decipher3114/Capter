@@ -85,16 +85,14 @@ pub enum Message {
 impl App {
     pub fn new() -> (App, Task<Message>) {
         let (config, task) = match Config::load() {
-            Ok((config, is_first_creation)) => {
-                (
-                    config,
-                    if is_first_creation {
-                        Task::done(Message::OpenSettingsWindow)
-                    } else {
-                        Task::none()
-                    },
-                )
-            }
+            Ok((config, is_first_creation)) => (
+                config,
+                if is_first_creation {
+                    Task::done(Message::OpenSettingsWindow)
+                } else {
+                    Task::none()
+                },
+            ),
             Err(_) => (Config::default(), Task::done(Message::OpenSettingsWindow)),
         };
 
