@@ -181,7 +181,7 @@ impl Capture {
                                 .font(MEDIUM_FONT)
                                 .size(TEXT_SIZE)
                                 .on_input(Message::UpdateText)
-                                .id("text_input"),
+                                .id("TextInput"),
                         );
                     }
 

@@ -40,7 +40,7 @@ impl Settings {
     pub fn view<'a>(&'a self, config: &'a Config) -> Element<'a, Message> {
         let header = Row::new()
             .push(Text::new(APPNAME).size(60).font(BOLD_FONT))
-            .push(Space::with_width(Length::Fill))
+            .push(Space::new().width(Length::Fill))
             .push(
                 Button::new(Text::new("Exit").center().size(TEXT_SIZE))
                     .on_press(Message::RequestExit)
@@ -76,7 +76,7 @@ impl Settings {
                             )
                             .on_press(Message::OpenFolder),
                         )
-                        .push(Space::with_width(10))
+                        .push(Space::new().width(10))
                         .push(
                             Button::new(
                                 Text::new(self.folder_path.as_str())
@@ -114,7 +114,7 @@ fn list_item<'a>(label: &'a str, item: Element<'a, Message>) -> Element<'a, Mess
     Container::new(
         Row::new()
             .push(Text::new(label).size(22).font(BOLD_FONT))
-            .push(Space::with_width(Length::Fill))
+            .push(Space::new().width(Length::Fill))
             .push(item)
             .align_y(Center)
             .width(Length::Fill)

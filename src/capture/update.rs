@@ -1,7 +1,7 @@
 use iced::{
     Point,
     Size,
-    widget::text_input::focus,
+    widget::operation::focus,
 };
 
 use crate::{
@@ -203,7 +203,7 @@ impl Capture {
                 } => {
                     if shape.tool.is_text_tool() {
                         *status = DrawState::TextInput;
-                        return focus("text_input").into();
+                        return focus("TextInput").into();
                     } else {
                         if shape.tool.is_valid() {
                             self.elements.push(shape.clone());
