@@ -1,7 +1,12 @@
 use iced::{
-    Background, Border,
+    Background,
+    Border,
     border::Radius,
-    widget::text_input::{Catalog, Status, Style},
+    widget::text_input::{
+        Catalog,
+        Status,
+        Style,
+    },
 };
 
 use crate::theme::Theme;

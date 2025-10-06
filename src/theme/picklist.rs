@@ -1,9 +1,15 @@
 use iced::{
     Background,
-    widget::pick_list::{Catalog, Style},
+    widget::pick_list::{
+        Catalog,
+        Style,
+    },
 };
 
-use crate::theme::{Theme, border};
+use crate::theme::{
+    Theme,
+    border,
+};
 
 pub enum PickListClass {
     Default,

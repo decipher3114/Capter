@@ -3,7 +3,11 @@ use rfd::FileDialog;
 use crate::{
     action::Action,
     config::Config,
-    settings::{Message, Request, Settings},
+    settings::{
+        Message,
+        Request,
+        Settings,
+    },
 };
 
 impl Settings {

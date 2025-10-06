@@ -1,4 +1,7 @@
-use crate::{capture::Capture, settings::Settings};
+use crate::{
+    capture::Capture,
+    settings::Settings,
+};
 
 pub enum AppWindow {
     Settings(Box<Settings>),

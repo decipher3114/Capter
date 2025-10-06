@@ -10,10 +10,16 @@ mod mode;
 
 use std::rc::Rc;
 
-use draw::{Tool, ToolColor};
+use draw::{
+    Tool,
+    ToolColor,
+};
 use iced::{
     Point,
-    widget::{canvas::Cache, image::Handle},
+    widget::{
+        canvas::Cache,
+        image::Handle,
+    },
 };
 use mode::Mode;
 use xcap::image::RgbaImage;

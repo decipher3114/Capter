@@ -8,15 +8,28 @@ pub mod text;
 pub mod text_input;
 pub mod toggler;
 
-use std::{fmt::Display, sync::LazyLock};
+use std::{
+    fmt::Display,
+    sync::LazyLock,
+};
 
 use iced::{
-    Border, Color,
+    Border,
+    Color,
     border::Radius,
     color,
-    theme::{Base, Mode, Palette, Style, palette::Extended},
+    theme::{
+        Base,
+        Mode,
+        Palette,
+        Style,
+        palette::Extended,
+    },
 };
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Serialize, Deserialize)]
 pub enum Theme {

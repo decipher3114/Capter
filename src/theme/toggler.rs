@@ -1,4 +1,8 @@
-use iced::widget::toggler::{Catalog, Status, Style};
+use iced::widget::toggler::{
+    Catalog,
+    Status,
+    Style,
+};
 
 use crate::theme::Theme;
 

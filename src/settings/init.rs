@@ -1,4 +1,7 @@
-use crate::{config::Config, settings::Settings};
+use crate::{
+    config::Config,
+    settings::Settings,
+};
 
 impl Settings {
     pub fn init(config: &Config) -> Self {

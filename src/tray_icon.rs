@@ -1,24 +1,41 @@
 use std::time::Duration;
 
 use iced::{
-    futures::{SinkExt, Stream, StreamExt, channel::mpsc},
+    futures::{
+        SinkExt,
+        Stream,
+        StreamExt,
+        channel::mpsc,
+    },
     stream,
 };
 use tokio::time::sleep;
 use tray_icon::{
     Icon,
     MouseButton::Left,
-    TrayIcon, TrayIconBuilder, TrayIconEvent,
+    TrayIcon,
+    TrayIconBuilder,
+    TrayIconEvent,
     menu::{
-        Menu, MenuEvent, MenuItem, PredefinedMenuItem,
-        accelerator::{Accelerator, Code, Modifiers},
+        Menu,
+        MenuEvent,
+        MenuItem,
+        PredefinedMenuItem,
+        accelerator::{
+            Accelerator,
+            Code,
+            Modifiers,
+        },
     },
 };
 use xcap::image::load_from_memory;
 
 use crate::{
     Message,
-    consts::{APPICON, APPNAME},
+    consts::{
+        APPICON,
+        APPNAME,
+    },
 };
 
 pub fn create_tray_icon() -> TrayIcon {

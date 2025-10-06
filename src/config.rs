@@ -1,13 +1,28 @@
 use std::{
-    fs::{DirBuilder, File},
-    io::{Read, Write},
+    fs::{
+        DirBuilder,
+        File,
+    },
+    io::{
+        Read,
+        Write,
+    },
     path::PathBuf,
 };
 
-use anyhow::{Context, Result};
-use serde::{Deserialize, Serialize};
+use anyhow::{
+    Context,
+    Result,
+};
+use serde::{
+    Deserialize,
+    Serialize,
+};
 
-use crate::{organize_type::OrgranizeMode, theme::Theme};
+use crate::{
+    organize_type::OrgranizeMode,
+    theme::Theme,
+};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {

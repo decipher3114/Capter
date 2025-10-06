@@ -1,11 +1,17 @@
 use std::rc::Rc;
 
-use iced::{Point, Size};
+use iced::{
+    Point,
+    Size,
+};
 
 use crate::capture::{
     CapturedWindow,
     crop::CropState,
-    draw::{DrawElement, DrawState},
+    draw::{
+        DrawElement,
+        DrawState,
+    },
 };
 
 #[derive(Debug)]

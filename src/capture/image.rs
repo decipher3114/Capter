@@ -1,25 +1,51 @@
-use std::{fs, path::PathBuf};
+use std::{
+    fs,
+    path::PathBuf,
+};
 
-use anyhow::{Context, Error, Result};
+use anyhow::{
+    Context,
+    Error,
+    Result,
+};
 use arboard::Clipboard;
 use chrono::Local;
-use edit_xml::{Document, ElementBuilder};
+use edit_xml::{
+    Document,
+    ElementBuilder,
+};
 use iced::Point;
-use resvg::{tiny_skia, usvg};
+use resvg::{
+    tiny_skia,
+    usvg,
+};
 use xcap::image::{
-    ImageFormat, RgbaImage,
-    imageops::{crop_imm, overlay},
+    ImageFormat,
+    RgbaImage,
+    imageops::{
+        crop_imm,
+        overlay,
+    },
 };
 
 use crate::{
     capture::{
         Capture,
         crop::CropState,
-        draw::{DrawElement, FONT_SIZE_FACTOR, STROKE_WIDHT_FACTOR, Tool},
+        draw::{
+            DrawElement,
+            FONT_SIZE_FACTOR,
+            STROKE_WIDHT_FACTOR,
+            Tool,
+        },
         mode::Mode,
     },
     config::Config,
-    consts::{APPNAME, FONT_NAME, MEDIUM_FONT_TTF},
+    consts::{
+        APPNAME,
+        FONT_NAME,
+        MEDIUM_FONT_TTF,
+    },
     organize_type::OrgranizeMode,
 };
 

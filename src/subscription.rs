@@ -1,14 +1,22 @@
 use iced::{
     Subscription,
-    keyboard::{self, Modifiers, key},
+    keyboard::{
+        self,
+        Modifiers,
+        key,
+    },
     window,
 };
 
 use crate::{
-    App, Message,
+    App,
+    Message,
     ipc::ipc_listener,
     key_listener::global_key_listener,
-    tray_icon::{tray_icon_listener, tray_menu_listener},
+    tray_icon::{
+        tray_icon_listener,
+        tray_menu_listener,
+    },
 };
 
 impl App {

@@ -1,9 +1,19 @@
 use iced::{
     Background,
-    widget::slider::{Catalog, Handle, HandleShape, Rail, Status, Style},
+    widget::slider::{
+        Catalog,
+        Handle,
+        HandleShape,
+        Rail,
+        Status,
+        Style,
+    },
 };
 
-use crate::theme::{Theme, border};
+use crate::theme::{
+    Theme,
+    border,
+};
 
 pub enum SliderClass {
     Default,

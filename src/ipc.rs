@@ -1,12 +1,21 @@
 use iced::{
-    futures::{SinkExt, Stream},
+    futures::{
+        SinkExt,
+        Stream,
+    },
     stream,
 };
 use interprocess::local_socket::{
-    GenericNamespaced, ListenerOptions, ToNsName, traits::tokio::Listener,
+    GenericNamespaced,
+    ListenerOptions,
+    ToNsName,
+    traits::tokio::Listener,
 };
 
-use crate::{Message, consts::APPNAME};
+use crate::{
+    Message,
+    consts::APPNAME,
+};
 
 pub fn ipc_listener() -> impl Stream<Item = Message> {
     stream::channel(1, async |mut output| {

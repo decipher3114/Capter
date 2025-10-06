@@ -1,11 +1,18 @@
 use iced::{
-    theme::{Base, Style},
+    theme::{
+        Base,
+        Style,
+    },
     window::Id,
 };
 
 use crate::{
-    App, Message,
-    theme::{Element, Theme},
+    App,
+    Message,
+    theme::{
+        Element,
+        Theme,
+    },
     window::AppWindow,
 };
 

@@ -1,9 +1,16 @@
 use iced::{
-    Background, Color,
-    widget::container::{Catalog, Style},
+    Background,
+    Color,
+    widget::container::{
+        Catalog,
+        Style,
+    },
 };
 
-use crate::theme::{Theme, border};
+use crate::theme::{
+    Theme,
+    border,
+};
 
 pub enum ContainerClass {
     Default,

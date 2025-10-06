@@ -2,11 +2,20 @@ use iced::{
     Background,
     widget::{
         container,
-        scrollable::{Catalog, Rail, Scroller, Status, Style},
+        scrollable::{
+            Catalog,
+            Rail,
+            Scroller,
+            Status,
+            Style,
+        },
     },
 };
 
-use crate::theme::{Theme, border};
+use crate::theme::{
+    Theme,
+    border,
+};
 
 pub enum ScrollableClass {
     Default,

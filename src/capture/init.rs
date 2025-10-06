@@ -1,10 +1,16 @@
 use std::rc::Rc;
 
-use anyhow::{Context, Result};
+use anyhow::{
+    Context,
+    Result,
+};
 use iced::widget::image::Handle;
 use xcap::Monitor;
 
-use crate::capture::{Capture, CapturedWindow};
+use crate::capture::{
+    Capture,
+    CapturedWindow,
+};
 
 impl Capture {
     pub fn new(monitor: Monitor) -> Result<Self> {

@@ -21,9 +21,24 @@ mod organize_type;
 use std::collections::BTreeMap;
 
 use config::Config;
-use consts::{APPNAME, BOLD_FONT_TTF, ICON_FONT_TTF, MEDIUM_FONT, MEDIUM_FONT_TTF};
-use iced::{Task, daemon, window::Id};
-use interprocess::local_socket::{self, GenericNamespaced, ToNsName, traits::Stream};
+use consts::{
+    APPNAME,
+    BOLD_FONT_TTF,
+    ICON_FONT_TTF,
+    MEDIUM_FONT,
+    MEDIUM_FONT_TTF,
+};
+use iced::{
+    Task,
+    daemon,
+    window::Id,
+};
+use interprocess::local_socket::{
+    self,
+    GenericNamespaced,
+    ToNsName,
+    traits::Stream,
+};
 use tray_icon::create_tray_icon;
 use window::AppWindow;
 

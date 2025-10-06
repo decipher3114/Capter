@@ -1,8 +1,17 @@
 use iced::{
-    futures::{SinkExt, Stream, StreamExt, channel::mpsc},
+    futures::{
+        SinkExt,
+        Stream,
+        StreamExt,
+        channel::mpsc,
+    },
     stream,
 };
-use rdev::{EventType, Key, listen};
+use rdev::{
+    EventType,
+    Key,
+    listen,
+};
 
 use crate::Message;
 

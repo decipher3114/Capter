@@ -2,7 +2,10 @@ mod init;
 mod update;
 mod view;
 
-use crate::{organize_type::OrgranizeMode, theme::Theme};
+use crate::{
+    organize_type::OrgranizeMode,
+    theme::Theme,
+};
 
 #[derive(Debug)]
 pub struct Settings {

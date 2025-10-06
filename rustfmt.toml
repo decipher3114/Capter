@@ -2,6 +2,7 @@ edition = "2024"
 format_strings = true
 group_imports = "StdExternalCrate"
 imports_granularity = "Crate"
+imports_layout = "Vertical"
 reorder_impl_items = true
 style_edition = "2024"
 unstable_features = true

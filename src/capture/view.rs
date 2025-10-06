@@ -1,21 +1,47 @@
 use iced::{
-    Alignment::{self},
+    Alignment::{
+        self,
+    },
     Length,
     widget::{
-        Button, Canvas, Column, Container, Image, Row, Slider, Stack, Text, TextInput, Tooltip,
-        opaque, tooltip::Position,
+        Button,
+        Canvas,
+        Column,
+        Container,
+        Image,
+        Row,
+        Slider,
+        Stack,
+        Text,
+        TextInput,
+        Tooltip,
+        opaque,
+        tooltip::Position,
     },
 };
 
 use crate::{
     capture::{
-        Capture, Message,
+        Capture,
+        Message,
         crop::CropState,
-        draw::{Tool, ToolColor},
+        draw::{
+            Tool,
+            ToolColor,
+        },
         mode::Mode,
     },
-    consts::{ICON_FONT, MEDIUM_FONT, MOVE_ICON},
-    theme::{Element, button::ButtonClass, container::ContainerClass, text::TextClass},
+    consts::{
+        ICON_FONT,
+        MEDIUM_FONT,
+        MOVE_ICON,
+    },
+    theme::{
+        Element,
+        button::ButtonClass,
+        container::ContainerClass,
+        text::TextClass,
+    },
 };
 
 const PADDING: f32 = 10.0;

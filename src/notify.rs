@@ -4,15 +4,24 @@ impl App {
     #[cfg(target_os = "windows")]
     pub fn notify(&self, body: &str, image_path: Option<String>) {
         use win32_notif::{
-            NotificationActivatedEventHandler, NotificationBuilder,
-            notification::visual::{Image, Placement, Text, image::ImageCrop},
+            NotificationActivatedEventHandler,
+            NotificationBuilder,
+            notification::visual::{
+                Image,
+                Placement,
+                Text,
+                image::ImageCrop,
+            },
         };
 
         if !self.config.show_notification {
             return;
         };
 
-        use crate::consts::{APPID, APPNAME};
+        use crate::consts::{
+            APPID,
+            APPNAME,
+        };
 
         let mut notification_builder =
             NotificationBuilder::new().visual(Text::new(1, None, None, String::from(body)));

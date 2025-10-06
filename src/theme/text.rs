@@ -1,6 +1,9 @@
 use iced::{
     Color,
-    widget::text::{Catalog, Style},
+    widget::text::{
+        Catalog,
+        Style,
+    },
 };
 
 use crate::theme::Theme;

@@ -1,11 +1,20 @@
-use iced::{Point, Size, widget::text_input::focus};
+use iced::{
+    Point,
+    Size,
+    widget::text_input::focus,
+};
 
 use crate::{
     action::Action,
     capture::{
-        Capture, Message, Request,
+        Capture,
+        Message,
+        Request,
         crop::CropState,
-        draw::{DrawElement, DrawState},
+        draw::{
+            DrawElement,
+            DrawState,
+        },
         mode::Mode,
     },
 };

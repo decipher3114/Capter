@@ -1,15 +1,37 @@
 use iced::{
     Alignment::Center,
     Length,
-    widget::{Button, Column, Container, PickList, Row, Scrollable, Space, Text, Toggler},
+    widget::{
+        Button,
+        Column,
+        Container,
+        PickList,
+        Row,
+        Scrollable,
+        Space,
+        Text,
+        Toggler,
+    },
 };
 
 use crate::{
     config::Config,
-    consts::{APPNAME, BOLD_FONT, FOLDER_ICON_ICON, ICON_FONT},
+    consts::{
+        APPNAME,
+        BOLD_FONT,
+        FOLDER_ICON_ICON,
+        ICON_FONT,
+    },
     organize_type::OrgranizeMode,
-    settings::{Message, Settings},
-    theme::{Element, Theme, button::ButtonClass},
+    settings::{
+        Message,
+        Settings,
+    },
+    theme::{
+        Element,
+        Theme,
+        button::ButtonClass,
+    },
 };
 
 const TEXT_SIZE: u32 = 20;

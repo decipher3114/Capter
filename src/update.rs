@@ -1,14 +1,26 @@
 use iced::{
-    Point, Size, Task,
-    window::{self, settings::PlatformSpecific},
+    Point,
+    Size,
+    Task,
+    window::{
+        self,
+        settings::PlatformSpecific,
+    },
 };
 use mouse_position::mouse_position::Mouse;
 
 use crate::{
-    App, Message,
-    capture::{self, Capture},
+    App,
+    Message,
+    capture::{
+        self,
+        Capture,
+    },
     consts::APPICON,
-    settings::{self, Settings},
+    settings::{
+        self,
+        Settings,
+    },
     window::AppWindow,
 };
 

@@ -1,9 +1,17 @@
 use iced::{
-    Background, Color,
-    widget::button::{Catalog, Status, Style},
+    Background,
+    Color,
+    widget::button::{
+        Catalog,
+        Status,
+        Style,
+    },
 };
 
-use crate::theme::{Theme, border};
+use crate::theme::{
+    Theme,
+    border,
+};
 
 pub enum ButtonClass {
     Default,

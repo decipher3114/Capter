@@ -1,9 +1,15 @@
 use iced::{
     Background,
-    overlay::menu::{Catalog, Style},
+    overlay::menu::{
+        Catalog,
+        Style,
+    },
 };
 
-use crate::theme::{Theme, border};
+use crate::theme::{
+    Theme,
+    border,
+};
 
 pub enum MenuClass {
     Default,

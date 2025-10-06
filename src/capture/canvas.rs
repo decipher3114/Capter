@@ -1,22 +1,49 @@
 use std::ops::Mul;
 
 use iced::{
-    Color, Pixels, Point, Radians, Rectangle, Renderer, Size,
+    Color,
+    Pixels,
+    Point,
+    Radians,
+    Rectangle,
+    Renderer,
+    Size,
     alignment::Vertical,
     widget::{
         Action,
         canvas::{
-            Fill, Frame, Geometry, LineCap, LineDash, Path, Program, Stroke, Style, Text,
-            path::{Builder, arc::Elliptical},
+            Fill,
+            Frame,
+            Geometry,
+            LineCap,
+            LineDash,
+            Path,
+            Program,
+            Stroke,
+            Style,
+            Text,
+            path::{
+                Builder,
+                arc::Elliptical,
+            },
         },
-        text::{Alignment, LineHeight},
+        text::{
+            Alignment,
+            LineHeight,
+        },
     },
 };
 
 use crate::{
     capture::{
-        Capture, Message,
-        draw::{DrawElement, FONT_SIZE_FACTOR, STROKE_WIDHT_FACTOR, Tool},
+        Capture,
+        Message,
+        draw::{
+            DrawElement,
+            FONT_SIZE_FACTOR,
+            STROKE_WIDHT_FACTOR,
+            Tool,
+        },
         mode::Mode,
     },
     consts::MEDIUM_FONT,
