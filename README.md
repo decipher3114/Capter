@@ -46,7 +46,7 @@
 
 ## 🎬 Video
 
-[![YouTube](http://i.ytimg.com/vi/1RSB8945yJA/0.jpg)](https://www.youtube.com/watch?v=1RSB8945yJA)
+[![YouTube](http://i.ytimg.com/vi/1RSB8945yJA/maxresdefault.jpg)](https://www.youtube.com/watch?v=1RSB8945yJA)
 
 ### 🙌 Thanks to
 
